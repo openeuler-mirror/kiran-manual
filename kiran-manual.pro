@@ -31,9 +31,9 @@ HEADERS += \
     src/searcher.h
 
 FORMS += \
-    forms/articlepage.ui \
-    forms/homepage.ui \
-    forms/mainwindow.ui
+    forms/article-page.ui \
+    forms/home-page.ui \
+    forms/main-window.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

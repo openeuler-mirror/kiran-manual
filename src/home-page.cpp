@@ -1,5 +1,5 @@
 #include "home-page.h"
-#include "ui_homepage.h"
+#include "ui_home-page.h"
 
 #include <QDebug>
 #include <QFile>
@@ -89,6 +89,8 @@ void HomePage::initView()
                 if (clickedButton)
                 {
                     qDebug() << "Button clicked: " << itType + "->" + iName;
+                    //用 emit 发信号
+                    emit entryArticlePage(iName);
                 }
             });
 

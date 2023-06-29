@@ -16,6 +16,8 @@ class HomePage : public QWidget
 public:
     explicit HomePage(QWidget *parent = nullptr);
     ~HomePage();
+signals:
+    void entryArticlePage(QString key);
 
 private:
     Ui::HomePage *ui;

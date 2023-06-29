@@ -18,4 +18,4 @@ private:
     QString *m_filePath;
 };
 
-#endif // SEARCHER_H
+#endif  // SEARCHER_H

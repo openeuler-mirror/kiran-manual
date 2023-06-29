@@ -1,23 +1,25 @@
 #include "home-page.h"
 #include "ui_homepage.h"
 
+#include <QDebug>
+#include <QFile>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonParseError>
+#include <QLabel>
 #include <QPushButton>
 #include <QVBoxLayout>
-#include <QLabel>
-#include <QFile>
-#include <QJsonParseError>
-#include <QJsonDocument>
-#include <QDebug>
 
-HomePage::HomePage(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::HomePage)
+HomePage::HomePage(QWidget *parent)
+    : QWidget(parent),
+      ui(new Ui::HomePage)
 {
     ui->setupUi(this);
 
+    this->cfPath = "/home/skyzcyou/Documents/km-config.json";
     // 从配置文件加载配置
-    QString filepath = "/home/skyzcyou/Documents/km-config.json";
-    loadConf(filepath);
+    loadConf();
     // 初始化视图
     initView();
 }
@@ -27,43 +29,73 @@ HomePage::~HomePage()
     delete ui;
 }
 
-bool HomePage::loadConf(const QString &filepath)
+bool HomePage::loadConf()
 {
     //判断路径以及是否正常打开
-    if(filepath.isEmpty())
+    if (cfPath.isEmpty())
+    {
         return false;
-    QFile file(filepath);
-    if(!file.open(QIODevice::ReadOnly|QIODevice::Text))
+    }
+    QFile file(cfPath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
         return false;
-
+    }
     //读取数据后关闭文件
-    const QByteArray raw_data=file.readAll();
+    const QByteArray rawData = file.readAll();
     file.close();
 
     //解析为Json文档
-    QJsonParseError json_error;
-    QJsonDocument json_doc=QJsonDocument::fromJson(raw_data,&json_error);
-
-    qDebug() << json_doc << endl;
-
+    QJsonParseError jsonError;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(rawData, &jsonError);
     //是否正常解析Json数据
-    if(json_doc.isNull()||json_doc.isEmpty()||json_error.error!=QJsonParseError::NoError){
+    if (jsonDoc.isNull() || jsonDoc.isEmpty() || jsonError.error != QJsonParseError::NoError)
+    {
         return false;
     }
-    return false;
+    confJ = jsonDoc;
+    return true;
 }
 
 void HomePage::initView()
 {
-    // 根据 conf 创建主页
+    // TODO: 根据 conf 创建主页
     QVBoxLayout *homeLayout = new QVBoxLayout(this);
-    homeLayout->addWidget(new QLabel("Welcome to QT Program!"));
-    QPushButton *article1Btn = new QPushButton("Article 1");
-    QPushButton *article2Btn = new QPushButton("Article 2");
-    QPushButton *article3Btn = new QPushButton("Article 3");
-    homeLayout->addWidget(article1Btn);
-    homeLayout->addWidget(article2Btn);
-    homeLayout->addWidget(article3Btn);
 
+    QJsonObject obj = confJ.object();
+    QJsonArray kmArray = obj.value("kiran-manual").toArray();
+    for (auto it = kmArray.constBegin(); it != kmArray.constEnd(); ++it)
+    {
+        QJsonObject obj = it->toObject();
+        QString itType = obj.keys()[0];
+        qDebug() << itType << endl;
 
+        // 创建分类块
+        QVBoxLayout *typeLayout = new QVBoxLayout();
+        typeLayout->addWidget(new QLabel(itType));
+        QHBoxLayout *itemLayout = new QHBoxLayout();
+        typeLayout->addLayout(itemLayout);
+
+        QJsonArray itArray = it->toObject().value(itType).toArray();
+        for (auto i = itArray.constBegin(); i != itArray.constEnd(); ++i)
+        {
+            QJsonObject o = i->toObject();
+            QString iName = o.value("name").toString();
+            // 添加条目块
+            QPushButton *iBtn = new QPushButton(iName);
+            iBtn->setMaximumWidth(100);
+            connect(iBtn, &QPushButton::clicked, this, [=]() {
+                QPushButton *clickedButton = qobject_cast<QPushButton *>(sender());
+                if (clickedButton)
+                {
+                    qDebug() << "Button clicked: " << itType + "->" + iName;
+                }
+            });
+
+            itemLayout->addWidget(iBtn);
+        }
+
+        // 添加分类块
+        homeLayout->addLayout(typeLayout);
+    }
 }

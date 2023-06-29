@@ -1,9 +1,9 @@
 #ifndef ARTICLEPAGE_H
 #define ARTICLEPAGE_H
 
-#include <QWidget>
-#include <QTreeWidgetItem>
 #include <QFileInfoList>
+#include <QTreeWidgetItem>
+#include <QWidget>
 
 namespace Ui {
 class ArticlePage;

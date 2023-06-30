@@ -1,0 +1,22 @@
+{
+	"BUILD_DIR" : "/home/skyzcyou/Repositories/workspace/kiran-manual/build/kiran-manual_autogen",
+	"CMAKE_BINARY_DIR" : "/home/skyzcyou/Repositories/workspace/kiran-manual/build",
+	"CMAKE_CURRENT_BINARY_DIR" : "/home/skyzcyou/Repositories/workspace/kiran-manual/build",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/skyzcyou/Repositories/workspace/kiran-manual",
+	"CMAKE_SOURCE_DIR" : "/home/skyzcyou/Repositories/workspace/kiran-manual",
+	"INCLUDE_DIR" : "/home/skyzcyou/Repositories/workspace/kiran-manual/build/kiran-manual_autogen/include",
+	"INPUTS" : 
+	[
+		"/home/skyzcyou/Repositories/workspace/kiran-manual/conf/km-config.json"
+	],
+	"LOCK_FILE" : "/home/skyzcyou/Repositories/workspace/kiran-manual/build/CMakeFiles/kiran-manual_autogen.dir/AutoRcc_km-config_UVLADIE3JM_Lock.lock",
+	"MULTI_CONFIG" : false,
+	"OPTIONS" : [ "-name", "km_config" ],
+	"OUTPUT_CHECKSUM" : "UVLADIE3JM",
+	"OUTPUT_NAME" : "qrc_km-config.cpp",
+	"RCC_EXECUTABLE" : "/home/skyzcyou/Applications/Qt5.14.2/5.14.2/gcc_64/bin/rcc",
+	"RCC_LIST_OPTIONS" : [ "--list" ],
+	"SETTINGS_FILE" : "/home/skyzcyou/Repositories/workspace/kiran-manual/build/CMakeFiles/kiran-manual_autogen.dir/AutoRcc_km-config_UVLADIE3JM_Used.txt",
+	"SOURCE" : "/home/skyzcyou/Repositories/workspace/kiran-manual/src/km-config.qrc",
+	"VERBOSITY" : 0
+}

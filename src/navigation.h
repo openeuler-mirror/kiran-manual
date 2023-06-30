@@ -6,21 +6,21 @@
 
 namespace Ui
 {
-class HomePage;
+class Navigation;
 }
 
-class HomePage : public QWidget
+class Navigation : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit HomePage(QWidget *parent = nullptr);
-    ~HomePage();
+    explicit Navigation(QWidget *parent = nullptr);
+    ~Navigation();
 signals:
     void entryArticlePage(QString key);
 
 private:
-    Ui::HomePage *ui;
+    Ui::Navigation *ui;
 
     QString cfPath;
     QJsonDocument confJ;  // 配置JSON

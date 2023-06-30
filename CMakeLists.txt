@@ -51,6 +51,6 @@ add_executable(kiran-manual
 	src/window.ui
 	src/navigation.ui
 	src/article.ui
-	km-config.qrc
+	src/km-config.qrc
 )
 target_link_libraries(kiran-manual PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)

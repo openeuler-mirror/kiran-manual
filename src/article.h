@@ -6,18 +6,18 @@
 #include <QFileInfoList>
 
 namespace Ui {
-class ArticlePage;
+class Article;
 }
 
-class ArticlePage : public QWidget
+class Article : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit ArticlePage(QWidget *parent = nullptr);
-    ~ArticlePage();
+    explicit Article(QWidget *parent = nullptr);
+    ~Article();
 
-    QFileInfoList ShowDirTree(QTreeWidgetItem *root, QString path, QJsonObject &parentJsonObj);  // 显示文档目录树
+    QFileInfoList showDirTree(QTreeWidgetItem *root, QString path, QJsonObject &parentJsonObj);  // 显示文档目录树
     QString mdFile2HtmlStr(QString mdPath);
 
 private slots:
@@ -31,8 +31,7 @@ signals:
     void backHome(QString key);
 
 private:
-    Ui::ArticlePage *ui;
-
+    Ui::Article *ui;
 
     QString m_mdFilePath;     // 要渲染的 Markdown 文档路径
     QString m_htmlStr;        // 解析后的 HTML 字符串

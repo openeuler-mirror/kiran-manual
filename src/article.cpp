@@ -1,5 +1,5 @@
-#include "article-page.h"
-#include "ui_article-page.h"
+#include "article.h"
+#include "ui_article.h"
 
 #include <QDir>
 #include <QFile>
@@ -18,21 +18,21 @@
 #include "search.h"
 
 
-ArticlePage::ArticlePage(QWidget *parent) :
+Article::Article(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::ArticlePage)
+    ui(new Ui::Article)
 {
     ui->setupUi(this);
     initView();
 
 }
 
-ArticlePage::~ArticlePage()
+Article::~Article()
 {
     delete ui;
 }
 
-void ArticlePage::initView()
+void Article::initView()
 {
     // 组件初始化
     ui->textBrowser->setOpenExternalLinks(true);        //设置 QTextBrowser 能自动用系统浏览器打开外站链接
@@ -48,14 +48,14 @@ void ArticlePage::initView()
     //    ui->treeWidget->setItemWidget(root,2,nullptr);
     root->setText(0, "manual_book");
     QJsonObject rootJsonObj;
-    ShowDirTree(root, dirPath, rootJsonObj);
+    showDirTree(root, dirPath, rootJsonObj);
 
     //    Pretreatment pretreatment(nullptr);
     //    QFileInfoList lists = pretreatment.allfile(dirPath, rootJsonObj);
     //    LoadJson("/home/skyzcyou/Documents/manual_tree.json");
 }
 
-QString ArticlePage::mdFile2HtmlStr(QString mdPath)
+QString Article::mdFile2HtmlStr(QString mdPath)
 {
     using namespace std;
     string mp = string((const char *)mdPath.toLocal8Bit());
@@ -65,7 +65,7 @@ QString ArticlePage::mdFile2HtmlStr(QString mdPath)
     return QString(QString::fromLocal8Bit(mkStr.c_str()));
 }
 
-void ArticlePage::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
+void Article::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
     QString fileName = item->text(column);
 
@@ -108,7 +108,7 @@ void ArticlePage::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int col
 }
 
 // FIXME: 获取文档目录
-QFileInfoList ArticlePage::ShowDirTree(QTreeWidgetItem *root, QString path, QJsonObject &parentJsonObj)
+QFileInfoList Article::showDirTree(QTreeWidgetItem *root, QString path, QJsonObject &parentJsonObj)
 {
     QDir dir(path);       // Traversal subdirectory
     QDir dir_file(path);  // Traversal all file in a subdirectory
@@ -139,7 +139,7 @@ QFileInfoList ArticlePage::ShowDirTree(QTreeWidgetItem *root, QString path, QJso
         childroot->setText(0, name);
 
         root->addChild(childroot);
-        QFileInfoList child_file_list = ShowDirTree(childroot, namepath, subdirJsonObj);
+        QFileInfoList child_file_list = showDirTree(childroot, namepath, subdirJsonObj);
         file_list.append(child_file_list);
         file_list.append(name);
 
@@ -173,23 +173,23 @@ QFileInfoList ArticlePage::ShowDirTree(QTreeWidgetItem *root, QString path, QJso
     return file_list;
 }
 
-void ArticlePage::on_pushButtonSearch_clicked()
+void Article::on_pushButtonSearch_clicked()
 {
     QString keyword = ui->lineEditKeyword->text();
 }
 
-void ArticlePage::on_pushButtonBackHome_clicked()
+void Article::on_pushButtonBackHome_clicked()
 {
     //用 emit 发信号
     emit backHome("HOME");
 }
 
-void ArticlePage::on_textBrowser_backwardAvailable(bool arg1)
+void Article::on_textBrowser_backwardAvailable(bool arg1)
 {
     ui->pushButtonBackward->setEnabled(arg1);
 }
 
-void ArticlePage::on_textBrowser_forwardAvailable(bool arg1)
+void Article::on_textBrowser_forwardAvailable(bool arg1)
 {
     ui->pushButtonForward->setEnabled(arg1);
 }

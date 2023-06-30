@@ -1,5 +1,5 @@
-#include "home-page.h"
-#include "ui_home-page.h"
+#include "navigation.h"
+#include "ui_navigation.h"
 
 #include <QDebug>
 #include <QFile>
@@ -11,9 +11,9 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-HomePage::HomePage(QWidget *parent)
+Navigation::Navigation(QWidget *parent)
     : QWidget(parent),
-      ui(new Ui::HomePage)
+      ui(new Ui::Navigation)
 {
     ui->setupUi(this);
 
@@ -24,12 +24,12 @@ HomePage::HomePage(QWidget *parent)
     initView();
 }
 
-HomePage::~HomePage()
+Navigation::~Navigation()
 {
     delete ui;
 }
 
-bool HomePage::loadConf()
+bool Navigation::loadConf()
 {
     //判断路径以及是否正常打开
     if (cfPath.isEmpty())
@@ -57,7 +57,7 @@ bool HomePage::loadConf()
     return true;
 }
 
-void HomePage::initView()
+void Navigation::initView()
 {
     // TODO: 根据 conf 创建主页
     QVBoxLayout *homeLayout = new QVBoxLayout(this);

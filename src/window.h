@@ -6,23 +6,23 @@
 QT_BEGIN_NAMESPACE
 namespace Ui
 {
-class MainWindow;
+class Window;
 }
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow
+class Window : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+    Window(QWidget *parent = nullptr);
+    ~Window();
 
 public slots:
     void switchArticlePage(QString key); // TODO: key -> JSON Object
     void switchHomePage(QString key);
 private:
-    Ui::MainWindow *ui;
+    Ui::Window *ui;
     void initView();
     void initEvent();
 };

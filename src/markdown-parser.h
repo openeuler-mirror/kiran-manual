@@ -1,3 +1,17 @@
+/**
+ * Copyright (c) 2020 ~ 2021 KylinSec Co., Ltd.
+ * kiran-session-manager is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *          http://license.coscl.org.cn/MulanPSL2
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ *
+ * Author:     youzhengcai <youzhengcai@kylinse.com.cn>
+ */
+
 #pragma once
 
 #include <QObject>
@@ -10,8 +24,8 @@
 using namespace std;
 
 /**
-* HTML 标签类型
-*/
+ * HTML 标签类型
+ */
 enum Token
 {
     nul = 0,
@@ -41,17 +55,17 @@ enum Token
 };
 
 /**
-* HTML 前置标签
-*/
+ * HTML 前置标签
+ */
 const std::string frontTag[] = {"", "<p>", "", "<ul>", "<ol>", "<li>", "<em>", "<strong>", "<hr color=#CCCCCC size=1 / > ", "", "<blockquote>", "<h1>", "<h2>", "<h3>", "<h4>", "<h5>", "<h6>", "<pre><code>", "<code>"};
 /**
-* HTML 后置标签
-*/
+ * HTML 后置标签
+ */
 const std::string backTag[] = {"", "</p>", "", "</ul>", "</ol>", "</li>", "</em>", "</strong>", "", "", "</blockquote>", "</h1>", "</h2>", "</h3>", "</h4>", "</h5>", "</h6>", "</code></pre>", "</code>"};
 
 /**
-* HTML DOM 节点
-*/
+ * HTML DOM 节点
+ */
 struct Node
 {
     //语法类型
@@ -65,7 +79,7 @@ struct Node
 
     Node(int t)
     {
-        type = t;  //赋值
+        type = t;
     }
 };
 
@@ -86,17 +100,28 @@ public:
             destory(m_root);
         }
     }
-    void transferm();                                   // 打开文件读取数据
-    void dfs(Node* root);                               // 语法树转换成HTML源代码//深度优先遍历 DFS
-    const char* processStr(const char* str);            // 去除行首空格
-    void insert(Node* curNode, const char* str);        // 逐字符内容插入
-    pair<int, const char*> parseType(const char* str);  // 解析行首语法  返回:语法类型 + 对应内容起始位置
-    bool isCutLine(const char* str);                    // 打开文件读取数据判断水平分割线 "---"
+    // 打开文件读取数据
+    void transferm();
+    // 语法树转换成HTML源代码(DFS)
+    void dfs(Node* root);
+    // 去除行首空格
+    const char* processStr(const char* str);
+    // 逐字符内容插入
+    void insert(Node* curNode, const char* str);
+    // 解析行首语法  返回:语法类型 + 对应内容起始位置
+    pair<int, const char*> parseType(const char* str);
+    // 打开文件读取数据判断水平分割线 "---"
+    bool isCutLine(const char* str);
+    // 生成 html 文档。
     string html();
-    void destory(Node* root);  // 销毁
+    // 销毁节点
+    void destory(Node* root);
 
 private:
-    Node* m_root;       //语法树根节点
-    string m_filename;  //文件名
-    string m_content;   //存放HTML文档内容
+    //语法树根节点
+    Node* m_root;
+    //文件名
+    string m_filename;
+    //存放HTML文档内容
+    string m_content;
 };

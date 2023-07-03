@@ -1,3 +1,17 @@
+/**
+ * Copyright (c) 2020 ~ 2021 KylinSec Co., Ltd.
+ * kiran-session-manager is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *          http://license.coscl.org.cn/MulanPSL2
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ *
+ * Author:     youzhengcai <youzhengcai@kylinse.com.cn>
+ */
+
 #include "article.h"
 #include "ui_article.h"
 
@@ -35,27 +49,31 @@ Article::~Article()
 void Article::initView()
 {
     // 组件初始化
-    ui->textBrowser->setOpenExternalLinks(true);        //设置 QTextBrowser 能自动用系统浏览器打开外站链接
-    ui->pushButtonBackward->setEnabled(false);          //将 "后退"、"前进"按钮设置为不可用状态
-    ui->pushButtonForward->setEnabled(false);           //将 "后退"、"前进"按钮设置为不可用状态
-    connect(ui->pushButtonBackward, SIGNAL(clicked()),  // 前进后退按钮关联到 TextBrowser 槽函数
-            ui->textBrowser,
-            SLOT(backward()));
-    connect(ui->pushButtonForward, SIGNAL(clicked()), ui->textBrowser, SLOT(forward()));
+    ui->textBrowser->setOpenExternalLinks(true);
+    ui->pushButtonBackward->setEnabled(false);
+    ui->pushButtonForward->setEnabled(false);
+    // 关联到槽函数
+    connect(ui->pushButtonBackward, &QPushButton::clicked, ui->textBrowser,&QTextBrowser::backward);
+    connect(ui->pushButtonForward, &QPushButton::clicked, ui->textBrowser, &QTextBrowser::forward);
+    connect(ui->treeWidget, &QTreeWidget::itemDoubleClicked, this, &Article::onTreeWidgetItemDoubleClicked);
+    connect(ui->pushButtonSearch, &QPushButton::clicked, this, &Article::onPushButtonSearchClicked);
+    connect(ui->pushButtonBackHome, &QPushButton::clicked, this, &Article::onPushButtonBackHomeClicked);
+    connect(ui->textBrowser, &QTextBrowser::forwardAvailable, this, &Article::onTextBrowserForwardAvailable);
+    connect(ui->textBrowser, &QTextBrowser::backwardAvailable, this, &Article::onTextBrowserBackwardAvailable);
 
     QString dirPath = "/home/skyzcyou/Documents/manual_book/";
     QTreeWidgetItem *root = new QTreeWidgetItem(ui->treeWidget);
-    //    ui->treeWidget->setItemWidget(root,2,nullptr);
     root->setText(0, "manual_book");
     QJsonObject rootJsonObj;
     showDirTree(root, dirPath, rootJsonObj);
 
-    //    Pretreatment pretreatment(nullptr);
-    //    QFileInfoList lists = pretreatment.allfile(dirPath, rootJsonObj);
-    //    LoadJson("/home/skyzcyou/Documents/manual_tree.json");
 }
-
-QString Article::mdFile2HtmlStr(QString mdPath)
+/**
+ * @brief Article::mdFile2HtmlStr
+ * @param mdPath: Markdown 文档路径
+ * @return QString htmlStr: 返回解析 Markdown 成功后的 HTML 字符串
+ */
+QString Article::mdFile2HtmlStr(const QString& mdPath)
 {
     using namespace std;
     string mp = string((const char *)mdPath.toLocal8Bit());
@@ -65,7 +83,7 @@ QString Article::mdFile2HtmlStr(QString mdPath)
     return QString(QString::fromLocal8Bit(mkStr.c_str()));
 }
 
-void Article::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
+void Article::onTreeWidgetItemDoubleClicked(QTreeWidgetItem *item, int column)
 {
     QString fileName = item->text(column);
 
@@ -108,7 +126,7 @@ void Article::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 }
 
 // FIXME: 获取文档目录
-QFileInfoList Article::showDirTree(QTreeWidgetItem *root, QString path, QJsonObject &parentJsonObj)
+QFileInfoList Article::showDirTree(QTreeWidgetItem *root, const QString &path, QJsonObject &parentJsonObj)
 {
     QDir dir(path);       // Traversal subdirectory
     QDir dir_file(path);  // Traversal all file in a subdirectory
@@ -173,23 +191,35 @@ QFileInfoList Article::showDirTree(QTreeWidgetItem *root, QString path, QJsonObj
     return file_list;
 }
 
-void Article::on_pushButtonSearch_clicked()
+void Article::reloadArticle()
+{
+    // 解析并渲染目标文档
+    if (m_mdFilePath.isEmpty()){
+        qDebug() << "m_mdFilePath is empty!! " << m_mdFilePath;
+        return;
+    }
+    qDebug() << "m_mdFilePath: " << m_mdFilePath;
+    QString hStr = mdFile2HtmlStr(m_mdFilePath);
+    ui->textBrowser->setHtml(hStr);
+}
+
+void Article::onPushButtonSearchClicked()
 {
     QString keyword = ui->lineEditKeyword->text();
 }
 
-void Article::on_pushButtonBackHome_clicked()
+void Article::onPushButtonBackHomeClicked()
 {
     //用 emit 发信号
     emit backHome("HOME");
 }
 
-void Article::on_textBrowser_backwardAvailable(bool arg1)
+void Article::onTextBrowserBackwardAvailable(bool arg1)
 {
     ui->pushButtonBackward->setEnabled(arg1);
 }
 
-void Article::on_textBrowser_forwardAvailable(bool arg1)
+void Article::onTextBrowserForwardAvailable(bool arg1)
 {
     ui->pushButtonForward->setEnabled(arg1);
 }

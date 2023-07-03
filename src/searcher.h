@@ -1,6 +1,18 @@
-#ifndef SEARCHER_H
-#define SEARCHER_H
+/**
+ * Copyright (c) 2020 ~ 2021 KylinSec Co., Ltd.
+ * kiran-session-manager is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *          http://license.coscl.org.cn/MulanPSL2
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ *
+ * Author:     youzhengcai <youzhengcai@kylinse.com.cn>
+ */
 
+#pragma once
 #include <QObject>
 
 class Searcher : public QObject
@@ -9,13 +21,11 @@ class Searcher : public QObject
 public:
     explicit Searcher(QObject *parent = nullptr);
 
-    QString searchKeywordInside(QString keyword);
-    QString searchKeywordOutside(QString keyword);
+    QString searchKeywordInside(const QString& keyword);
+    QString searchKeywordOutside(const QString& keyword);
 
 signals:
 private:
     QString *m_keyward;
     QString *m_filePath;
 };
-
-#endif  // SEARCHER_H

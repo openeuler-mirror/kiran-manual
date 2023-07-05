@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2020 ~ 2021 KylinSec Co., Ltd.
- * kiran-session-manager is licensed under Mulan PSL v2.
+ * Copyright (c) 2020 ~ 2024 KylinSec Co., Ltd.
+ * kiran-manual is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -9,7 +9,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  *
- * Author:     youzhengcai <youzhengcai@kylinse.com.cn>
+ * Author:     youzhengcai <youzhengcai@kylinsec.com.cn>
  */
 
 #pragma once
@@ -27,19 +27,16 @@ class Navigation : public QWidget
 
 public:
     explicit Navigation(QWidget *parent = nullptr);
-    ~Navigation();
+    ~Navigation() override;
 signals:
-    void entryArticlePage(const QString& key);
+    void docPageClicked(const QString& key);
 
 private:
-    Ui::Navigation *ui;
+    Ui::Navigation *m_ui;
     // 配置文件路径 (://conf/km-config.json)
     QString m_confFilePath;
     // 配置文件解析后的JSON形式
     QJsonDocument m_confJson;
-
-    // 加载导航页配置文件
-    bool loadConf();
-    // 初始化视图
-    void initView();
+    // 初始化导航页视图
+    void init();
 };

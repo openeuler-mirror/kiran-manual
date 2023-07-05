@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2020 ~ 2021 KylinSec Co., Ltd.
- * kiran-session-manager is licensed under Mulan PSL v2.
+ * Copyright (c) 2020 ~ 2024 KylinSec Co., Ltd.
+ * kiran-manual is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -9,11 +9,12 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  *
- * Author:     youzhengcai <youzhengcai@kylinse.com.cn>
+ * Author:     youzhengcai <youzhengcai@kylinsec.com.cn>
  */
 
-#include "article.h"
-#include "ui_article.h"
+#include "document.h"
+#include "ui_document.h"
+#include "highlighter.h"
 
 #include <QDir>
 #include <QFile>
@@ -21,7 +22,6 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QJsonParseError>
 #include <QJsonValue>
 #include <QString>
 #include <QStringList>
@@ -29,74 +29,78 @@
 #include <QtDebug>
 #include <string>
 #include "markdown-parser.h"
-#include "search.h"
 
 
-Article::Article(QWidget *parent) :
+Document::Document(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::Article)
+    m_ui(new Ui::Document)
 {
-    ui->setupUi(this);
-    initView();
+    m_ui->setupUi(this);
+    init();
 
 }
 
-Article::~Article()
+Document::~Document()
 {
-    delete ui;
+    delete m_ui;
 }
 
-void Article::initView()
+void Document::init()
 {
     // 组件初始化
-    ui->textBrowser->setOpenExternalLinks(true);
-    ui->pushButtonBackward->setEnabled(false);
-    ui->pushButtonForward->setEnabled(false);
+    m_ui->textBrowser->setOpenExternalLinks(true);
+    m_ui->pushButtonBackward->setEnabled(false);
+    m_ui->pushButtonForward->setEnabled(false);
+    // 代码高亮
+    Highlighter *highlighter= new Highlighter(m_ui->textBrowser->document());
+    
     // 关联到槽函数
-    connect(ui->pushButtonBackward, &QPushButton::clicked, ui->textBrowser,&QTextBrowser::backward);
-    connect(ui->pushButtonForward, &QPushButton::clicked, ui->textBrowser, &QTextBrowser::forward);
-    connect(ui->treeWidget, &QTreeWidget::itemDoubleClicked, this, &Article::onTreeWidgetItemDoubleClicked);
-    connect(ui->pushButtonSearch, &QPushButton::clicked, this, &Article::onPushButtonSearchClicked);
-    connect(ui->pushButtonBackHome, &QPushButton::clicked, this, &Article::onPushButtonBackHomeClicked);
-    connect(ui->textBrowser, &QTextBrowser::forwardAvailable, this, &Article::onTextBrowserForwardAvailable);
-    connect(ui->textBrowser, &QTextBrowser::backwardAvailable, this, &Article::onTextBrowserBackwardAvailable);
+    connect(m_ui->pushButtonBackward, &QPushButton::clicked, m_ui->textBrowser,&QTextBrowser::backward);
+    connect(m_ui->pushButtonForward, &QPushButton::clicked, m_ui->textBrowser, &QTextBrowser::forward);
+    connect(m_ui->treeWidget, &QTreeWidget::itemDoubleClicked, this, &Document::onTreeWidgetItemDoubleClicked);
+    connect(m_ui->pushButtonSearch, &QPushButton::clicked, this, &Document::searchKeyword);
+    connect(m_ui->pushButtonBackHome, &QPushButton::clicked, this, &Document::onPushButtonBackHomeClicked);
+    connect(m_ui->textBrowser, &QTextBrowser::forwardAvailable, this, &Document::onTextBrowserForwardAvailable);
+    connect(m_ui->textBrowser, &QTextBrowser::backwardAvailable, this, &Document::onTextBrowserBackwardAvailable);
 
     QString dirPath = "/home/skyzcyou/Documents/manual_book/";
-    QTreeWidgetItem *root = new QTreeWidgetItem(ui->treeWidget);
+    QTreeWidgetItem *root = new QTreeWidgetItem(m_ui->treeWidget);
     root->setText(0, "manual_book");
     QJsonObject rootJsonObj;
     showDirTree(root, dirPath, rootJsonObj);
 
 }
 /**
- * @brief Article::mdFile2HtmlStr
+ * @brief Document::mdFile2HtmlStr
  * @param mdPath: Markdown 文档路径
  * @return QString htmlStr: 返回解析 Markdown 成功后的 HTML 字符串
  */
-QString Article::mdFile2HtmlStr(const QString& mdPath)
+QString Document::mdFile2HtmlStr(const QString& mdPath)
 {
     using namespace std;
     string mp = string((const char *)mdPath.toLocal8Bit());
     MarkdownParser mk(mp);
-    mk.transferm();
+    mk.transfer();
     string mkStr = mk.html();
     return QString(QString::fromLocal8Bit(mkStr.c_str()));
 }
 
-void Article::onTreeWidgetItemDoubleClicked(QTreeWidgetItem *item, int column)
+void Document::onTreeWidgetItemDoubleClicked(QTreeWidgetItem *item, int column)
 {
     QString fileName = item->text(column);
 
     QStringList filePath;
-    while (item != NULL)
-    {
-        filePath << item->text(0);  //获取itemfile名称
-        item = item->parent();      //将itemfile指向父item
+    while (item != nullptr)
+    {   //获取 itemFile 名称
+        filePath << item->text(0);
+        //将itemFile指向父item
+        item = item->parent();
     }
     QString strpath;
     //cout<<filepath.size()<<endl;
-    for (int i = (filePath.size() - 1); i >= 0; i--)  //QStringlist类filepath反向存着初始item的路径
-    {                                                 //将filepath反向输出，相应的加入’/‘
+    //QStringList 类 filepath 反向存着初始item的路径
+    for (int i = (filePath.size() - 1); i >= 0; i--)      {
+        //将filepath反向输出，相应的加入’/‘
         strpath += filePath.at(i);
         if (i != 0)
             strpath += "/";
@@ -117,20 +121,19 @@ void Article::onTreeWidgetItemDoubleClicked(QTreeWidgetItem *item, int column)
         }
         QTextStream tsOut(&hFile);
         tsOut << hStr;
-        qDebug() << fileName + "=> HTML Docment Save Success";
+        qDebug() << fileName + "=> HTML Document Save Success";
     }
-    qDebug() << "前进? " << ui->textBrowser->isForwardAvailable();
-    qDebug() << "后退? " << ui->textBrowser->isBackwardAvailable();
+    qDebug() << "前进? " << m_ui->textBrowser->isForwardAvailable();
+    qDebug() << "后退? " << m_ui->textBrowser->isBackwardAvailable();
 
-    ui->textBrowser->setHtml(hStr);
+    m_ui->textBrowser->setHtml(hStr);
 }
 
 // FIXME: 获取文档目录
-QFileInfoList Article::showDirTree(QTreeWidgetItem *root, const QString &path, QJsonObject &parentJsonObj)
+QFileInfoList Document::showDirTree(QTreeWidgetItem *root, const QString &path, QJsonObject &parentJsonObj)
 {
-    QDir dir(path);       // Traversal subdirectory
-    QDir dir_file(path);  // Traversal all file in a subdirectory
-
+    QDir dir(path);
+    QDir dir_file(path);
     // Traversal folder add into Widget
     QFileInfoList file_list = dir.entryInfoList(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     QFileInfoList folder_list = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -141,27 +144,29 @@ QFileInfoList Article::showDirTree(QTreeWidgetItem *root, const QString &path, Q
         QJsonObject subdirJsonObj;
         subdirJsonObj["type"] = QJsonValue("dir");
 
-        QString namepath = folder_list.at(i).absoluteFilePath();  // get absolute path
-        QFileInfo folderinfo = folder_list.at(i);
+        // get absolute path
+        QString namepath = folder_list.at(i).absoluteFilePath();
+        const QFileInfo&folderInfo = folder_list.at(i);
 
-        QString name = folderinfo.fileName();  // get folder name
+        // get folder name
+        QString name = folderInfo.fileName();
 
         // skip file name star with "_"
         if (name.startsWith("_"))
         {
             continue;
         }
-        QTreeWidgetItem *childroot = new QTreeWidgetItem(QStringList() << name);
-        root->addChild(childroot);
-        childroot->setIcon(0, QIcon(path + "_images/_self/folder.png"));
-        childroot->setText(0, name);
+        QTreeWidgetItem *childRoot = new QTreeWidgetItem(QStringList() << name);
+        root->addChild(childRoot);
+        childRoot->setIcon(0, QIcon(path + "_images/_self/folder.png"));
+        childRoot->setText(0, name);
 
-        root->addChild(childroot);
-        QFileInfoList child_file_list = showDirTree(childroot, namepath, subdirJsonObj);
+        root->addChild(childRoot);
+        QFileInfoList child_file_list = showDirTree(childRoot, namepath, subdirJsonObj);
         file_list.append(child_file_list);
         file_list.append(name);
-
-        subdirJsonObj["alias"] = QJsonValue(name);  // alias
+        // alias
+        subdirJsonObj["alias"] = QJsonValue(name);
         parentJsonObj[name] = subdirJsonObj;
     }
 
@@ -171,9 +176,8 @@ QFileInfoList Article::showDirTree(QTreeWidgetItem *root, const QString &path, Q
     QFileInfoList list_file = dir_file.entryInfoList();
 
     QJsonArray jsonArray;
-    for (int i = 0; i < list_file.size(); ++i)
+    for (const auto& fileInfo : list_file)
     {
-        QFileInfo fileInfo = list_file.at(i);
         QString name2 = fileInfo.fileName();
         QTreeWidgetItem *child = new QTreeWidgetItem(QStringList() << name2);
         child->setIcon(0, QIcon(path + "_images/_self/markdown.png"));
@@ -182,16 +186,18 @@ QFileInfoList Article::showDirTree(QTreeWidgetItem *root, const QString &path, Q
 
         QJsonObject fileJsonObj;
         fileJsonObj["name"] = QJsonValue(name2);
-        fileJsonObj["alias"] = QJsonValue(name2);  // alias: TODO:set document head?
+        // alias: TODO:set document head?
+        fileJsonObj["alias"] = QJsonValue(name2);
         fileJsonObj["type"] = QJsonValue("file");
         fileJsonObj["size"] = QJsonValue(QString::number(fileInfo.size()));
         jsonArray.append(fileJsonObj);
     }
     parentJsonObj["nodes"] = jsonArray;
+
     return file_list;
 }
 
-void Article::reloadArticle()
+void Document::reloadDocument()
 {
     // 解析并渲染目标文档
     if (m_mdFilePath.isEmpty()){
@@ -200,26 +206,26 @@ void Article::reloadArticle()
     }
     qDebug() << "m_mdFilePath: " << m_mdFilePath;
     QString hStr = mdFile2HtmlStr(m_mdFilePath);
-    ui->textBrowser->setHtml(hStr);
+    m_ui->textBrowser->setHtml(hStr);
 }
 
-void Article::onPushButtonSearchClicked()
+void Document::searchKeyword()
 {
-    QString keyword = ui->lineEditKeyword->text();
+    QString keyword = m_ui->lineEditKeyword->text();
 }
 
-void Article::onPushButtonBackHomeClicked()
+void Document::onPushButtonBackHomeClicked()
 {
     //用 emit 发信号
-    emit backHome("HOME");
+    emit backHomeClicked("HOME");
 }
 
-void Article::onTextBrowserBackwardAvailable(bool arg1)
+void Document::onTextBrowserBackwardAvailable(bool arg1)
 {
-    ui->pushButtonBackward->setEnabled(arg1);
+    m_ui->pushButtonBackward->setEnabled(arg1);
 }
 
-void Article::onTextBrowserForwardAvailable(bool arg1)
+void Document::onTextBrowserForwardAvailable(bool arg1)
 {
-    ui->pushButtonForward->setEnabled(arg1);
+    m_ui->pushButtonForward->setEnabled(arg1);
 }

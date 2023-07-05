@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.15)
 
 project(kiran-manual VERSION 0.1.0 LANGUAGES CXX)
 
@@ -15,42 +15,29 @@ endif()
 
 find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
 
+set (kiran-manual test)
+find_package(PkgConfig REQUIRED)
+pkg_search_module(KLOG REQUIRED klog-qt5)
 
-set(PROJECT_SOURCE_DIR src)
+set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-set(HEADER
-	${PROJECT_SOURCE_DIR}/
-        window.h
-	navigation.h
-	article.h
-        markdown-parser.h
-        searcher.h	
-)
-set(SOURCES
-	${PROJECT_SOURCE_DIR}/
-    	main.cpp
-    	window.cpp
-    	navigation.cpp
-    	article.cpp
-    	markdown-parser.cpp
-    	searcher.cpp
-)
+file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h")
+file(GLOB_RECURSE FORMS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.ui")
 
 add_executable(kiran-manual
-        src/window.h
-	src/navigation.h
-	src/article.h
-        src/markdown-parser.h
-        src/searcher.h	
-    	src/main.cpp
-    	src/window.cpp
-    	src/navigation.cpp
-    	src/article.cpp
-    	src/markdown-parser.cpp
-    	src/searcher.cpp
-	src/window.ui
-	src/navigation.ui
-	src/article.ui
-	src/km-config.qrc
+    ${HEADER}
+    ${SOURCES}
+    ${FORMS}
+    ${PROJECT_SOURCE_DIR}/km-config.qrc)
+
+target_link_libraries(kiran-manual PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets klog-qt5)
+
+
+# install
+install(TARGETS kiran-manual
+    RUNTIME DESTINATION bin
 )
-target_link_libraries(kiran-manual PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/manual-books
+    DESTINATION share/kiran-manual/data
+)

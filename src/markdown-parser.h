@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2020 ~ 2021 KylinSec Co., Ltd.
- * kiran-session-manager is licensed under Mulan PSL v2.
+ * Copyright (c) 2020 ~ 2024 KylinSec Co., Ltd.
+ * kiran-manual is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -9,14 +9,12 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  *
- * Author:     youzhengcai <youzhengcai@kylinse.com.cn>
+ * Author:     youzhengcai <youzhengcai@kylinsec.com.cn>
  */
 
 #pragma once
 
 #include <QObject>
-#pragma once
-#pragma once
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -26,42 +24,57 @@ using namespace std;
 /**
  * HTML 标签类型
  */
-enum Token
+enum HtmlToken
 {
-    nul = 0,
-    paragraph = 1,  //段落
-    href = 2,       //超链接
-    ul = 3,         //无序集
-    ol = 4,         //有序集
-    li = 5,         //列表项目
-    em = 6,         //斜体，表示强调
-    strong = 7,     //加粗
-    hr = 8,         //标题
-    image = 9,      //图片
-    quote = 10,     //块引用
+    HTML_TOKEN_NUL = 0,
+    //段落
+    HTML_TOKEN_PARAGRAPH = 1,
+    //超链接
+    HTML_TOKEN_HREF = 2,
+    //无序集
+    HTML_TOKEN_UL = 3,
+    //有序集
+    HTML_TOKEN_OL = 4,
+    //列表项目
+    HTML_TOKEN_LI = 5,
+    //斜体，表示强调
+    HTML_TOKEN_EM = 6,
+    //加粗
+    HTML_TOKEN_STRONG = 7,
+    //标题
+    HTML_TOKEN_HR = 8,
+    //图片
+    HTML_TOKEN_IMAGE = 9,
+    //块引用
+    HTML_TOKEN_QUOTE = 10,
 
     //标题1-6
-    h1 = 11,
-    h2 = 12,
-    h3 = 13,
-    h4 = 14,
-    h5 = 15,
-    h6 = 16,
+    HTML_TOKEN_H1 = 11,
+    HTML_TOKEN_H2 = 12,
+    HTML_TOKEN_H3 = 13,
+    HTML_TOKEN_H4 = 14,
+    HTML_TOKEN_H5 = 15,
+    HTML_TOKEN_H6 = 16,
 
-    blockcode = 17,  //代码块
-    code = 18,       //单行代码
-
-    blankrow = 19,  // space
+    //代码块
+    HTML_TOKEN_BLOCKCODE = 17,
+    //单行代码
+    HTML_TOKEN_CODE = 18,
+    // 空行
+    HTML_TOKEN_BLANKROW = 19,
 };
 
 /**
  * HTML 前置标签
+ * 注意 code 标签加了盘古之白
  */
-const std::string frontTag[] = {"", "<p>", "", "<ul>", "<ol>", "<li>", "<em>", "<strong>", "<hr color=#CCCCCC size=1 / > ", "", "<blockquote>", "<h1>", "<h2>", "<h3>", "<h4>", "<h5>", "<h6>", "<pre><code>", "<code>"};
+const std::string frontTag[] = {"", "<p>", "", "<ul>", "<ol>", "<li>", "<em>", "<strong>", "<hr color=#CCCCCC size=1 / > ", "", "<blockquote>",
+                                "<h1>", "<h2>", "<h3>", "<h4>", "<h5>", "<h6>", "<pre><code>", "<code> ", ""};
 /**
  * HTML 后置标签
  */
-const std::string backTag[] = {"", "</p>", "", "</ul>", "</ol>", "</li>", "</em>", "</strong>", "", "", "</blockquote>", "</h1>", "</h2>", "</h3>", "</h4>", "</h5>", "</h6>", "</code></pre>", "</code>"};
+const std::string backTag[] = {"", "</p>", "", "</ul>", "</ol>", "</li>", "</em>", "</strong>", "", "", "</blockquote>",
+                               "</h1>", "</h2>", "</h3>", "</h4>", "</h5>", "</h6>", "</code></pre>", " </code>", ""};
 
 /**
  * HTML DOM 节点
@@ -77,7 +90,7 @@ struct Node
     //elem[1]:保存网址/路径
     string elem[2];
 
-    Node(int t)
+    explicit Node(int t)
     {
         type = t;
     }
@@ -88,12 +101,12 @@ class MarkdownParser : public QObject
     Q_OBJECT
 public:
     explicit MarkdownParser(QObject* parent = nullptr);
-    MarkdownParser(const string& filename)
+    explicit MarkdownParser(const string& filename)
     {
-        m_root = new Node(nul);
+        m_root = new Node(HTML_TOKEN_NUL);
         m_filename = filename;
     }
-    ~MarkdownParser()
+    ~MarkdownParser() override
     {
         if (m_root)
         {
@@ -101,25 +114,25 @@ public:
         }
     }
     // 打开文件读取数据
-    void transferm();
+    void transfer();
     // 语法树转换成HTML源代码(DFS)
     void dfs(Node* root);
     // 去除行首空格
-    const char* processStr(const char* str);
+    static const char* processStr(const char* str);
     // 逐字符内容插入
-    void insert(Node* curNode, const char* str);
+    static void insert(Node* curNode, const char* str);
     // 解析行首语法  返回:语法类型 + 对应内容起始位置
-    pair<int, const char*> parseType(const char* str);
+    static pair<int, const char*> parseType(const char* str);
     // 打开文件读取数据判断水平分割线 "---"
-    bool isCutLine(const char* str);
-    // 生成 html 文档。
+    static bool isCutLine(const char* str);
+    // 生成 HTML 文档。
     string html();
     // 销毁节点
     void destory(Node* root);
 
 private:
     //语法树根节点
-    Node* m_root;
+    Node* m_root{};
     //文件名
     string m_filename;
     //存放HTML文档内容

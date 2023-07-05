@@ -2,9 +2,13 @@
 
 TODO:
 ## 编译安装
-```
-# make
-# make install
+```bash
+# cmake -S . -B build
+# cmake --build build  -j4 -v
+# cmake --install build
 ```
 
 ## 运行
+```bash
+# kiran-manual
+```

@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2020 ~ 2021 KylinSec Co., Ltd.
- * kiran-session-manager is licensed under Mulan PSL v2.
+ * Copyright (c) 2020 ~ 2024 KylinSec Co., Ltd.
+ * kiran-manual is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -9,7 +9,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  *
- * Author:     youzhengcai <youzhengcai@kylinse.com.cn>
+ * Author:     youzhengcai <youzhengcai@kylinsec.com.cn>
  */
 
 #pragma once
@@ -18,37 +18,41 @@
 #include <QFileInfoList>
 
 namespace Ui {
-class Article;
+class Document;
 }
 
-class Article : public QWidget
+class Document : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit Article(QWidget *parent = nullptr);
-    ~Article();
-
-    QString m_mdFilePath;     // 要渲染的 Markdown 文档路径
-    QFileInfoList showDirTree(QTreeWidgetItem *root, const QString &path, QJsonObject &parentJsonObj);  // 显示文档目录树
-    QString mdFile2HtmlStr(const QString &mdPath);
-    void reloadArticle();
+    explicit Document(QWidget *parent = nullptr);
+    ~Document() override;
+    // 要渲染的 Markdown 文档路径
+    QString m_mdFilePath;     
+    // 显示文档目录树
+    QFileInfoList showDirTree(QTreeWidgetItem *root, const QString &path, QJsonObject &parentJsonObj);  
+    static QString mdFile2HtmlStr(const QString &mdPath);
+    void reloadDocument();
 
 private slots:
     void onTreeWidgetItemDoubleClicked(QTreeWidgetItem *item, int column);
-    void onPushButtonSearchClicked();
+    void searchKeyword();
     void onPushButtonBackHomeClicked();
     void onTextBrowserBackwardAvailable(bool arg1);
     void onTextBrowserForwardAvailable(bool arg1);
 
 signals:
-    void backHome(const QString& key);
+    void backHomeClicked(const QString& key);
 
 private:
-    Ui::Article *ui;
+    Ui::Document *m_ui;
 
-    QString m_htmlStr;        // 解析后的 HTML 字符串
-    QTreeWidget *m_treeWidget;  // 显示文档目录的控件
+    // 解析后的 HTML 字符串
+    QString m_htmlStr;
 
-    void initView();
+    // 显示文档目录的控件
+    QTreeWidget *m_treeWidget{};
+
+    void init();
 };

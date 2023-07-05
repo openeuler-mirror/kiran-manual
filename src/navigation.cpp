@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2020 ~ 2021 KylinSec Co., Ltd.
- * kiran-session-manager is licensed under Mulan PSL v2.
+ * Copyright (c) 2020 ~ 2024 KylinSec Co., Ltd.
+ * kiran-manual is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -9,115 +9,109 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  *
- * Author:     youzhengcai <youzhengcai@kylinse.com.cn>
+ * Author:     youzhengcai <youzhengcai@kylinsec.com.cn>
  */
 
 #include "navigation.h"
 #include "ui_navigation.h"
+#include "constants.h"
 
+#include "kiran-log/qt5-log-i.h"
 #include <QDebug>
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QJsonParseError>
 #include <QLabel>
 #include <QPushButton>
+#include <QSettings>
+#include <QStandardPaths>
 #include <QVBoxLayout>
 
 Navigation::Navigation(QWidget *parent)
     : QWidget(parent),
-      ui(new Ui::Navigation)
+      m_ui(new Ui::Navigation)
 {
-    ui->setupUi(this);
-    // 设定配置文件路径 (://conf/km-config.json)
-    this->m_confFilePath = "/home/skyzcyou/Documents/km-config.json";
-    // 从配置文件加载配置
-    loadConf();
+    m_ui->setupUi(this);
+    // 设定配置文件路径 (:/conf/km-config.ini)
+    this->m_confFilePath = ":/data/km-config.ini";
     // 初始化视图
-    initView();
+    init();
 }
 
 Navigation::~Navigation()
 {
-    delete ui;
+    delete m_ui;
 }
-
-/**
- * @brief Navigation::loadConf 以 JSON 形式加载配置文件
- * @return bool 是否正常解析配置文件为 JSON 数据
- */
-bool Navigation::loadConf()
-{
-    //判断路径以及是否正常打开
-    if (m_confFilePath.isEmpty())
-    {
-        return false;
-    }
-    QFile file(m_confFilePath);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        return false;
-    }
-    //读取数据后关闭文件
-    const QByteArray rawData = file.readAll();
-    file.close();
-
-    //解析为Json文档
-    QJsonParseError jsonError;
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(rawData, &jsonError);
-    //是否正常解析Json数据
-    if (jsonDoc.isNull() || jsonDoc.isEmpty() || jsonError.error != QJsonParseError::NoError)
-    {
-        return false;
-    }
-    m_confJson = jsonDoc;
-    return true;
-}
-/**
- * @brief Navigation::initView 初始化视图
- * @details
- */
-void Navigation::initView()
+void Navigation::init()
 {
     // 定义最外部的垂直布局容器
     QVBoxLayout *homeLayout = new QVBoxLayout(this);
 
-    QJsonObject obj = m_confJson.object();
-    QJsonArray kmArray = obj.value("kiran-manual").toArray();
-    for (auto it = kmArray.constBegin(); it != kmArray.constEnd(); ++it)
+    // 载入配置文件
+    QString confIniPath = m_confFilePath;
+    QSettings settings(confIniPath, QSettings::IniFormat);
+    settings.setIniCodec("UTF-8");
+
+    // 获取公共信息
+    settings.beginGroup("Document");
+    QString docDir = settings.value("DocDir").toString();
+
+    QStringList languageSupport = settings.value("LanguageSupport").toStringList();
+    // 获取当前系统的语言环境
+    QLocale locale = QLocale::system();
+    QString localName = locale.name();
+    // 目前只支持中英文，不在支持语言中则为英文
+    if (!languageSupport.contains(localName))
     {
-        QJsonObject obj = it->toObject();
-        QString itType = obj.keys()[0];
-        qDebug() << "Scaned Type: " << itType << endl;
+        localName = languageSupport.at(0);
+    }
+    QString localFlag = "[" + localName + "]";
+
+    // 程序内 categories 使用英文，需要显示时再转为其他语言
+    QStringList categories = settings.value("Categories[en_US]").toStringList();
+    QStringList categoriesLocal = settings.value("Categories"+localFlag).toStringList();
+    settings.endGroup();
+
+    // 输出每个分类下的FileName
+    for (auto it = categories.begin(); it != categories.end(); ++it)
+    {
+        qint8 index = std::distance(categories.begin(),it);
+        // "Category" 分两个，一是原始 categoryRaw 二是根据语言环境翻译后到 categoryLocal
+        const QString& categoryRaw = *it;
+        const QString& categoryLocal = categoriesLocal.at(index);
 
         // 创建分类块
         QVBoxLayout *typeLayout = new QVBoxLayout();
-        typeLayout->addWidget(new QLabel(itType));
+        typeLayout->addWidget(new QLabel(categoryLocal));
         QHBoxLayout *itemLayout = new QHBoxLayout();
         typeLayout->addLayout(itemLayout);
 
-        QJsonArray itArray = it->toObject().value(itType).toArray();
-        for (auto i = itArray.constBegin(); i != itArray.constEnd(); ++i)
+        // 获取该分类下的 item
+        QString itemsKey = "Document/" + categoryRaw + "Item";
+        QStringList items = settings.value(itemsKey).toStringList();
+        foreach (const QString& item, items)
         {
-            QJsonObject o = i->toObject();
-            QString iName = o.value("name").toString();
-            qDebug() << "Scaned Item: " << iName << endl;
-            QPushButton *iBtn = new QPushButton(iName);
+            settings.beginGroup("Document "+categoryRaw+" "+item);
+            QString itemName = settings.value("Name"+localFlag).toString();
+            QString fileName = settings.value("FileName").toString();
+            QString filePath = docDir + localName + "/" + fileName;
+            QString iconPath = docDir + "icon/" + settings.value("Icon").toString();
+            settings.endGroup();
+            // 声明条目块
+            QPushButton *iBtn = new QPushButton(itemName);
             iBtn->setMaximumWidth(100);
             connect(iBtn, &QPushButton::clicked, this, [=]() {
                 QPushButton *clickedButton = qobject_cast<QPushButton *>(sender());
                 if (clickedButton)
                 {
-                    qDebug() << "Button clicked: " << itType + "->" + iName;
-                    //用 emit 发信号
-                    emit entryArticlePage(iName);
+                    //用 emit 发信号 发送文档路径
+                    emit docPageClicked(filePath);
                 }
             });
             // 添加条目块
             itemLayout->addWidget(iBtn);
         }
-
         // 添加分类块
         homeLayout->addLayout(typeLayout);
     }

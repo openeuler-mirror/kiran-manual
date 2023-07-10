@@ -205,8 +205,17 @@ void Document::reloadDocument()
         return;
     }
     qDebug() << "m_mdFilePath: " << m_mdFilePath;
+
+    // 不同 QT 版本调用不同 Markdown 渲染方法:
+    // QT_VERSION >= 5.14 QT 原生渲染函数
+    // QT_VERSION < 5.14     自解析渲染函数
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    m_ui->textBrowser->setSource(m_mdFilePath);
+
+#else
     QString hStr = mdFile2HtmlStr(m_mdFilePath);
     m_ui->textBrowser->setHtml(hStr);
+#endif
 }
 
 void Document::searchKeyword()
@@ -216,7 +225,6 @@ void Document::searchKeyword()
 
 void Document::onPushButtonBackHomeClicked()
 {
-    //用 emit 发信号
     emit backHomeClicked("HOME");
 }
 

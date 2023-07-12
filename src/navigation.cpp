@@ -17,15 +17,10 @@
 #include "constants.h"
 
 #include "kiran-log/qt5-log-i.h"
-#include <QDebug>
 #include <QFile>
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QLabel>
 #include <QPushButton>
 #include <QSettings>
-#include <QStandardPaths>
 #include <QVBoxLayout>
 
 Navigation::Navigation(QWidget *parent)
@@ -34,7 +29,7 @@ Navigation::Navigation(QWidget *parent)
 {
     m_ui->setupUi(this);
     // 设定配置文件路径 (:/conf/km-config.ini)
-    this->m_confFilePath = ":/data/km-config.ini";
+    this->m_confFilePath = CONF_FILE_PATH;
     // 初始化视图
     init();
 }
@@ -43,6 +38,7 @@ Navigation::~Navigation()
 {
     delete m_ui;
 }
+// 初始化视图
 void Navigation::init()
 {
     // 定义最外部的垂直布局容器
@@ -64,6 +60,7 @@ void Navigation::init()
     // 目前只支持中英文，不在支持语言中则为英文
     if (!languageSupport.contains(localName))
     {
+        KLOG_INFO() << "dont support language-" + localName + ", auto change to en_US";
         localName = languageSupport.at(0);
     }
     QString localFlag = "[" + localName + "]";
@@ -73,7 +70,7 @@ void Navigation::init()
     QStringList categoriesLocal = settings.value("Categories"+localFlag).toStringList();
     settings.endGroup();
 
-    // 输出每个分类下的FileName
+    // 输出每个分类下的 FileName
     for (auto it = categories.begin(); it != categories.end(); ++it)
     {
         qint8 index = std::distance(categories.begin(),it);
@@ -81,10 +78,14 @@ void Navigation::init()
         const QString& categoryRaw = *it;
         const QString& categoryLocal = categoriesLocal.at(index);
 
-        // 创建分类块
+        // 声明分类块
+        // 此处不会造成内存泄漏，因为两个对象会绑定到父布局
         QVBoxLayout *typeLayout = new QVBoxLayout();
-        typeLayout->addWidget(new QLabel(categoryLocal));
+        int maxPerLine = 3;
+
         QHBoxLayout *itemLayout = new QHBoxLayout();
+        itemLayout->setAlignment(Qt::AlignLeft);
+        typeLayout->addWidget(new QLabel(categoryLocal));
         typeLayout->addLayout(itemLayout);
 
         // 获取该分类下的 item
@@ -100,12 +101,12 @@ void Navigation::init()
             settings.endGroup();
             // 声明条目块
             QPushButton *iBtn = new QPushButton(itemName);
-            iBtn->setMaximumWidth(100);
+            iBtn->setMaximumWidth(parentWidget()->width() / maxPerLine);
+
             connect(iBtn, &QPushButton::clicked, this, [=]() {
                 QPushButton *clickedButton = qobject_cast<QPushButton *>(sender());
                 if (clickedButton)
                 {
-                    //用 emit 发信号 发送文档路径
                     emit docPageClicked(filePath);
                 }
             });

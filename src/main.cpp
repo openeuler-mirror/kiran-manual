@@ -13,27 +13,20 @@
  */
 
 #include "window.h"
+#include "constants.h"
 #include "kiran-log/qt5-log-i.h"
-
 #include <QApplication>
 #include <QStandardPaths>
 
-static const char* const projectName = "kiran-manual";
 int main(int argc, char *argv[])
 {
-
-    // 获取应用程序的 share 路径
-    QStringList paths = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
-    QString sharePath = paths.value(0) + "/kiran-manual/";
-    qDebug() << "Share path: " << sharePath;
-
     // 初始化日志库
-    int iRet = klog_qt5_init("", "kylinsec-session", projectName, projectName);
+    int iRet = klog_qt5_init("", "kylinsec-session", PROJECT_NAME, PROJECT_NAME);
     if (iRet != 0)
     {
         fprintf(stderr, "klog_qt5_init field,res:%d\n", iRet);
     }
-
+    KLOG_INFO() << PROJECT_NAME << "Start ^_^";
     QApplication app(argc, argv);
     Window window;
     window.show();

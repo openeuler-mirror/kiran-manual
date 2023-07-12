@@ -13,12 +13,31 @@
  */
 
 #include "markdown-parser.h"
+#include "constants.h"
+#include <codecvt>
+#include <regex>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonDocument>
 
+void removeEscapeChar(char* str);
+void removeEscapeChar(string& str);
 MarkdownParser::MarkdownParser(QObject* parent)
     : QObject(parent)
 {
 }
-
+void removeEscapeChar(char* str)
+{
+    regex re(R"([\r\n]+$)");
+    string s = string(str);
+    s = regex_replace(s, re, "");
+    strcpy(str, s.c_str());
+}
+void removeEscapeChar(string& str)
+{
+    regex re(R"([\r\n]+$)");
+    str = regex_replace(str, re, "");
+}
 // 打开文件读取数据
 void MarkdownParser::transfer()
 {
@@ -38,6 +57,7 @@ void MarkdownParser::transfer()
     }
 
     bool inBlock = false;
+    int cntTag = 0;
     //读取内容(按行读取)
     string rowStr;
     while (fin.peek() != EOF)
@@ -50,7 +70,7 @@ void MarkdownParser::transfer()
         // 忽略空内容
         if (!inBlock && start == nullptr)
         {
-            m_root->_child.push_back(new Node(HTML_TOKEN_BLANKROW));
+            m_root->_child.push_back(new Node(HTML_TOKEN_BLANK_ROW));
             continue;
         }
         // 代码块中空行,直接处理,不过类型判定
@@ -72,14 +92,14 @@ void MarkdownParser::transfer()
 
         //创建语法结点
         //代码块结点
-        if (typeRet.first == HTML_TOKEN_BLOCKCODE)
+        if (typeRet.first == HTML_TOKEN_BLOCK_CODE)
         {
             //判断代码块起始还是结束
             if (!inBlock)
             {
                 //代码块起始
                 //创建代码块结点
-                m_root->_child.push_back(new Node(HTML_TOKEN_BLOCKCODE));
+                m_root->_child.push_back(new Node(HTML_TOKEN_BLOCK_CODE));
             }
 
             //如果是代码块结束位置,不需要创建新的代码块结点
@@ -91,6 +111,15 @@ void MarkdownParser::transfer()
         //判断是否为代码块中代码
         if (inBlock)
         {
+            // 处理 <> 否则会被 HTML 渲染为tag 同一行中存在 <> 则处理
+            if (rowStr.find('<') && rowStr.find('>')){
+                std::regex re("<");
+                std::string result = std::regex_replace(rowStr, re, "&lt;");
+                re = std::regex(">");
+                rowStr = std::regex_replace(result, re, "&gt;");
+            }
+            // 行首主动添加空格
+            m_root->_child.back()->elem[0] += "&nbsp;&nbsp;";
             m_root->_child.back()->elem[0] += rowStr;
             m_root->_child.back()->elem[0] += '\n';
             continue;
@@ -113,6 +142,10 @@ void MarkdownParser::transfer()
             m_root->_child.push_back(new Node(typeRet.first));
             //插入标题内容
             m_root->_child.back()->elem[0] = typeRet.second;
+            // 插入目录
+            char* hd = const_cast<char*>(typeRet.second);
+            removeEscapeChar(hd);
+            Cins(m_croot,typeRet.first - HTML_TOKEN_H1 + 1, hd,cntTag);
             continue;
         }
 
@@ -157,16 +190,71 @@ void MarkdownParser::transfer()
     }
     //展开语法树,生成HTML文档
     dfs(m_root);
+    // 构造目录
+    m_toc += "<ul>";
+    for (int i = 0; i < (int)m_croot->_child.size(); i++)
+    {
+        Cdfs(m_croot->_child[i], to_string(i + 1) + ".");
+    }
+    m_toc += "</ul>";
+
+    // 构建目录 JSON
+    buildJSONTOC();
+}
+
+// 根据已经遍历完毕的目录节点树 m_croot 生成 JSON
+QJsonObject MarkdownParser::buildJSONTOC() {
+    // 构造 JSON
+    QJsonObject rootObject;
+    QJsonArray baseArray;
+    for (int i = 0; i < (int)m_croot->_child.size(); i++)
+    {
+        QJsonObject baseItemObject;
+        baseItemObject.insert("heading",QString::fromStdString(m_croot->_child[i]->heading));
+        QJsonArray baseItemArray;
+        CdfsForJSON(m_croot->_child[i], to_string(i + 1) + ".", baseItemArray);
+        baseItemObject.insert("child", baseItemArray);
+
+        baseArray.append(baseItemObject);
+    }
+    rootObject["_child"] = baseArray;
+    return rootObject;
+}
+
+void MarkdownParser::CdfsForJSON(CatalogNode *v, const string &index, QJsonArray& jsonArray) {
+    int n = (int)v->_child.size();
+    if (n) {
+        for (int i = 0; i < n; i++) {
+            QJsonObject itemObject;
+            itemObject.insert("heading",QString::fromStdString(v->_child[i]->heading));
+            QJsonArray itemArray;
+            CdfsForJSON(v->_child[i], index + to_string(i + 1) + ".", itemArray);
+            itemObject.insert("child", itemArray);
+
+            jsonArray.append(itemObject);
+        }
+    }
 }
 
 // 语法树转换成HTML源代码(DFS)
 void MarkdownParser::dfs(Node* root)
 {
-    //插入前置标签
-    m_content += frontTag[root->type];
+    // 此段只处理前置标签
+    // h1~h6 标题增加锚点
+    if (root->type >= HTML_TOKEN_H1 && root->type <= HTML_TOKEN_H6)
+    {
+        m_content += frontTag[root->type] + " id=\"";
+        string idStr = root->elem[0];
+        removeEscapeChar(idStr);
+        m_content += idStr;
+        m_content += "\">";
+    }else
+    {
+        //插入前置标签
+        m_content += frontTag[root->type];
+    }
 
     //插入内容
-
     //网址
     if (root->type == HTML_TOKEN_HREF)
     {
@@ -179,10 +267,10 @@ void MarkdownParser::dfs(Node* root)
     //图片
     else if (root->type == HTML_TOKEN_IMAGE)
     {
-        m_content += R"(<img height="300" alt=")";
+        m_content += R"(<img width="400" alt=")";
         m_content += root->elem[0];
         m_content += "\" src=\"";
-        string prePath = "/usr/local/share/kiran-manual/data/manual-books/images/";
+        string prePath = IMAGE_FOLDER;
 
         string img = prePath + root->elem[1];
         m_content += prePath + root->elem[1];
@@ -190,7 +278,7 @@ void MarkdownParser::dfs(Node* root)
         m_content += "\" />";
     }
     // 处理空行
-    else if (root->type == HTML_TOKEN_BLANKROW)
+    else if (root->type == HTML_TOKEN_BLANK_ROW)
     {
         m_content += "\n";
     }
@@ -237,7 +325,7 @@ void MarkdownParser::insert(Node* curNode, const char* str)
     bool inEm = false;      //斜体
     int len = strlen(str);
     //解析内容为纯文本,可以放入纯文本结点中
-    //先创建一incode个纯文本孩子结点
+    //先创建一个纯文本孩子结点
     curNode->_child.push_back(new Node(HTML_TOKEN_NUL));
     for (int i = 0; i < len; ++i)
     {
@@ -246,7 +334,7 @@ void MarkdownParser::insert(Node* curNode, const char* str)
         {
             if (inCode)
             {
-                //行内代码结束,则创建一个新的孩子结点,存放后序内容
+                // 第二次遇到 ` 表示行内代码结束,则创建一个新的孩子结点,存放后序内容
                 curNode->_child.push_back(new Node(HTML_TOKEN_NUL));
             }
             else
@@ -357,7 +445,7 @@ pair<int, const char*> MarkdownParser::parseType(const char* str)
         ++ptr;
         ++titleNum;
     }
-    //1.标题
+    //1.标题 (# 号后面为空格)
     if (*ptr == ' ' && titleNum > 0 && titleNum <= 6)
     {
         return make_pair(HTML_TOKEN_H1 + titleNum - 1, ptr + 1);
@@ -368,11 +456,11 @@ pair<int, const char*> MarkdownParser::parseType(const char* str)
     //2.代码块:```代码内容```
     if (strncmp(ptr, "```", 3) == 0)
     {
-        return make_pair(HTML_TOKEN_BLOCKCODE, ptr + 3);
+        return make_pair(HTML_TOKEN_BLOCK_CODE, ptr + 3);
     }
 
     //3.无序列表: - + 空格
-    if (strncmp(ptr, "- ", 2) == 0)
+    if (strncmp(ptr, "- ", 2) == 0 || strncmp(ptr, "+ ", 2) == 0)
     {
         return make_pair(HTML_TOKEN_UL, ptr + 2);
     }
@@ -418,18 +506,41 @@ string MarkdownParser::html()
         "<!DOCTYPE html><html><head>\
         <meta charset=\"utf-8\">\
         <title>Markdown</title>\
-        <link rel=\"stylesheet\" href=\"github-markdown.css\">\
-        <link rel=\"stylesheet\" href=\"index.css\">\
         <style>\
-		code { background-color: #d8d8d8 }\
-		pre { background-color: #d8d8d8; padding:15px }\
-		pre code { background-color: #d8d8d8;}\
-		img { max-width: 500px;}\
+		code { background-color: #f5f5f5 }\
+		pre { background-color: #f5f5f5;padding-left:100px; white-space: pre-wrap;}\
+		pre>code { background-color: #f5f5f5;width:100%;text-intend:100px}\
         </style>\
         </head><body><article class=\"markdown-body\">";
     std::string end = "</article></body></html>";
 
     return head + m_content + end;
+}
+// 插入目录项
+void MarkdownParser::Cins(CatalogNode *v, int x, const string &hd, int tag) {
+    int n = (int)v->_child.size();
+    if (x == 1) {
+        v->_child.push_back(new CatalogNode(hd));
+        v->_child.back()->tag = "tag" + to_string(tag);
+        return ;
+    }
+
+    if (!n || v->_child.back()->heading.empty())
+        v->_child.push_back(new CatalogNode(""));
+    Cins(v->_child.back(), x - 1, hd, tag);
+}
+void MarkdownParser::Cdfs(CatalogNode *v, string index) {
+    m_toc += "<li>";
+    m_toc += "<a href=\"#" + v->heading + "\">" + v->heading + "</a>";
+    int n = (int)v->_child.size();
+    if (n) {
+        m_toc += "<ul>";
+        for (int i = 0; i < n; i++) {
+            Cdfs(v->_child[i], index + to_string(i + 1) + ".");
+        }
+        m_toc += "</ul>";
+    }
+    m_toc += "</li>";
 }
 
 void MarkdownParser::destory(Node* root)

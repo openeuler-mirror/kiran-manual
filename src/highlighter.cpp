@@ -15,7 +15,12 @@
 #include "highlighter.h"
 #include <QTextBlockFormat>
 
-//! [0]
+/**
+ *      rule.pattern = QRegularExpression(pattern);
+ *       rule.format = keywordFormat;
+ *       highlightingRules.append(rule);
+ */
+
 Highlighter::Highlighter(QTextDocument *parent)
     : QSyntaxHighlighter(parent)
 {
@@ -23,6 +28,7 @@ Highlighter::Highlighter(QTextDocument *parent)
 
     keywordFormat.setForeground(Qt::darkBlue);
     keywordFormat.setFontWeight(QFont::Bold);
+    // 定义关键字规则，下列为常见 C++ 关键字
     QStringList keywordPatterns;
     keywordPatterns << "\\bchar\\b" << "\\bclass\\b" << "\\bconst\\b"
                     << "\\bdouble\\b" << "\\benum\\b" << "\\bexplicit\\b"
@@ -35,52 +41,44 @@ Highlighter::Highlighter(QTextDocument *parent)
                     << "\\bunion\\b" << "\\bunsigned\\b" << "\\bvirtual\\b"
                     << "\\bvoid\\b" << "\\bvolatile\\b" << "\\bbool\\b";
     foreach (const QString &pattern, keywordPatterns) {
+        // 定义 pattern
         rule.pattern = QRegularExpression(pattern);
+        // 定义 format
         rule.format = keywordFormat;
+        // 加入规则集合
         highlightingRules.append(rule);
-//! [0] //! [1]
     }
-//! [1]
-
-//! [2]
     classFormat.setFontWeight(QFont::Bold);
     classFormat.setForeground(Qt::darkMagenta);
     rule.pattern = QRegularExpression("\\bQ[A-Za-z]+\\b");
     rule.format = classFormat;
     highlightingRules.append(rule);
-//! [2]
 
-//! [3]
+    // 单行注释
     singleLineCommentFormat.setForeground(Qt::red);
     rule.pattern = QRegularExpression("//[^\n]*");
     rule.format = singleLineCommentFormat;
-    highlightingRules.append(rule);
+//    highlightingRules.append(rule);
 
     multiLineCommentFormat.setForeground(Qt::red);
-//! [3]
 
-//! [4]
     quotationFormat.setForeground(Qt::darkGreen);
     rule.pattern = QRegularExpression("\".*\"");
     rule.format = quotationFormat;
     highlightingRules.append(rule);
-//! [4]
 
-//! [5]
     functionFormat.setFontItalic(true);
     functionFormat.setForeground(Qt::blue);
     rule.pattern = QRegularExpression("\\b[A-Za-z0-9_]+(?=\\()");
     rule.format = functionFormat;
     highlightingRules.append(rule);
-//! [5]
-
-//! [6]
     commentStartExpression = QRegularExpression("/\\*");
     commentEndExpression = QRegularExpression("\\*/");
-}
-//! [6]
 
-//! [7]
+    codeBlockFormat.setForeground(Qt::yellow);
+    codeBlockStartExpression = QRegularExpression("<code>");
+    codeBlockEndExpression = QRegularExpression("</code>");
+}
 void Highlighter::highlightBlock(const QString &text)
 {
     foreach (const HighlightingRule &rule, highlightingRules) {
@@ -90,18 +88,12 @@ void Highlighter::highlightBlock(const QString &text)
             setFormat(match.capturedStart(), match.capturedLength(), rule.format);
         }
     }
-//! [7] //! [8]
     setCurrentBlockState(0);
-//! [8]
-
-//! [9]
     int startIndex = 0;
     if (previousBlockState() != 1)
         startIndex = text.indexOf(commentStartExpression);
 
-//! [9] //! [10]
     while (startIndex >= 0) {
-//! [10] //! [11]
         QRegularExpressionMatch match = commentEndExpression.match(text, startIndex);
         int endIndex = match.capturedStart();
         int commentLength = 0;
@@ -115,5 +107,23 @@ void Highlighter::highlightBlock(const QString &text)
         setFormat(startIndex, commentLength, multiLineCommentFormat);
         startIndex = text.indexOf(commentStartExpression, startIndex + commentLength);
     }
+    // TODO: 实现只对 <code> 块中的代码进行高亮匹配
+    setCurrentBlockState(0);
+    startIndex = 0;
+    if (previousBlockState() != 1)
+        startIndex = text.indexOf(codeBlockStartExpression);
+    while (startIndex >= 0) {
+        QRegularExpressionMatch match = codeBlockEndExpression.match(text, startIndex);
+        int endIndex = match.capturedStart();
+        int commentLength = 0;
+        if (endIndex == -1) {
+            setCurrentBlockState(1);
+            commentLength = text.length() - startIndex;
+        } else {
+            commentLength = endIndex - startIndex
+                            + match.capturedLength();
+        }
+        setFormat(startIndex, commentLength, codeBlockFormat);
+        startIndex = text.indexOf(codeBlockStartExpression, startIndex + commentLength);
+    }
 }
-//! [11]

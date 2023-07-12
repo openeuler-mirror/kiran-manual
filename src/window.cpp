@@ -15,8 +15,6 @@
 #include "window.h"
 #include "ui_window.h"
 
-#include <QDebug>
-
 Window::Window(QWidget* parent)
     : QMainWindow(parent), m_ui(new Ui::Window)
 {
@@ -34,7 +32,7 @@ void Window::documentPageLoader(const QString& key)
 {
     m_document->m_mdFilePath = key;
     m_document->reloadDocument();
-    // TODO: 将路径入栈，实现前进后退功能
+    // 将路径入栈，实现前进后退功能
 
     m_ui->stackedWidget->setCurrentIndex(3);
 }

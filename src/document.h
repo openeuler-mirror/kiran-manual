@@ -13,9 +13,10 @@
  */
 
 #pragma once
-#include <QWidget>
-#include <QTreeWidgetItem>
 #include <QFileInfoList>
+#include <QTextCursor>
+#include <QTreeWidgetItem>
+#include <QWidget>
 
 namespace Ui {
 class Document;
@@ -29,19 +30,19 @@ public:
     explicit Document(QWidget *parent = nullptr);
     ~Document() override;
     // 要渲染的 Markdown 文档路径
-    QString m_mdFilePath;     
+    QString m_mdFilePath;
     // 显示文档目录树
-    QFileInfoList showDirTree(QTreeWidgetItem *root, const QString &path, QJsonObject &parentJsonObj);  
-    static QString mdFile2HtmlStr(const QString &mdPath);
+    static void showTOC(QTreeWidgetItem *root, const QJsonObject& obj, int level = 0);
+    // 解析 Markdown 文档为 HTML 字符串
+    QString mdFile2HtmlStr(const QString &mdPath);
+    // 重新渲染文档
     void reloadDocument();
+    void renderCatalog(QJsonObject& jsonObject);
 
 private slots:
-    void onTreeWidgetItemDoubleClicked(QTreeWidgetItem *item, int column);
+    void tocItemScrollToAnchor(QTreeWidgetItem *item, int column);
     void searchKeyword();
-    void onPushButtonBackHomeClicked();
-    void onTextBrowserBackwardAvailable(bool arg1);
-    void onTextBrowserForwardAvailable(bool arg1);
-
+    void backHome();
 signals:
     void backHomeClicked(const QString& key);
 
@@ -50,9 +51,14 @@ private:
 
     // 解析后的 HTML 字符串
     QString m_htmlStr;
-
     // 显示文档目录的控件
     QTreeWidget *m_treeWidget{};
-
+    // 记录上一次搜索匹配项的位置
+    QTextCursor m_lastMatch;
+    // 初始化视图
     void init();
+    // HTML 字符串保存到文件
+    static void htmlStrSaveToFile(QString& fileName, QString& hStr);
+    // 清除搜索项的高亮颜色
+    void clearSearchHighlights();
 };

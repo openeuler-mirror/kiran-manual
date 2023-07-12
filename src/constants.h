@@ -14,4 +14,6 @@
 
 #pragma once
 
-const QString CONF_FILE_PATH = ":/data/km-config.ini";
+#define PROJECT_NAME "kiran-manual"
+#define CONF_FILE_PATH ":/data/km-config.ini";
+#define IMAGE_FOLDER "/usr/local/share/kiran-manual/data/manual-books/images/"

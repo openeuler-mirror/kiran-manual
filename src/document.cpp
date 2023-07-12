@@ -16,6 +16,7 @@
 #include "ui_document.h"
 #include "highlighter.h"
 
+#include <kiran-log/qt5-log-i.h>
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
@@ -23,13 +24,12 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QMessageBox>
 #include <QString>
 #include <QStringList>
 #include <QTreeWidget>
-#include <QtDebug>
 #include <string>
 #include "markdown-parser.h"
-
 
 Document::Document(QWidget *parent) :
     QWidget(parent),
@@ -51,169 +51,105 @@ void Document::init()
     m_ui->textBrowser->setOpenExternalLinks(true);
     m_ui->pushButtonBackward->setEnabled(false);
     m_ui->pushButtonForward->setEnabled(false);
+    // QTextBrowser 最外层组件样式，组件内部的渲染样式需要使用源 HTML 中到CSS来调整
+    m_ui->textBrowser->setStyleSheet("\
+                                    QTextBrowser { background-color: #ffffff; padding-top: 16px; padding-left:5px;}\
+    ");
     // 代码高亮
     Highlighter *highlighter= new Highlighter(m_ui->textBrowser->document());
     
     // 关联到槽函数
     connect(m_ui->pushButtonBackward, &QPushButton::clicked, m_ui->textBrowser,&QTextBrowser::backward);
     connect(m_ui->pushButtonForward, &QPushButton::clicked, m_ui->textBrowser, &QTextBrowser::forward);
-    connect(m_ui->treeWidget, &QTreeWidget::itemDoubleClicked, this, &Document::onTreeWidgetItemDoubleClicked);
+    connect(m_ui->treeWidget, &QTreeWidget::itemDoubleClicked, this, &Document::tocItemScrollToAnchor);
     connect(m_ui->pushButtonSearch, &QPushButton::clicked, this, &Document::searchKeyword);
-    connect(m_ui->pushButtonBackHome, &QPushButton::clicked, this, &Document::onPushButtonBackHomeClicked);
-    connect(m_ui->textBrowser, &QTextBrowser::forwardAvailable, this, &Document::onTextBrowserForwardAvailable);
-    connect(m_ui->textBrowser, &QTextBrowser::backwardAvailable, this, &Document::onTextBrowserBackwardAvailable);
-
-    QString dirPath = "/home/skyzcyou/Documents/manual_book/";
-    QTreeWidgetItem *root = new QTreeWidgetItem(m_ui->treeWidget);
-    root->setText(0, "manual_book");
-    QJsonObject rootJsonObj;
-    showDirTree(root, dirPath, rootJsonObj);
-
+    connect(m_ui->pushButtonBackHome, &QPushButton::clicked, this, &Document::backHome);
 }
-/**
- * @brief Document::mdFile2HtmlStr
- * @param mdPath: Markdown 文档路径
- * @return QString htmlStr: 返回解析 Markdown 成功后的 HTML 字符串
- */
+
+ // 返回解析 Markdown 成功后的 HTML 字符串
 QString Document::mdFile2HtmlStr(const QString& mdPath)
 {
     using namespace std;
-    string mp = string((const char *)mdPath.toLocal8Bit());
-    MarkdownParser mk(mp);
-    mk.transfer();
-    string mkStr = mk.html();
-    return QString(QString::fromLocal8Bit(mkStr.c_str()));
+    string mdFilePath = string((const char *)mdPath.toLocal8Bit());
+    MarkdownParser markdownParser(mdFilePath);
+    markdownParser.transfer();
+    string htmlStr = markdownParser.html();
+
+    QJsonObject rootObject = markdownParser.buildJSONTOC();
+    renderCatalog(rootObject);
+
+    return QString(QString::fromLocal8Bit(htmlStr.c_str()));
 }
 
-void Document::onTreeWidgetItemDoubleClicked(QTreeWidgetItem *item, int column)
+void Document::tocItemScrollToAnchor(QTreeWidgetItem *item, int column)
 {
-    QString fileName = item->text(column);
+    QString itemName = item->text(column);
+    m_ui->textBrowser->scrollToAnchor(itemName);
+}
 
-    QStringList filePath;
-    while (item != nullptr)
-    {   //获取 itemFile 名称
-        filePath << item->text(0);
-        //将itemFile指向父item
-        item = item->parent();
-    }
-    QString strpath;
-    //cout<<filepath.size()<<endl;
-    //QStringList 类 filepath 反向存着初始item的路径
-    for (int i = (filePath.size() - 1); i >= 0; i--)      {
-        //将filepath反向输出，相应的加入’/‘
-        strpath += filePath.at(i);
-        if (i != 0)
-            strpath += "/";
-    }
-    qDebug() << "Full Name: " << strpath << endl;
-
-    // TODO: Change this Path
-    QString hStr = mdFile2HtmlStr("/home/skyzcyou/Documents/" + strpath);
-
-    // DEBUG: Save Html to File
-    // TODO: DEBUG 信息，当打开.md文档时，将 markdown2html 模块输出的 html 文档输出到文件，调试使用
-    if (fileName.endsWith(".md"))
-    {
-        QFile hFile(fileName + ".html");
-        if (!hFile.open(QIODevice::WriteOnly))
-        {
+// TODO: DEBUG 信息，当打开.md文档时，将 markdown2html 模块输出的 html 文档输出到文件，调试使用
+void Document::htmlStrSaveToFile(QString& fileName, QString& hStr)
+{
+    if (fileName.endsWith(".md")) {
+        QString pureFileName = fileName.split(".").first();
+        QString htmlFilePath = "html/" + pureFileName + ".html";
+        QDir().mkpath("html"); // 创建目录
+        QFile hFile(htmlFilePath);
+        if (!hFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
+            KLOG_ERROR() << "Open File Failed: " + htmlFilePath;
             return;
         }
         QTextStream tsOut(&hFile);
         tsOut << hStr;
-        qDebug() << fileName + "=> HTML Document Save Success";
+        KLOG_INFO() << htmlFilePath + " => HTML document save success" << endl;
     }
-    qDebug() << "前进? " << m_ui->textBrowser->isForwardAvailable();
-    qDebug() << "后退? " << m_ui->textBrowser->isBackwardAvailable();
-
-    m_ui->textBrowser->setHtml(hStr);
 }
 
-// FIXME: 获取文档目录
-QFileInfoList Document::showDirTree(QTreeWidgetItem *root, const QString &path, QJsonObject &parentJsonObj)
+void Document::showTOC(QTreeWidgetItem *root, const QJsonObject& obj, int level)
 {
-    QDir dir(path);
-    QDir dir_file(path);
-    // Traversal folder add into Widget
-    QFileInfoList file_list = dir.entryInfoList(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
-    QFileInfoList folder_list = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
-
-    for (int i = 0; i != folder_list.size(); i++)
-    {
-        // JSON of current node
-        QJsonObject subdirJsonObj;
-        subdirJsonObj["type"] = QJsonValue("dir");
-
-        // get absolute path
-        QString namepath = folder_list.at(i).absoluteFilePath();
-        const QFileInfo&folderInfo = folder_list.at(i);
-
-        // get folder name
-        QString name = folderInfo.fileName();
-
-        // skip file name star with "_"
-        if (name.startsWith("_"))
-        {
-            continue;
+    QTreeWidgetItem *childRoot;
+    // 输出当前对象的 heading 属性
+    if (obj.contains("heading")) {
+        QJsonValue headingValue = obj.value("heading");
+        if (headingValue.isString()) {
+            QString heading = headingValue.toString();
+            childRoot = new QTreeWidgetItem(QStringList() << heading);
+            root->addChild(childRoot);
         }
-        QTreeWidgetItem *childRoot = new QTreeWidgetItem(QStringList() << name);
-        root->addChild(childRoot);
-        childRoot->setIcon(0, QIcon(path + "_images/_self/folder.png"));
-        childRoot->setText(0, name);
-
-        root->addChild(childRoot);
-        QFileInfoList child_file_list = showDirTree(childRoot, namepath, subdirJsonObj);
-        file_list.append(child_file_list);
-        file_list.append(name);
-        // alias
-        subdirJsonObj["alias"] = QJsonValue(name);
-        parentJsonObj[name] = subdirJsonObj;
     }
-
-    // add file in path
-    dir_file.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
-    dir_file.setSorting(QDir::Name);
-    QFileInfoList list_file = dir_file.entryInfoList();
-
-    QJsonArray jsonArray;
-    for (const auto& fileInfo : list_file)
-    {
-        QString name2 = fileInfo.fileName();
-        QTreeWidgetItem *child = new QTreeWidgetItem(QStringList() << name2);
-        child->setIcon(0, QIcon(path + "_images/_self/markdown.png"));
-        child->setText(0, name2);
-        root->addChild(child);
-
-        QJsonObject fileJsonObj;
-        fileJsonObj["name"] = QJsonValue(name2);
-        // alias: TODO:set document head?
-        fileJsonObj["alias"] = QJsonValue(name2);
-        fileJsonObj["type"] = QJsonValue("file");
-        fileJsonObj["size"] = QJsonValue(QString::number(fileInfo.size()));
-        jsonArray.append(fileJsonObj);
+    // 递归遍历当前对象的 child 数组
+    if (obj.contains("child")) {
+        QJsonValue childValue = obj.value("child");
+        if (childValue.isArray()) {
+            QJsonArray childArray = childValue.toArray();
+            for (auto child : childArray) {
+                if (child.isObject()) {
+                    showTOC(childRoot, child.toObject(), level + 1);
+                }
+            }
+        }
     }
-    parentJsonObj["nodes"] = jsonArray;
-
-    return file_list;
 }
-
+// 重新加载文档
 void Document::reloadDocument()
 {
     // 解析并渲染目标文档
     if (m_mdFilePath.isEmpty()){
-        qDebug() << "m_mdFilePath is empty!! " << m_mdFilePath;
+        KLOG_ERROR() << "m_mdFilePath is empty!! " << m_mdFilePath;
         return;
     }
-    qDebug() << "m_mdFilePath: " << m_mdFilePath;
 
+    // 原生渲染无法配合当前到样式定制，当前只使用自解析渲染
     // 不同 QT 版本调用不同 Markdown 渲染方法:
     // QT_VERSION >= 5.14 QT 原生渲染函数
     // QT_VERSION < 5.14     自解析渲染函数
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 16, 0)
     m_ui->textBrowser->setSource(m_mdFilePath);
-
 #else
     QString hStr = mdFile2HtmlStr(m_mdFilePath);
+    // TODO: DELETE ME . DEBUG 需要，保存解析后的 html 到文件
+     QString testFileName = "testFileName.md";
+     htmlStrSaveToFile(testFileName,hStr);
     m_ui->textBrowser->setHtml(hStr);
 #endif
 }
@@ -221,19 +157,78 @@ void Document::reloadDocument()
 void Document::searchKeyword()
 {
     QString keyword = m_ui->lineEditKeyword->text();
-}
 
-void Document::onPushButtonBackHomeClicked()
+    if (keyword.trimmed().isEmpty()) {
+        QMessageBox::information(this, tr("关键字为空"), tr("The search field is empty."));
+    } else {
+        QTextDocument *document = m_ui->textBrowser->document();
+        QTextCursor cursor(document);
+
+        // 搜索文本
+        int count = 0;
+        QTextCharFormat format;
+        format.setBackground(Qt::yellow);
+
+        // 从上一次匹配项的位置开始搜索
+        if (!m_lastMatch.isNull()) {
+            cursor.setPosition(m_lastMatch.position() + m_lastMatch.selectedText().length());
+        }
+        while (!cursor.isNull() && !cursor.atEnd()) {
+            cursor = document->find(keyword, cursor, QTextDocument::FindWholeWords);
+            if (!cursor.isNull()) {
+                cursor.mergeCharFormat(format);
+                ++count;
+                // 将光标定位到匹配项的位置
+                m_ui->textBrowser->setTextCursor(cursor);
+                m_ui->textBrowser->ensureCursorVisible();
+                // 记录匹配项的位置
+                m_lastMatch = cursor;
+                break; // 只找下一项
+            }
+        }
+        // 显示搜索结果
+        if (count > 0) {
+            // QMessageBox::information(this, tr("Search results"), tr("Found %1 occurrences of '%2'.").arg(count).arg(keyword));
+        } else {
+            QMessageBox::information(this, tr("Search results"), tr("No more occurrences of '%1' found.").arg(keyword));
+            m_lastMatch = QTextCursor();
+            clearSearchHighlights();
+        }
+    }
+}
+void Document::clearSearchHighlights()
+{
+    QTextDocument *document = m_ui->textBrowser->document();
+    QTextCursor cursor(document);
+
+    // 清除上次高亮的文本
+    QTextCharFormat format;
+    format.clearBackground();
+
+    while (!cursor.isNull() && !cursor.atEnd()) {
+        cursor = document->find(m_ui->lineEditKeyword->text(), cursor, QTextDocument::FindWholeWords);
+        if (!cursor.isNull()) {
+            cursor.mergeCharFormat(format);
+        }
+    }
+}
+void Document::backHome()
 {
     emit backHomeClicked("HOME");
 }
-
-void Document::onTextBrowserBackwardAvailable(bool arg1)
+void Document::renderCatalog(QJsonObject& jsonObject)
 {
-    m_ui->pushButtonBackward->setEnabled(arg1);
-}
+    // 获取目录到 JSON 格式
+    m_ui->treeWidget->clear();
+    QTreeWidgetItem *root = new QTreeWidgetItem(m_ui->treeWidget);
 
-void Document::onTextBrowserForwardAvailable(bool arg1)
-{
-    m_ui->pushButtonForward->setEnabled(arg1);
+    root->setText(0, "文档目录");
+
+    QJsonArray jsonArray = jsonObject["_child"].toArray();
+    for (auto obj : jsonArray) {
+        if (obj.isObject()) {
+            showTOC(root, obj.toObject());
+        }
+    }
+    m_ui->treeWidget->expandAll();
 }

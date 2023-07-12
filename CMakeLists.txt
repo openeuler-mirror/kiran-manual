@@ -14,10 +14,9 @@ if(CMAKE_VERSION VERSION_LESS "3.7.0")
 endif()
 
 find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
-
-set (kiran-manual test)
 find_package(PkgConfig REQUIRED)
 pkg_search_module(KLOG REQUIRED klog-qt5)
+pkg_search_module(KIRAN_STYLE REQUIRED kiran-style-helper)
 
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 

@@ -13,7 +13,6 @@
  */
 
 #pragma once
-#include <QJsonDocument>
 #include <QWidget>
 
 namespace Ui
@@ -33,10 +32,8 @@ signals:
 
 private:
     Ui::Navigation *m_ui;
-    // 配置文件路径 (://conf/km-config.json)
+    // 配置文件路径 (:/conf/km-config.ini)
     QString m_confFilePath;
-    // 配置文件解析后的JSON形式
-    QJsonDocument m_confJson;
     // 初始化导航页视图
     void init();
 };

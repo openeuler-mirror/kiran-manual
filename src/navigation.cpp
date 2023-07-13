@@ -17,7 +17,6 @@
 #include "constants.h"
 
 #include "kiran-log/qt5-log-i.h"
-#include <QFile>
 #include <QLabel>
 #include <QPushButton>
 #include <QSettings>

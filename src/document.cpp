@@ -49,8 +49,6 @@ void Document::init()
 {
     // 组件初始化
     m_ui->textBrowser->setOpenExternalLinks(true);
-    m_ui->pushButtonBackward->setEnabled(false);
-    m_ui->pushButtonForward->setEnabled(false);
     // QTextBrowser 最外层组件样式，组件内部的渲染样式需要使用源 HTML 中到CSS来调整
     m_ui->textBrowser->setStyleSheet("\
                                     QTextBrowser { background-color: #ffffff; padding-top: 16px; padding-left:5px;}\
@@ -59,8 +57,6 @@ void Document::init()
     Highlighter *highlighter= new Highlighter(m_ui->textBrowser->document());
     
     // 关联到槽函数
-    connect(m_ui->pushButtonBackward, &QPushButton::clicked, m_ui->textBrowser,&QTextBrowser::backward);
-    connect(m_ui->pushButtonForward, &QPushButton::clicked, m_ui->textBrowser, &QTextBrowser::forward);
     connect(m_ui->treeWidget, &QTreeWidget::itemDoubleClicked, this, &Document::tocItemScrollToAnchor);
     connect(m_ui->pushButtonSearch, &QPushButton::clicked, this, &Document::searchKeyword);
     connect(m_ui->pushButtonBackHome, &QPushButton::clicked, this, &Document::backHome);

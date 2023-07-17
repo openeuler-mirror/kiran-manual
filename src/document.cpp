@@ -16,10 +16,9 @@
 #include "ui_document.h"
 #include "highlighter.h"
 
-#include <kiran-log/qt5-log-i.h>
+#include <qt5-log-i.h>
 #include <QDir>
 #include <QFile>
-#include <QFileDialog>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -53,9 +52,10 @@ void Document::init()
     m_ui->textBrowser->setStyleSheet("\
                                     QTextBrowser { background-color: #ffffff; padding-top: 16px; padding-left:5px;}\
     ");
+    m_ui->pushButtonBackHome->setText(tr("返回主页"));
     // 代码高亮
     Highlighter *highlighter= new Highlighter(m_ui->textBrowser->document());
-    
+    m_ui->treeWidget->setHeaderHidden(true);
     // 关联到槽函数
     connect(m_ui->treeWidget, &QTreeWidget::itemDoubleClicked, this, &Document::tocItemScrollToAnchor);
     connect(m_ui->pushButtonSearch, &QPushButton::clicked, this, &Document::searchKeyword);
@@ -83,7 +83,7 @@ void Document::tocItemScrollToAnchor(QTreeWidgetItem *item, int column)
     m_ui->textBrowser->scrollToAnchor(itemName);
 }
 
-// TODO: DEBUG 信息，当打开.md文档时，将 markdown2html 模块输出的 html 文档输出到文件，调试使用
+// DEBUG 信息，当打开.md文档时，将 markdown2html 模块输出的 html 文档输出到文件，调试使用
 void Document::htmlStrSaveToFile(QString& fileName, QString& hStr)
 {
     if (fileName.endsWith(".md")) {
@@ -110,7 +110,14 @@ void Document::showTOC(QTreeWidgetItem *root, const QJsonObject& obj, int level)
         if (headingValue.isString()) {
             QString heading = headingValue.toString();
             childRoot = new QTreeWidgetItem(QStringList() << heading);
-            root->addChild(childRoot);
+            if (root == nullptr)
+            {
+                m_ui->treeWidget->addTopLevelItem(childRoot);
+            }
+            else
+            {
+                root->addChild(childRoot);
+            }
         }
     }
     // 递归遍历当前对象的 child 数组
@@ -143,9 +150,9 @@ void Document::reloadDocument()
     m_ui->textBrowser->setSource(m_mdFilePath);
 #else
     QString hStr = mdFile2HtmlStr(m_mdFilePath);
-    // TODO: DELETE ME . DEBUG 需要，保存解析后的 html 到文件
-     QString testFileName = "testFileName.md";
-     htmlStrSaveToFile(testFileName,hStr);
+    // DELETE ME . DEBUG 需要，保存解析后的 html 到文件
+    //QString testFileName = "testFileName.md";
+    //htmlStrSaveToFile(testFileName,hStr);
     m_ui->textBrowser->setHtml(hStr);
 #endif
 }
@@ -179,7 +186,8 @@ void Document::searchKeyword()
                 m_ui->textBrowser->ensureCursorVisible();
                 // 记录匹配项的位置
                 m_lastMatch = cursor;
-                break; // 只找下一项
+                // 只找下一项
+                break;
             }
         }
         // 显示搜索结果
@@ -216,14 +224,11 @@ void Document::renderCatalog(QJsonObject& jsonObject)
 {
     // 获取目录到 JSON 格式
     m_ui->treeWidget->clear();
-    QTreeWidgetItem *root = new QTreeWidgetItem(m_ui->treeWidget);
-
-    root->setText(0, "文档目录");
 
     QJsonArray jsonArray = jsonObject["_child"].toArray();
     for (auto obj : jsonArray) {
         if (obj.isObject()) {
-            showTOC(root, obj.toObject());
+            showTOC(nullptr, obj.toObject());
         }
     }
     m_ui->treeWidget->expandAll();

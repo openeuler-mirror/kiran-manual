@@ -36,4 +36,5 @@ private:
     QString m_confFilePath;
     // 初始化导航页视图
     void init();
+    bool LoadStyleSheet(const QString& StyleSheetFile);
 };

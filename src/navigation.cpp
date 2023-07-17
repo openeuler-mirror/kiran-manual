@@ -16,11 +16,14 @@
 #include "ui_navigation.h"
 #include "constants.h"
 
-#include "kiran-log/qt5-log-i.h"
+#include <QFile>
 #include <QLabel>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QSettings>
 #include <QVBoxLayout>
+#include "kiran-log/qt5-log-i.h"
+#include "style-palette.h"
 
 Navigation::Navigation(QWidget *parent)
     : QWidget(parent),
@@ -40,8 +43,10 @@ Navigation::~Navigation()
 // 初始化视图
 void Navigation::init()
 {
+    // 定义最外层 Widget
+    auto *homeWidget = new QWidget(this);
     // 定义最外部的垂直布局容器
-    QVBoxLayout *homeLayout = new QVBoxLayout(this);
+    auto *homeLayout = new QVBoxLayout(homeWidget);
 
     // 载入配置文件
     QString confIniPath = m_confFilePath;
@@ -80,10 +85,12 @@ void Navigation::init()
         // 声明分类块
         // 此处不会造成内存泄漏，因为两个对象会绑定到父布局
         QVBoxLayout *typeLayout = new QVBoxLayout();
-        int maxPerLine = 3;
+        int maxPerLine = 7;
 
         QHBoxLayout *itemLayout = new QHBoxLayout();
         itemLayout->setAlignment(Qt::AlignLeft);
+        itemLayout->setMargin(10);
+
         typeLayout->addWidget(new QLabel(categoryLocal));
         typeLayout->addLayout(itemLayout);
 
@@ -99,9 +106,36 @@ void Navigation::init()
             QString iconPath = docDir + "icon/" + settings.value("Icon").toString();
             settings.endGroup();
             // 声明条目块
-            QPushButton *iBtn = new QPushButton(itemName);
-            iBtn->setMaximumWidth(parentWidget()->width() / maxPerLine);
+            QWidget *innerItemWidget = new QWidget();
+            QVBoxLayout *innerItemLayout = new QVBoxLayout(innerItemWidget);
+            innerItemLayout->setAlignment(Qt::AlignCenter);
 
+            // ==========
+            QString imgPathStr = ":/images/Qt.png"; // 背景图片文件路径
+            QString styleSheet = QString("QPushButton{border-image: url(%1);}").arg(imgPathStr);
+            QPushButton *btn = new QPushButton(this);
+            btn->setStyleSheet(styleSheet);
+            QImage img(imgPathStr);
+            int w = img.width();
+            int h = img.height();  // 图片宽高等比例缩放
+            int maxSide = 100;     // 调整图片中宽高最大者至maxSide
+            if(w >= h){
+                double scale = maxSide / double(w);
+                w = maxSide;
+                h *= scale;
+            }else{
+                double scale = maxSide / double(h);
+                h = maxSide;
+                w *= scale;
+            }
+            btn->setFixedSize(w,h);
+            //=============
+
+            QPushButton *iBtn = new QPushButton(innerItemWidget);
+            iBtn->setMaximumWidth(parentWidget()->width() / maxPerLine);
+            iBtn->setIcon(QIcon("/usr/local/share/kiran-manual/data/manual-books/images/nav/clion.png"));
+            iBtn->setIconSize(QSize(parentWidget()->width() / maxPerLine, parentWidget()->width() / maxPerLine));
+            iBtn->setStyleSheet("background-color: #393939;");
             connect(iBtn, &QPushButton::clicked, this, [=]() {
                 QPushButton *clickedButton = qobject_cast<QPushButton *>(sender());
                 if (clickedButton)
@@ -109,10 +143,33 @@ void Navigation::init()
                     emit docPageClicked(filePath);
                 }
             });
+            innerItemLayout->addWidget(iBtn);
+            innerItemLayout->addWidget(new QLabel(itemName));
+
+            // 样式调整
+            QPalette pal(innerItemWidget->palette());
+            pal.setColor(QPalette::Background, QColor(57,57,57)); // #2d2d2d
+            innerItemWidget->setAutoFillBackground(true);
+            innerItemWidget->setPalette(pal);
+
             // 添加条目块
-            itemLayout->addWidget(iBtn);
+            itemLayout->addWidget(innerItemWidget);
         }
         // 添加分类块
         homeLayout->addLayout(typeLayout);
     }
+    this->LoadStyleSheet(":/data/styles/navigation.qss");
+}
+// 加载 QSS 样式文件
+bool Navigation::LoadStyleSheet(const QString &StyleSheetFile)
+{
+    QFile file(StyleSheetFile);
+    if (!file.open(QFile::ReadOnly))
+    {
+        QMessageBox::information(this,"Tip", file.errorString());
+        return false;
+    }
+    this->setStyleSheet(file.readAll());
+    file.close();
+    return true;
 }

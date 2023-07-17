@@ -14,6 +14,7 @@
 
 #include "window.h"
 #include "ui_window.h"
+#include "constants.h"
 
 Window::Window(QWidget* parent)
     : QMainWindow(parent), m_ui(new Ui::Window)
@@ -45,6 +46,13 @@ void Window::navigationPageLoader(const QString& key)
 // 初始化导航页视图
 void Window::init()
 {
+    // 页面颜色
+    QPalette pal(this->palette());
+    pal.setColor(QPalette::Window, QColor(45,45,45)); // #2d2d2d
+    this->setAutoFillBackground(true);
+    this->setPalette(pal);
+
+    this->setWindowTitle(tr(PROJECT_NAME));
     // 声明 Navigation, Document 页面
     m_navigation = new Navigation(this);
     m_document = new Document(this);

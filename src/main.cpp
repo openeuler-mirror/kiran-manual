@@ -17,6 +17,7 @@
 #include "kiran-log/qt5-log-i.h"
 #include <QApplication>
 #include <QStandardPaths>
+#include <QDesktopWidget>
 
 int main(int argc, char *argv[])
 {
@@ -29,6 +30,10 @@ int main(int argc, char *argv[])
     KLOG_INFO() << PROJECT_NAME << "Start ^_^";
     QApplication app(argc, argv);
     Window window;
+    // 将窗口移动到屏幕中心
+    int screenWidth = QApplication::desktop()->screen()->width();
+    int screenHeight = QApplication::desktop()->screen()->height();
+    window.move((screenWidth - window.width()) / 2, (screenHeight - window.height()) / 2);
     window.show();
     return QApplication::exec();
 }

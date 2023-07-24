@@ -13,7 +13,7 @@
  */
 
 #pragma once
-#include <QMainWindow>
+#include "base-window.h"
 #include "document.h"
 #include "navigation.h"
 
@@ -24,12 +24,12 @@ class Window;
 }
 QT_END_NAMESPACE
 
-class Window : public QMainWindow
+class Window : public BaseWindow
 {
     Q_OBJECT
 
 public:
-    explicit Window(QWidget *parent = nullptr);
+    explicit Window(QMainWindow *parent = nullptr);
     ~Window() override;
 
 public slots:
@@ -41,4 +41,5 @@ private:
     Document *m_document{};
 
     void init();
+    void initTitleBar();
 };

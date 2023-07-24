@@ -41,8 +41,11 @@ public:
 
 private slots:
     void tocItemScrollToAnchor(QTreeWidgetItem *item, int column);
-    void searchKeyword();
     void backHome();
+
+public slots:
+    void searchKeyword();
+
 signals:
     void backHomeClicked(const QString& key);
 

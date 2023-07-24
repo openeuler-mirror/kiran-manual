@@ -15,6 +15,7 @@
 #pragma once
 
 #include <QWidget>
+#include <kiranwidgets-qt5/kiran-titlebar-window.h>
 
 #include "document.h"
 #include "navigation.h"

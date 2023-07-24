@@ -16,10 +16,11 @@
 #include "ui_window.h"
 #include "constants.h"
 
-Window::Window(QWidget* parent)
-    : QMainWindow(parent), m_ui(new Ui::Window)
+Window::Window(QMainWindow* parent)
+    : BaseWindow(parent), m_ui(new Ui::Window)
 {
     m_ui->setupUi(this);
+    initTitleBar();
     init();
 }
 
@@ -46,11 +47,10 @@ void Window::navigationPageLoader(const QString& key)
 // 初始化导航页视图
 void Window::init()
 {
-    // 隐藏 TitleBar
-    this->setWindowFlags(Qt::FramelessWindowHint);
     // 页面颜色
     QPalette pal(this->palette());
-    pal.setColor(QPalette::Window, QColor(45,45,45)); // #2d2d2d
+    // #2d2d2d
+    pal.setColor(QPalette::Window, QColor(45,45,45));
     this->setAutoFillBackground(true);
     this->setPalette(pal);
 
@@ -62,7 +62,16 @@ void Window::init()
     m_ui->stackedWidget->addWidget(m_navigation);
     m_ui->stackedWidget->addWidget(m_document);
     m_ui->stackedWidget->setCurrentWidget(m_navigation);
+    m_ui->stackedWidget->setStyleSheet("QStackedWidget { background-color: #2d2d2d}");
     // 关联页面切换信号到槽函数
     connect(m_navigation, &Navigation::docPageClicked, this, &Window::documentPageLoader);
     connect(m_document, &Document::backHomeClicked, this, &Window::navigationPageLoader);
+}
+void Window::initTitleBar()
+{
+    m_titleBar->setTitleIcon(":/resources/title-icon.png");
+    m_titleBar->setBackgroundColor(45, 45, 45);
+    m_titleBar->setTitleContent(tr(PROJECT_NAME));
+    m_titleBar->setButtonType(MIN_MAX_BUTTON);
+    m_titleBar->setTitleWidth(this->width());
 }

@@ -37,14 +37,18 @@
 以下操作均可用命令行配置，现只做简单示例，若想使用更多命令可以使用``pcs --help``进行查询。
 
 - 命令行方式
-    ```
-    # pcs property set stonith-enabled=false
-    # pcs property set no-quorum-policy=ignore
-    ```
+
+```
+# pcs property set stonith-enabled=false
+# pcs property set no-quorum-policy=ignore
+```
+
     执行如下命令，可以查看全部配置。
+
     ```
     pcs property
     ```
+
     ![](./figures/HA-firstchoice-cmd.png)
 
 -  图形界面方式

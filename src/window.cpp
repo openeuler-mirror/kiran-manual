@@ -13,20 +13,19 @@
  */
 
 #include "window.h"
-#include "ui_window.h"
 #include "constants.h"
+#include <QLineEdit>
+#include <QAction>
+#include <QHBoxLayout>
 
-Window::Window(QWidget* parent)
-    : QWidget(parent), m_ui(new Ui::Window)
+Window::Window(QWidget* parent) : KiranTitlebarWindow(parent)
 {
-    m_ui->setupUi(this);
+    initTitleBar();
     init();
 }
 
 Window::~Window()
-{
-    delete m_ui;
-}
+= default;
 
 // 槽函数：加载文档页面
 void Window::documentPageLoader(const QString& key)
@@ -35,14 +34,13 @@ void Window::documentPageLoader(const QString& key)
     m_document->reloadDocument();
     // 将路径入栈，实现前进后退功能
 
-    m_ui->stackedWidget->setCurrentIndex(3);
+    m_stackedWidget->setCurrentWidget(m_document);
 }
 // 槽函数：加载导航页面
 void Window::navigationPageLoader(const QString& key)
 {
-    m_ui->stackedWidget->setCurrentIndex(2);
+    m_stackedWidget->setCurrentWidget(m_navigation);
 }
-
 // 初始化导航页视图
 void Window::init()
 {
@@ -53,17 +51,41 @@ void Window::init()
     this->setAutoFillBackground(true);
     this->setPalette(pal);
 
-    this->setWindowTitle(tr(PROJECT_NAME));
     // 声明 Navigation, Document 页面
+    m_stackedWidget = new QStackedWidget(this);
     m_navigation = new Navigation(this);
     m_document = new Document(this);
     // 将主页和文章页面添加到 QStackedWidget 中, 并设定主页
-    m_ui->stackedWidget->addWidget(m_navigation);
-    m_ui->stackedWidget->addWidget(m_document);
-    m_ui->stackedWidget->setCurrentWidget(m_navigation);
-    m_ui->stackedWidget->setFixedSize(this->width(), this->height());
-    m_ui->stackedWidget->setStyleSheet("QStackedWidget { background-color: #2d2d2d}");
+    m_stackedWidget->addWidget(m_navigation);
+    m_stackedWidget->addWidget(m_document);
+    m_stackedWidget->setCurrentWidget(m_navigation);
+    m_stackedWidget->setStyleSheet("QStackedWidget { background-color: #2d2d2d}");
+    // 初始化中心显示窗口
+    setWindowContentWidget(m_stackedWidget);
     // 关联页面切换信号到槽函数
     connect(m_navigation, &Navigation::docPageClicked, this, &Window::documentPageLoader);
     connect(m_document, &Document::backHomeClicked, this, &Window::navigationPageLoader);
+}
+#include <search-edit/search-edit.h>
+void Window::initTitleBar()
+{
+    // 初始化标题栏
+    setTitleBarHeight(40);
+    setButtonHints(KiranTitlebarWindow::TitlebarMinMaxCloseHints);
+    setTitlebarColorBlockEnable(true);
+    setIcon(QIcon::fromTheme("kiran-control-panel"));
+    setTitle(tr(PROJECT_NAME));
+
+    // 添加搜索框
+    auto* searchBox = new SearchEdit(this);
+    searchBox->setPlaceholderText(tr("Enter keywords to search"));
+    searchBox->setFixedWidth(this->width()/2);
+    searchBox->setFocusPolicy(Qt::ClickFocus);
+
+    getTitlebarCustomLayout()->addWidget(searchBox);
+    setTitlebarCustomLayoutAlignHCenter(true);
+}
+void Window::resizeEvent(QResizeEvent* event)
+{
+    QWidget::resizeEvent(event);
 }

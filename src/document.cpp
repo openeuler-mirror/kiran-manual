@@ -186,8 +186,8 @@ void Document::reloadDocument()
 #else
     QString hStr = mdFile2HtmlStr(m_mdFilePath);
     // DELETE ME . DEBUG 需要，保存解析后的 html 到文件
-//    QString testFileName = "testFileName.md";
-//    htmlStrSaveToFile(testFileName,hStr);
+    QString testFileName = "testFileName.md";
+    htmlStrSaveToFile(testFileName,hStr);
     m_ui->textBrowser->setHtml(hStr);
 #endif
 }

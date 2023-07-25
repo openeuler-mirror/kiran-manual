@@ -174,7 +174,7 @@ void Navigation::init()
         // 添加分类块
         homeLayout->addLayout(typeLayout);
     }
-    this->LoadStyleSheet(":/data/styles/navigation.qss");
+    this->LoadStyleSheet(":/resources/styles/navigation.qss");
 }
 // 加载 QSS 样式文件
 bool Navigation::LoadStyleSheet(const QString &StyleSheetFile)

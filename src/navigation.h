@@ -16,11 +16,6 @@
 #include <QWidget>
 #include "constants.h"
 
-namespace Ui
-{
-class Navigation;
-}
-
 class Navigation : public QWidget
 {
     Q_OBJECT
@@ -32,7 +27,6 @@ signals:
     void docPageClicked(const QString& key);
 
 private:
-    Ui::Navigation *m_ui;
     // 配置文件路径
     QString m_confFilePath = CONF_FILE_PATH;
     void init();

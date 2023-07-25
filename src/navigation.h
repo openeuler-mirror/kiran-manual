@@ -14,6 +14,7 @@
 
 #pragma once
 #include <QWidget>
+#include "constants.h"
 
 namespace Ui
 {
@@ -32,9 +33,8 @@ signals:
 
 private:
     Ui::Navigation *m_ui;
-    // 配置文件路径 (:/conf/km-config.ini)
-    QString m_confFilePath;
-    // 初始化导航页视图
+    // 配置文件路径
+    QString m_confFilePath = CONF_FILE_PATH;
     void init();
     bool LoadStyleSheet(const QString& StyleSheetFile);
 };

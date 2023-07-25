@@ -18,3 +18,7 @@
 #define CONF_FILE_PATH ":/data/km-config.ini";
 #define IMAGE_FOLDER "/usr/local/share/kiran-manual/data/manual-books/images/"
 #define RESOURCES_FOLDER ":/resources/"
+
+// UI
+#define WINDOW_WIDTH 1035
+#define WINDOW_HEIGHT 742

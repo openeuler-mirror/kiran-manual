@@ -13,8 +13,6 @@
  */
 
 #include "navigation.h"
-#include "ui_navigation.h"
-#include "constants.h"
 
 #include <QFile>
 #include <QGraphicsDropShadowEffect>
@@ -22,29 +20,23 @@
 #include <QMessageBox>
 #include <QPainter>
 #include <QPushButton>
-#include <QScrollArea>
 #include <QSettings>
 #include <QVBoxLayout>
 #include "kiran-log/qt5-log-i.h"
 #include "style-palette.h"
 
 Navigation::Navigation(QWidget *parent)
-    : QWidget(parent),
-      m_ui(new Ui::Navigation)
+    : QWidget(parent)
 {
-    m_ui->setupUi(this);
-    // 初始化视图
     init();
 }
 
 Navigation::~Navigation()
-{
-    delete m_ui;
-}
+= default;
 // 初始化视图
 void Navigation::init()
 {
-    QVBoxLayout *outLayout = new QVBoxLayout(this);
+    auto *outLayout = new QVBoxLayout(this);
     outLayout->setMargin(0);
     // 定义最外层 Widget
     auto *homeWidget = new QWidget(this);
@@ -98,11 +90,11 @@ void Navigation::init()
 
         auto *itemWidget = new QWidget();
 //        auto *itemLayout = new QHBoxLayout(itemWidget);
-        QGridLayout *itemLayout = new QGridLayout(itemWidget);
+        auto *itemLayout = new QGridLayout(itemWidget);
         itemLayout->setAlignment(Qt::AlignLeft);
         itemLayout->setContentsMargins(50, 0, 0, 0);
 
-        QLabel *categoryLabel = new QLabel(categoryLocal);
+        auto *categoryLabel = new QLabel(categoryLocal);
         categoryLabel->setMaximumHeight(15);
         typeLayout->addWidget(categoryLabel);
         typeLayout->addWidget(itemWidget);

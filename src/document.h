@@ -14,6 +14,7 @@
 
 #pragma once
 #include <QFileInfoList>
+#include <QLineEdit>
 #include <QTextCursor>
 #include <QTreeWidgetItem>
 #include <QWidget>
@@ -54,6 +55,7 @@ private:
 
     // 解析后的 HTML 字符串
     QString m_htmlStr;
+    QLineEdit *lineEditKeyword{};
     // 显示文档目录的控件
     QTreeWidget *m_treeWidget{};
     // 记录上一次搜索匹配项的位置

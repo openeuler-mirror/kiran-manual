@@ -18,8 +18,6 @@
 #include <QApplication>
 #include <QStandardPaths>
 #include <QDesktopWidget>
-#include <QAction>
-#include <QLineEdit>
 #include <QHBoxLayout>
 
 void initKiranLog();
@@ -30,7 +28,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     Window window;
-    window.resize(1031, 742);
+    window.resize(WINDOW_WIDTH, WINDOW_HEIGHT);
     // 居中显示
     QRect availableGeometry = QApplication::desktop()->availableGeometry();
     int x = (availableGeometry.width() - window.width()) / 2;
@@ -39,8 +37,9 @@ int main(int argc, char *argv[])
     window.show();
     return QApplication::exec();
 }
+
+// 初始化日志库
 void initKiranLog(){
-    // 初始化日志库
     int iRet = klog_qt5_init("", "kylinsec-session", PROJECT_NAME, PROJECT_NAME);
     if (iRet != 0)
     {

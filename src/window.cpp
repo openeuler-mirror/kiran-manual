@@ -14,7 +14,7 @@
 
 #include "window.h"
 #include "constants.h"
-#include <QLineEdit>
+#include <search-edit/search-edit.h>
 #include <QAction>
 #include <QHBoxLayout>
 
@@ -44,13 +44,6 @@ void Window::navigationPageLoader(const QString& key)
 // 初始化导航页视图
 void Window::init()
 {
-    // 页面颜色
-    QPalette pal(this->palette());
-    // #2d2d2d
-    pal.setColor(QPalette::Window, QColor(45,45,45));
-    this->setAutoFillBackground(true);
-    this->setPalette(pal);
-
     // 声明 Navigation, Document 页面
     m_stackedWidget = new QStackedWidget(this);
     m_navigation = new Navigation(this);
@@ -59,14 +52,23 @@ void Window::init()
     m_stackedWidget->addWidget(m_navigation);
     m_stackedWidget->addWidget(m_document);
     m_stackedWidget->setCurrentWidget(m_navigation);
-    m_stackedWidget->setStyleSheet("QStackedWidget { background-color: #2d2d2d}");
+    m_stackedWidget->setStyleSheet("QStackedWidget { border-radius: 6px;}");
+
+    auto outWidget = new QWidget(this);
+    auto outLayout = new QVBoxLayout(outWidget);
+    // 页面颜色
+    QPalette pal(this->palette());
+    pal.setColor(QPalette::Window, Qt::black);
+    outWidget->setAutoFillBackground(true);
+    outWidget->setPalette(pal);
+    outWidget->setStyleSheet("border-radius: 6px;");
+    outLayout->addWidget(m_stackedWidget);
     // 初始化中心显示窗口
-    setWindowContentWidget(m_stackedWidget);
+    setWindowContentWidget(outWidget);
     // 关联页面切换信号到槽函数
     connect(m_navigation, &Navigation::docPageClicked, this, &Window::documentPageLoader);
     connect(m_document, &Document::backHomeClicked, this, &Window::navigationPageLoader);
 }
-#include <search-edit/search-edit.h>
 void Window::initTitleBar()
 {
     // 初始化标题栏

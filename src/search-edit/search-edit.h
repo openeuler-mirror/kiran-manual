@@ -12,9 +12,7 @@
  * Author:     liuxinhao <liuxinhao@kylinsec.com.cn>
  */
 
-#ifndef KIRAN_CONTROL_PANEL_SRC_PANEL_SEARCH_EDIT_H_
-#define KIRAN_CONTROL_PANEL_SRC_PANEL_SEARCH_EDIT_H_
-
+#pragma once
 #include <QLineEdit>
 #include <QItemDelegate>
 #include <QStandardItemModel>
@@ -32,11 +30,11 @@ class SearchEdit : public KiranSearchBox
     Q_OBJECT
 public:
     explicit SearchEdit(QWidget* parent = nullptr);
-    ~SearchEdit();
+    ~SearchEdit() override;
 
 private:
     void init();
-    QStandardItemModel* buildSearchModel();
+    static QStandardItemModel* buildSearchModel();
     void setSearchPopupVisible(bool searchPopupVisible);
 
 signals:
@@ -47,5 +45,3 @@ private:
     SearchDelegate* m_searchDelegate = nullptr;
     QCompleter* m_completer = nullptr;
 };
-
-#endif  //KIRAN_CONTROL_PANEL_SRC_PANEL_SEARCH_EDIT_H_

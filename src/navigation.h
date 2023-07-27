@@ -13,10 +13,11 @@
  */
 
 #pragma once
+#include <kiranwidgets-qt5/kiran-color-block.h>
 #include <QWidget>
 #include "constants.h"
 
-class Navigation : public QWidget
+class Navigation : public KiranColorBlock
 {
     Q_OBJECT
 

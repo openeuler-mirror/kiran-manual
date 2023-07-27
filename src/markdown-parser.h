@@ -18,6 +18,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <utility>
 #include <vector>
 using namespace std;
 
@@ -102,11 +103,10 @@ struct Node
  */
 struct CatalogNode
 {
-    int _type;
     vector <CatalogNode *> _child;
     string heading;
     string tag;
-    CatalogNode (const string &hd): heading(hd) {}
+    CatalogNode (string hd): heading(std::move(hd)) {}
 };
 
 class MarkdownParser : public QObject
@@ -144,13 +144,13 @@ public:
     // 销毁节点
     void destory(Node* root);
     // 插入目录节点
-    void Cins(CatalogNode *v, int x, const string &hd, int tag);
+    void cins(CatalogNode *v, int x, const string &hd, int tag);
     // 遍历目录节点
-    void Cdfs(CatalogNode *v, string index);
+    void cdfs(CatalogNode *v, const string& index);
     // 构建目录节点的 JSON 结构
     // 此数据结构用于与目录渲染模块交互
     QJsonObject buildJSONTOC();
-    void CdfsForJSON(CatalogNode *v, const string &index, QJsonArray& jsonArray);
+    void cdfsForJson(CatalogNode *v, const string &index, QJsonArray& jsonArray);
 
 private:
     //语法树根节点

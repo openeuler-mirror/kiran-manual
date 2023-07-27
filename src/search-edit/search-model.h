@@ -12,9 +12,7 @@
  * Author:     liuxinhao <liuxinhao@kylinsec.com.cn>
  */
 
-#ifndef KIRAN_CONTROL_PANEL_SEARCH_MODEL_H
-#define KIRAN_CONTROL_PANEL_SEARCH_MODEL_H
-
+#pragma once
 #include <QStandardItemModel>
 
 //通过分类管理层级信息初始化搜索信息形成 "分类->功能项" 的搜索项
@@ -25,7 +23,7 @@ class SearchModel : public  QStandardItemModel
     Q_OBJECT
 public:
     explicit SearchModel(QObject* parent = nullptr);
-    ~SearchModel();
+    ~SearchModel() override;
 
     static const int roleCategoryID;
     static const int roleSubItemID;
@@ -42,5 +40,3 @@ private slots:
     void handleSubItemDeleted(const QString& id);
     void handleSubItemInfoChanged(const QString& subitemID);
 };
-
-#endif  // KIRAN_CONTROL_PANEL_SEARCH_MODEL_H

@@ -20,13 +20,15 @@
 #include <QMessageBox>
 #include <QPainter>
 #include <QPushButton>
+#include <QScrollArea>
 #include <QSettings>
 #include <QVBoxLayout>
 #include "kiran-log/qt5-log-i.h"
-#include "style-palette.h"
+#include "kiran-style/style-palette.h"
+#include "kiran-frame/kiran-frame.h"
 
 Navigation::Navigation(QWidget *parent)
-    : QWidget(parent)
+    : KiranColorBlock(parent)
 {
     init();
 }
@@ -38,11 +40,12 @@ void Navigation::init()
 {
     auto *outLayout = new QVBoxLayout(this);
     outLayout->setMargin(0);
+    auto* scrollArea = new QScrollArea(this);
+    outLayout->addWidget(scrollArea);
+
     // 定义最外层 Widget
     auto *homeWidget = new QWidget(this);
     outLayout->addWidget(homeWidget);
-    homeWidget->setObjectName("homeWidget");
-    homeWidget->setStyleSheet("background-color: #2d2d2d");
     homeWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     homeWidget->setContentsMargins(15, 15, 15, 15);
     // 定义最外部的垂直布局容器
@@ -112,7 +115,7 @@ void Navigation::init()
             QString iconPath = docDir + "images/nav/" + settings.value("Icon").toString();
             settings.endGroup();
             // 声明条目块
-            auto *innerItemWidget = new QWidget();
+            auto *innerItemWidget = new KiranFrame();
             auto *innerItemLayout = new QVBoxLayout(innerItemWidget);
             innerItemLayout->setAlignment(Qt::AlignCenter);
 
@@ -153,16 +156,21 @@ void Navigation::init()
             innerItemLayout->addWidget(iBtn);
             innerItemLayout->addWidget(titleLabel);
             innerItemWidget->setFixedSize(150, 150);
-            innerItemWidget->setStyleSheet("background-color: #393939; border-radius: 6px;");
+//            innerItemWidget->setStyleSheet("background-color: #393939; border-radius: 6px;");
 
             // 添加条目块
-            itemLayout->addWidget(innerItemWidget, index, count%numberPerRow);
+            itemLayout->addWidget(innerItemWidget, count/4, count%numberPerRow);
             itemLayout->setSpacing(80);
+            itemLayout->setVerticalSpacing(40);
+
             count++;
         }
         // 添加分类块
         homeLayout->addWidget(typeWidget);
     }
+
+    scrollArea->setWidget(homeWidget);
+    scrollArea->setWidgetResizable(true);
 }
 // 加载 QSS 样式文件
 bool Navigation::LoadStyleSheet(const QString &StyleSheetFile)

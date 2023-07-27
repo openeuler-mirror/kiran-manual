@@ -46,6 +46,8 @@ private slots:
 
 public slots:
     void searchKeyword();
+    // 处理 a 标签的点击事件，用于文档之间的跳转
+    void openDocumentURL(const QUrl& url);
 
 signals:
     void backHomeClicked(const QString& key);

@@ -56,6 +56,8 @@ void Window::init()
 
     auto outWidget = new QWidget(this);
     auto outLayout = new QVBoxLayout(outWidget);
+    // 缝隙宽度
+    outLayout->setMargin(4);
     // 页面颜色
     QPalette pal(this->palette());
     pal.setColor(QPalette::Window, Qt::black);
@@ -75,7 +77,9 @@ void Window::initTitleBar()
     setTitleBarHeight(40);
     setButtonHints(KiranTitlebarWindow::TitlebarMinMaxCloseHints);
     setTitlebarColorBlockEnable(true);
-    setIcon(QIcon::fromTheme("kiran-control-panel"));
+//    setIcon(QIcon::fromTheme("kiran-control-panel"));
+    QPixmap pixmap(":/resources/title-icon.png");
+    setIcon(pixmap);
     setTitle(tr(PROJECT_NAME));
 
     // 添加搜索框

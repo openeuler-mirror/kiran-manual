@@ -28,9 +28,7 @@ SearchModel::SearchModel(QObject *parent)
 }
 
 SearchModel::~SearchModel()
-{
-
-}
+= default;
 
 void SearchModel::init()
 {

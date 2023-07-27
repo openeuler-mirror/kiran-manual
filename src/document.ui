@@ -30,17 +30,17 @@
     <number>0</number>
    </property>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayoutUp"/>
-   </item>
-   <item>
     <layout class="QHBoxLayout" name="horizontalLayoutDown" stretch="1,3">
+     <property name="spacing">
+      <number>3</number>
+     </property>
      <item>
       <layout class="QVBoxLayout" name="verticalLayoutForTree">
        <property name="spacing">
-        <number>6</number>
+        <number>3</number>
        </property>
        <item>
-        <widget class="QWidget" name="widgetLeft" native="true">
+        <widget class="KiranColorBlock" name="widgetLeft" native="true">
          <layout class="QVBoxLayout" name="verticalLayout">
           <property name="leftMargin">
            <number>0</number>
@@ -84,7 +84,7 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayoutForTextBrowser">
        <item>
-        <widget class="QWidget" name="widgetRight" native="true">
+        <widget class="KiranColorBlock" name="widgetRight" native="true">
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <property name="leftMargin">
            <number>0</number>
@@ -117,6 +117,14 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KiranColorBlock</class>
+   <extends>QWidget</extends>
+   <header location="global">kiranwidgets-qt5/kiran-color-block.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

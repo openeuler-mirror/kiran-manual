@@ -37,8 +37,7 @@ SearchEdit::SearchEdit(QWidget *parent)
 }
 
 SearchEdit::~SearchEdit()
-{
-}
+= default;
 
 void SearchEdit::init()
 {
@@ -72,13 +71,13 @@ void SearchEdit::init()
         QTimer::singleShot(0,this,&QLineEdit::clear);
     });
     connect(this,&QLineEdit::returnPressed,[this](){
-        QString searchkey = text();
-        if( searchkey.isEmpty() )
+        QString searchKey = text();
+        if( searchKey.isEmpty() )
         {
             return;
         }
 
-        auto items = m_searchModel->findItems(searchkey);
+        auto items = m_searchModel->findItems(searchKey);
         if( items.isEmpty() )
         {
             auto clickedButton = KiranMessageBox::message(this,tr("Info"),tr("Failed to find related items, please re-enter!"),KiranMessageBox::Ok|KiranMessageBox::No);
@@ -97,4 +96,11 @@ void SearchEdit::init()
         emit requestJumpTo(categoryID,subItemID,customSearchKey);
     });
     // clang-format on
+}
+QStandardItemModel *SearchEdit::buildSearchModel()
+{
+    return nullptr;
+}
+void SearchEdit::setSearchPopupVisible(bool searchPopupVisible)
+{
 }

@@ -12,8 +12,7 @@
  * Author:     liuxinhao <liuxinhao@kylinsec.com.cn>
  */
 
-#ifndef KIRAN_CONTROL_PANEL_SEARCH_DELEGATE_H
-#define KIRAN_CONTROL_PANEL_SEARCH_DELEGATE_H
+#pragma once
 
 #include <QItemDelegate>
 
@@ -22,11 +21,9 @@ class SearchDelegate : public QItemDelegate
     Q_OBJECT
 public:
     explicit SearchDelegate(QObject* parent = nullptr);
-    ~SearchDelegate();
+    ~SearchDelegate() override;
 
 public:
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
     QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 };
-
-#endif  // KIRAN_CONTROL_PANEL_SEARCH_DELEGATE_H

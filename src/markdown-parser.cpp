@@ -145,7 +145,7 @@ void MarkdownParser::transfer()
             // 插入目录
             char* hd = const_cast<char*>(typeRet.second);
             removeEscapeChar(hd);
-            Cins(m_croot,typeRet.first - HTML_TOKEN_H1 + 1, hd,cntTag);
+            cins(m_croot, typeRet.first - HTML_TOKEN_H1 + 1, hd, cntTag);
             continue;
         }
 
@@ -194,7 +194,7 @@ void MarkdownParser::transfer()
     m_toc += "<ul>";
     for (int i = 0; i < (int)m_croot->_child.size(); i++)
     {
-        Cdfs(m_croot->_child[i], to_string(i + 1) + ".");
+        cdfs(m_croot->_child[i], to_string(i + 1) + ".");
     }
     m_toc += "</ul>";
 
@@ -212,7 +212,7 @@ QJsonObject MarkdownParser::buildJSONTOC() {
         QJsonObject baseItemObject;
         baseItemObject.insert("heading",QString::fromStdString(m_croot->_child[i]->heading));
         QJsonArray baseItemArray;
-        CdfsForJSON(m_croot->_child[i], to_string(i + 1) + ".", baseItemArray);
+        cdfsForJson(m_croot->_child[i], to_string(i + 1) + ".", baseItemArray);
         baseItemObject.insert("child", baseItemArray);
 
         baseArray.append(baseItemObject);
@@ -221,14 +221,14 @@ QJsonObject MarkdownParser::buildJSONTOC() {
     return rootObject;
 }
 
-void MarkdownParser::CdfsForJSON(CatalogNode *v, const string &index, QJsonArray& jsonArray) {
+void MarkdownParser::cdfsForJson(CatalogNode *v, const string &index, QJsonArray& jsonArray) {
     int n = (int)v->_child.size();
     if (n) {
         for (int i = 0; i < n; i++) {
             QJsonObject itemObject;
             itemObject.insert("heading",QString::fromStdString(v->_child[i]->heading));
             QJsonArray itemArray;
-            CdfsForJSON(v->_child[i], index + to_string(i + 1) + ".", itemArray);
+            cdfsForJson(v->_child[i], index + to_string(i + 1) + ".", itemArray);
             itemObject.insert("child", itemArray);
 
             jsonArray.append(itemObject);
@@ -517,7 +517,7 @@ string MarkdownParser::html()
     return head + m_content + end;
 }
 // 插入目录项
-void MarkdownParser::Cins(CatalogNode *v, int x, const string &hd, int tag) {
+void MarkdownParser::cins(CatalogNode *v, int x, const string &hd, int tag) {
     int n = (int)v->_child.size();
     if (x == 1) {
         v->_child.push_back(new CatalogNode(hd));
@@ -527,16 +527,16 @@ void MarkdownParser::Cins(CatalogNode *v, int x, const string &hd, int tag) {
 
     if (!n || v->_child.back()->heading.empty())
         v->_child.push_back(new CatalogNode(""));
-    Cins(v->_child.back(), x - 1, hd, tag);
+    cins(v->_child.back(), x - 1, hd, tag);
 }
-void MarkdownParser::Cdfs(CatalogNode *v, string index) {
+void MarkdownParser::cdfs(CatalogNode *v, const string& index) {
     m_toc += "<li>";
     m_toc += "<a href=\"#" + v->heading + "\">" + v->heading + "</a>";
     int n = (int)v->_child.size();
     if (n) {
         m_toc += "<ul>";
         for (int i = 0; i < n; i++) {
-            Cdfs(v->_child[i], index + to_string(i + 1) + ".");
+            cdfs(v->_child[i], index + to_string(i + 1) + ".");
         }
         m_toc += "</ul>";
     }

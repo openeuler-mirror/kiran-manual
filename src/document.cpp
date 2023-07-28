@@ -15,6 +15,7 @@
 #include "document.h"
 #include "ui_document.h"
 #include "highlighter.h"
+#include "my-scroll-bar/my-scroll-bar.h"
 
 #include <kiranwidgets-qt5/kiran-message-box.h>
 #include <kiran-log/qt5-log-i.h>
@@ -52,36 +53,28 @@ void Document::init()
     auto *outLayout = new QVBoxLayout(this);
     outLayout->setMargin(0);
     // 组件初始化
-    // QTextBrowser 最外层组件样式，组件内部的渲染样式需要使用源 HTML 中到CSS来调整
-    m_ui->textBrowser->setStyleSheet("\
-                                    QTextBrowser { padding-left:5px; }\
-    ");
     m_ui->pushButtonBackHome->setText(tr("返回主页"));
     // 代码高亮
     auto *highlighter= new Highlighter(m_ui->textBrowser->document());
     m_ui->treeWidget->setHeaderHidden(true);
+    auto* myScrollBarForTree = new MyScrollBar(this);
+    m_ui->treeWidget->setVerticalScrollBar(myScrollBarForTree);
     // 关联到槽函数
-    connect(m_ui->treeWidget, &QTreeWidget::itemDoubleClicked, this, &Document::tocItemScrollToAnchor);
-//    connect(m_ui->pushButtonSearch, &QPushButton::clicked, this, &Document::searchKeyword);
+    connect(m_ui->treeWidget, &QTreeWidget::itemClicked, this, &Document::tocItemScrollToAnchor);
     connect(m_ui->pushButtonBackHome, &QPushButton::clicked, this, &Document::backHome);
 
     m_ui->textBrowser->setOpenLinks(false);
     m_ui->textBrowser->setOpenExternalLinks(false);
+    m_ui->textBrowser->setStyleSheet("QTextBrowser{background-color: transparent; padding: 0 10px 10px 10px}");
+    auto* myScrollBarForText = new MyScrollBar(this);
+    m_ui->textBrowser->setVerticalScrollBar(myScrollBarForText);
     connect(m_ui->textBrowser, &QTextBrowser::anchorClicked, this, &Document::openDocumentURL);
 
     m_ui->pushButtonBackHome->setFlat(true);
     m_ui->pushButtonBackHome->setStyleSheet("height: 30px; padding-left: 24px; padding-top: 5px; text-align: left");
-    m_ui->treeWidget->setStyleSheet("QTreeView {background-color: transparent; border: none;} QTreeView::branch::selected{background-color:#2eb3ff;border-radius: 6px} QTreeView::item::selected{background-color:#2eb3ff;} ");
+    m_ui->treeWidget->setStyleSheet("QTreeView {background-color: transparent; border: none;} QTreeView::branch {image: none} QTreeView::branch::selected{background-color:#2eb3ff;border-radius: 6px} QTreeView::item::selected{background-color:#2eb3ff;} ");
 //    m_ui->treeWidget->setRootIsDecorated(false);
     this->setStyleSheet("QTreeView::item { height: 40px}");
-    m_ui->textBrowser->setStyleSheet("QTextBrowser{background-color: transparent; padding-left: 20px}");
-//    this->setStyleSheet("QScrollBar{background-color: transparent}");
-
-
-    // 连接returnPressed()信号到槽函数
-//    connect(lineEditKeyword, &QLineEdit::returnPressed, this, [=]() {
-//                searchKeyword();
-//    });
 }
 
  // 返回解析 Markdown 成功后的 HTML 字符串
@@ -212,7 +205,7 @@ void Document::searchKeyword(const QString& keyword)
         }
         // 显示搜索结果
         if (count > 0) {
-            // QMessageBox::information(this, tr("Search results"), tr("Found %1 occurrences of '%2'.").arg(count).arg(keyword));
+             QMessageBox::information(this, tr("Search results"), tr("Found %1 occurrences of '%2'.").arg(count).arg(keyword));
         } else
         {
             auto clickedButton = KiranMessageBox::message(this, tr("Search results"), tr("No more occurrences of '%1' found.").arg(keyword), KiranMessageBox::Ok | KiranMessageBox::No);
@@ -271,7 +264,7 @@ void Document::openDocumentURL(const QUrl& url)
     rv.setRegExp(rx);
     QValidator::State rvState = rv.validate(strUrl, pos);
     if (rvState == QValidator::Acceptable) {
-        auto result = KiranMessageBox::message(this,tr("Notice!"),tr("About to open the Browser and go to: ").arg(strUrl),KiranMessageBox::Ok|KiranMessageBox::No);
+        auto result = KiranMessageBox::message(this,tr("Notice!"),tr("About to open the Browser and go to: %1").arg(strUrl),KiranMessageBox::Ok|KiranMessageBox::No);
         switch (result)
         {
         case KiranMessageBox::Ok:
@@ -282,6 +275,7 @@ void Document::openDocumentURL(const QUrl& url)
         default:
             break;
         }
+        return;
     }
     // 获取当前文档父路径
     QRegularExpression docNameRegex("(.*/)[^/]*$");
@@ -296,7 +290,7 @@ void Document::openDocumentURL(const QUrl& url)
     // 如果目标路径为空 且 文件不存在则提示
     if (targetUrl.isEmpty() || !QFile::exists(targetUrl))
     {
-        KiranMessageBox::message(this, tr("Notice!"), tr("Target document does not exist! \n Document Name: ") + strUrl, KiranMessageBox::Cancel);
+        KiranMessageBox::message(this, tr("Notice!"), tr("Target document does not exist! \nDocument Name: ") + strUrl, KiranMessageBox::Cancel);
     }else
     {
         this->m_mdFilePath = targetUrl;

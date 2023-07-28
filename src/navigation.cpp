@@ -26,6 +26,7 @@
 #include "kiran-log/qt5-log-i.h"
 #include "kiran-style/style-palette.h"
 #include "kiran-frame/kiran-frame.h"
+#include "my-scroll-bar/my-scroll-bar.h"
 
 Navigation::Navigation(QWidget *parent)
     : KiranColorBlock(parent)
@@ -41,7 +42,13 @@ void Navigation::init()
     auto *outLayout = new QVBoxLayout(this);
     outLayout->setMargin(0);
     auto* scrollArea = new QScrollArea(this);
+//    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+//    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     outLayout->addWidget(scrollArea);
+
+    auto* myScrollBar = new MyScrollBar(this);
+//    myScrollBar->setArea(scrollArea);
+    scrollArea->setVerticalScrollBar(myScrollBar);
 
     // 定义最外层 Widget
     auto *homeWidget = new QWidget(this);

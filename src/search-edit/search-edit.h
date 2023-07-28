@@ -39,6 +39,7 @@ private:
 
 signals:
     void requestJumpTo(const QString& categoryID, const QString& subItemID, const QString& customKey = QString());
+    void requestSearch(const QString& keyword);
 
 private:
     SearchModel* m_searchModel = nullptr;

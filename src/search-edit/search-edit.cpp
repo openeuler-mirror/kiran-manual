@@ -13,7 +13,6 @@
  */
 
 #include "search-edit.h"
-//#include "plugin-manager.h"
 #include "search-delegate.h"
 #include "search-model.h"
 
@@ -71,29 +70,7 @@ void SearchEdit::init()
         QTimer::singleShot(0,this,&QLineEdit::clear);
     });
     connect(this,&QLineEdit::returnPressed,[this](){
-        QString searchKey = text();
-        if( searchKey.isEmpty() )
-        {
-            return;
-        }
-
-        auto items = m_searchModel->findItems(searchKey);
-        if( items.isEmpty() )
-        {
-            auto clickedButton = KiranMessageBox::message(this,tr("Info"),tr("Failed to find related items, please re-enter!"),KiranMessageBox::Ok|KiranMessageBox::No);
-            if( clickedButton == KiranMessageBox::Ok )
-                clear();
-            return;
-        }
-
-        auto item = items.at(0);
-        auto categoryID = item->data(SearchModel::roleCategoryID).toString();
-        auto subItemID = item->data(SearchModel::roleSubItemID).toString();
-        auto customSearchKey = item->data(SearchModel::roleSearchKey).toString();
-
-        clear();
-        
-        emit requestJumpTo(categoryID,subItemID,customSearchKey);
+      emit requestSearch(text());
     });
     // clang-format on
 }

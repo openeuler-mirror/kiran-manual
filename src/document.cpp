@@ -16,7 +16,8 @@
 #include "ui_document.h"
 #include "highlighter.h"
 
-#include <qt5-log-i.h>
+#include <kiranwidgets-qt5/kiran-message-box.h>
+#include <kiran-log/qt5-log-i.h>
 #include <QDesktopServices>
 #include <QDir>
 #include <QFile>
@@ -78,9 +79,9 @@ void Document::init()
 
 
     // 连接returnPressed()信号到槽函数
-    connect(lineEditKeyword, &QLineEdit::returnPressed, this, [=]() {
-                searchKeyword();
-    });
+//    connect(lineEditKeyword, &QLineEdit::returnPressed, this, [=]() {
+//                searchKeyword();
+//    });
 }
 
  // 返回解析 Markdown 成功后的 HTML 字符串
@@ -178,12 +179,10 @@ void Document::reloadDocument()
 #endif
 }
 
-void Document::searchKeyword()
+void Document::searchKeyword(const QString& keyword)
 {
-    QString keyword = lineEditKeyword->text();
-
     if (keyword.trimmed().isEmpty()) {
-        QMessageBox::information(this, tr("关键字为空"), tr("The search field is empty."));
+        KiranMessageBox::message(this, tr("Search results"), tr("Please input keyword."), KiranMessageBox::Cancel);
     } else {
         QTextDocument *document = m_ui->textBrowser->document();
         QTextCursor cursor(document);
@@ -214,14 +213,19 @@ void Document::searchKeyword()
         // 显示搜索结果
         if (count > 0) {
             // QMessageBox::information(this, tr("Search results"), tr("Found %1 occurrences of '%2'.").arg(count).arg(keyword));
-        } else {
-            QMessageBox::information(this, tr("Search results"), tr("No more occurrences of '%1' found.").arg(keyword));
+        } else
+        {
+            auto clickedButton = KiranMessageBox::message(this, tr("Search results"), tr("No more occurrences of '%1' found.").arg(keyword), KiranMessageBox::Ok | KiranMessageBox::No);
+            if (clickedButton == KiranMessageBox::Ok)
+            {
+
+            }
             m_lastMatch = QTextCursor();
-            clearSearchHighlights();
+            clearSearchHighlights(keyword);
         }
     }
 }
-void Document::clearSearchHighlights()
+void Document::clearSearchHighlights(const QString& keyword)
 {
     QTextDocument *document = m_ui->textBrowser->document();
     QTextCursor cursor(document);
@@ -231,7 +235,7 @@ void Document::clearSearchHighlights()
     format.clearBackground();
 
     while (!cursor.isNull() && !cursor.atEnd()) {
-        cursor = document->find(lineEditKeyword->text(), cursor, QTextDocument::FindWholeWords);
+        cursor = document->find(keyword, cursor, QTextDocument::FindWholeWords);
         if (!cursor.isNull()) {
             cursor.mergeCharFormat(format);
         }
@@ -267,18 +271,17 @@ void Document::openDocumentURL(const QUrl& url)
     rv.setRegExp(rx);
     QValidator::State rvState = rv.validate(strUrl, pos);
     if (rvState == QValidator::Acceptable) {
-        QMessageBox::StandardButton result = QMessageBox::information(nullptr, QStringLiteral("提示"), QStringLiteral("即将打开浏览器前往：") + strUrl, QMessageBox::Yes | QMessageBox::No);
+        auto result = KiranMessageBox::message(this,tr("Notice!"),tr("About to open the Browser and go to: ").arg(strUrl),KiranMessageBox::Ok|KiranMessageBox::No);
         switch (result)
         {
-        case QMessageBox::Yes:
+        case KiranMessageBox::Ok:
             QDesktopServices::openUrl(url);
             break;
-        case QMessageBox::No:
+        case KiranMessageBox::No:
             break;
         default:
             break;
         }
-        return;
     }
     // 获取当前文档父路径
     QRegularExpression docNameRegex("(.*/)[^/]*$");
@@ -293,7 +296,7 @@ void Document::openDocumentURL(const QUrl& url)
     // 如果目标路径为空 且 文件不存在则提示
     if (targetUrl.isEmpty() || !QFile::exists(targetUrl))
     {
-        QMessageBox::information(nullptr, QStringLiteral("Notice!"), QStringLiteral("Target document does not exist! \n Document Name: ") + strUrl, QMessageBox::Yes);
+        KiranMessageBox::message(this, tr("Notice!"), tr("Target document does not exist! \n Document Name: ") + strUrl, KiranMessageBox::Cancel);
     }else
     {
         this->m_mdFilePath = targetUrl;

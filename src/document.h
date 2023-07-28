@@ -45,7 +45,7 @@ private slots:
     void backHome();
 
 public slots:
-    void searchKeyword();
+    void searchKeyword(const QString& keyword);
     // 处理 a 标签的点击事件，用于文档之间的跳转
     void openDocumentURL(const QUrl& url);
 
@@ -67,5 +67,5 @@ private:
     // HTML 字符串保存到文件
     static void htmlStrSaveToFile(QString& fileName, QString& hStr);
     // 清除搜索项的高亮颜色
-    void clearSearchHighlights();
+    void clearSearchHighlights(const QString& keyword);
 };

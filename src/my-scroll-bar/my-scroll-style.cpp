@@ -35,8 +35,7 @@ QRect MyScrollStyle::subControlRect(ComplexControl cc,
                 sliderLen = 2 * maxLen / 3;
                 if (widget)
                 {
-                    //这里给定的最大高度，按照自己的喜好处理
-                    //我的Scrollbar设置的parent为：QAbstractScrollArea
+                    //Scrollbar设置的parent为：QAbstractScrollArea
                     auto* area = qobject_cast<QAbstractScrollArea*>(widget->parentWidget());
                     QWidget * w = area->viewport();
                     contentLen = w->height();

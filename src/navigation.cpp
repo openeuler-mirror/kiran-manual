@@ -14,10 +14,8 @@
 
 #include "navigation.h"
 
-#include <QFile>
 #include <QGraphicsDropShadowEffect>
 #include <QLabel>
-#include <QMessageBox>
 #include <QPainter>
 #include <QPushButton>
 #include <QScrollArea>
@@ -42,13 +40,10 @@ void Navigation::init()
     auto *outLayout = new QVBoxLayout(this);
     outLayout->setMargin(0);
     auto* scrollArea = new QScrollArea(this);
-//    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-//    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     outLayout->addWidget(scrollArea);
 
-    auto* myScrollBar = new MyScrollBar(this);
-//    myScrollBar->setArea(scrollArea);
-    scrollArea->setVerticalScrollBar(myScrollBar);
+    auto*navScrollBar = new MyScrollBar(this);
+    scrollArea->setVerticalScrollBar(navScrollBar);
 
     // 定义最外层 Widget
     auto *homeWidget = new QWidget(this);
@@ -99,7 +94,6 @@ void Navigation::init()
         int maxPerLine = 7;
 
         auto *itemWidget = new QWidget();
-//        auto *itemLayout = new QHBoxLayout(itemWidget);
         auto *itemLayout = new QGridLayout(itemWidget);
         itemLayout->setAlignment(Qt::AlignLeft);
         itemLayout->setContentsMargins(50, 0, 0, 0);
@@ -123,6 +117,7 @@ void Navigation::init()
             settings.endGroup();
             // 声明条目块
             auto *innerItemWidget = new KiranFrame();
+            innerItemWidget->setDrawBorder(false);
             auto *innerItemLayout = new QVBoxLayout(innerItemWidget);
             innerItemLayout->setAlignment(Qt::AlignCenter);
 
@@ -157,8 +152,23 @@ void Navigation::init()
                 }
             });
             // 声明条目标题
-            auto *titleLabel = new QLabel(itemName);
+            auto *titleLabel = new QLabel(itemName, innerItemWidget);
             titleLabel->setAlignment(Qt::AlignCenter);
+            // Fixme: 以下代码用一种不好的方式解决 categoryLabel, titleLabel 文字不跟随主题变化到问题
+            // note: 要跟随主题变化要求控件不能设置样式表，如有样式表则会导致主题透传失败
+            // 后期优化
+            using namespace Kiran;
+            auto* stylePalette = StylePalette::instance();
+            connect(stylePalette, &StylePalette::themeChanged, this, [=](Kiran::PaletteType paletteType){
+                QColor qColor = stylePalette->color(StylePalette::Normal,
+                                                    StylePalette::Widget,
+                                                    StylePalette::Foreground);
+                QPalette palette{};
+                palette.setColor(QPalette::WindowText, qColor);
+                categoryLabel->setPalette(palette);
+                titleLabel->setPalette(palette);
+            });
+
             // 添加图片按钮和条目标题
             innerItemLayout->addWidget(iBtn);
             innerItemLayout->addWidget(titleLabel);
@@ -178,17 +188,4 @@ void Navigation::init()
 
     scrollArea->setWidget(homeWidget);
     scrollArea->setWidgetResizable(true);
-}
-// 加载 QSS 样式文件
-bool Navigation::LoadStyleSheet(const QString &StyleSheetFile)
-{
-    QFile file(StyleSheetFile);
-    if (!file.open(QFile::ReadOnly))
-    {
-        QMessageBox::information(this,"Tip", file.errorString());
-        return false;
-    }
-    this->setStyleSheet(file.readAll());
-    file.close();
-    return true;
 }

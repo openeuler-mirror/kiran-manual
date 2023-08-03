@@ -31,5 +31,4 @@ private:
     // 配置文件路径
     QString m_confFilePath = CONF_FILE_PATH;
     void init();
-    bool LoadStyleSheet(const QString& StyleSheetFile);
 };

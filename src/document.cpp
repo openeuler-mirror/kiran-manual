@@ -33,6 +33,8 @@
 #include <QTreeWidget>
 #include <string>
 #include "markdown-parser.h"
+#include <kiran-style/style-global-define.h>
+#include <kiran-style/style-palette.h>
 
 Document::Document(QWidget *parent) :
     QWidget(parent),
@@ -53,7 +55,7 @@ void Document::init()
     auto *outLayout = new QVBoxLayout(this);
     outLayout->setMargin(0);
     // 组件初始化
-    m_ui->pushButtonBackHome->setText(tr("返回主页"));
+    m_ui->pushButtonBackHome->setText(tr("Back Home"));
     // 代码高亮
     auto *highlighter= new Highlighter(m_ui->textBrowser->document());
     m_ui->treeWidget->setHeaderHidden(true);
@@ -75,6 +77,32 @@ void Document::init()
     m_ui->treeWidget->setStyleSheet("QTreeView {background-color: transparent; border: none;} QTreeView::branch {image: none} QTreeView::branch::selected{background-color:#2eb3ff;border-radius: 6px} QTreeView::item::selected{background-color:#2eb3ff;} ");
 //    m_ui->treeWidget->setRootIsDecorated(false);
     this->setStyleSheet("QTreeView::item { height: 40px}");
+
+    // Fixme: 以下代码用一种不好的方式解决 pushButtonBackHome, treeWidget, textBrowser 文字不跟随主题变化到问题
+    // note: 要跟随主题变化要求控件不能设置样式表，如有样式表则会导致主题样式透传失败
+    // 后期优化
+    using namespace Kiran;
+    auto* stylePalette = StylePalette::instance();
+    connect(stylePalette, &StylePalette::themeChanged, this, [=](Kiran::PaletteType paletteType){
+      QColor qColor = stylePalette->color(StylePalette::Normal,
+                                          StylePalette::Widget,
+                                          StylePalette::Foreground);
+      QPalette palette{};
+      palette.setColor(QPalette::ButtonText, qColor);
+      m_ui->pushButtonBackHome->setPalette(palette);
+
+      // pushButtonBackHome 可以通过单独的 setPalette 来跟随，但是 treeWidget, textBrowser 单独设置无效，暂不知道原因
+      // 因此采用如下方式来设置
+
+      // 获取 QPushButton 的 QPalette
+      QPalette buttonPalette = m_ui->pushButtonBackHome->palette();
+      // 获取 QPushButton 文本颜色
+      const QColor& buttonTextColor = buttonPalette.color(QPalette::ButtonText);
+      QPalette followPalette{};
+      followPalette.setColor(QPalette::Text, buttonTextColor);
+      m_ui->treeWidget->setPalette(followPalette);
+      m_ui->textBrowser->setPalette(followPalette);
+    });
 }
 
  // 返回解析 Markdown 成功后的 HTML 字符串
@@ -161,22 +189,46 @@ void Document::reloadDocument()
     // 不同 QT 版本调用不同 Markdown 渲染方法:
     // QT_VERSION >= 5.14 QT 原生渲染函数
     // QT_VERSION < 5.14     自解析渲染函数
-#if QT_VERSION >= QT_VERSION_CHECK(6, 16, 0)
-    m_ui->textBrowser->setSource(m_mdFilePath);
-#else
+//#if QT_VERSION >= QT_VERSION_CHECK(6, 16, 0)
+//    m_ui->textBrowser->setSource(m_mdFilePath);
+//#else
     QString hStr = mdFile2HtmlStr(m_mdFilePath);
-    // DELETE ME . DEBUG 需要，保存解析后的 html 到文件
-//    QString testFileName = "testFileName.md";
-//    htmlStrSaveToFile(testFileName,hStr);
     m_ui->textBrowser->setHtml(hStr);
-#endif
+//#endif
 }
 
-void Document::searchKeyword(const QString& keyword)
+void Document::fillMatchList(const QString& searchText)
+{
+    QTextDocument *document = m_ui->textBrowser->document();
+    QTextCursor cursor(document);
+
+    // 清空匹配项列表
+    m_matchList.clear();
+
+    // 查找所有匹配项
+    while (!cursor.isNull() && !cursor.atEnd()) {
+        cursor = document->find(searchText, cursor);
+        if (!cursor.isNull()) {
+            // 将匹配项的位置添加到列表中
+            m_matchList.append(cursor);
+        }
+    }
+}
+
+void Document::searchPrevKeyword(const QString& keyword)
+{
+    // 将光标定位到匹配项的位置
+    m_ui->textBrowser->setTextCursor(m_matchList.at(m_matchIndex-1));
+    m_ui->textBrowser->ensureCursorVisible();
+    // 记录匹配项的位置
+    m_lastMatch = m_matchList.at(m_matchIndex-1);
+}
+void Document::searchNextKeyword(const QString& keyword)
 {
     if (keyword.trimmed().isEmpty()) {
-        KiranMessageBox::message(this, tr("Search results"), tr("Please input keyword."), KiranMessageBox::Cancel);
+        return;
     } else {
+        fillMatchList(keyword);
         QTextDocument *document = m_ui->textBrowser->document();
         QTextCursor cursor(document);
 
@@ -205,7 +257,8 @@ void Document::searchKeyword(const QString& keyword)
         }
         // 显示搜索结果
         if (count > 0) {
-             QMessageBox::information(this, tr("Search results"), tr("Found %1 occurrences of '%2'.").arg(count).arg(keyword));
+//            KiranMessageBox::message(this, tr("Search results"), tr("Found %1 occurrences of '%2'.").arg(count).arg(keyword), KiranMessageBox::Yes);
+            m_matchIndex++;
         } else
         {
             auto clickedButton = KiranMessageBox::message(this, tr("Search results"), tr("No more occurrences of '%1' found.").arg(keyword), KiranMessageBox::Ok | KiranMessageBox::No);

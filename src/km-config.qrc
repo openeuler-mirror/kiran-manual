@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>../data/km-config.ini</file>
-        <file>../resources/styles/navigation.qss</file>
-        <file>../resources/title-icon.png</file>
+        <file>../resources/images/kiran-manual.png</file>
     </qresource>
 </RCC>

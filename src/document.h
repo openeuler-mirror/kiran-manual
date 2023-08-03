@@ -45,7 +45,8 @@ private slots:
     void backHome();
 
 public slots:
-    void searchKeyword(const QString& keyword);
+    void searchNextKeyword(const QString& keyword);
+    void searchPrevKeyword(const QString& keyword);
     // 处理 a 标签的点击事件，用于文档之间的跳转
     void openDocumentURL(const QUrl& url);
 
@@ -62,10 +63,13 @@ private:
     QTreeWidget *m_treeWidget{};
     // 记录上一次搜索匹配项的位置
     QTextCursor m_lastMatch;
+    QList<QTextCursor> m_matchList; // 用于存储所有匹配项的位置
+    int m_matchIndex = 0;
     // 初始化视图
     void init();
     // HTML 字符串保存到文件
     static void htmlStrSaveToFile(QString& fileName, QString& hStr);
     // 清除搜索项的高亮颜色
     void clearSearchHighlights(const QString& keyword);
+    void fillMatchList(const QString& searchText);
 };

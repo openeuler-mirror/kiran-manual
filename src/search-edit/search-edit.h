@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2020 ~ 2021 KylinSec Co., Ltd.
- * kiran-control-panel is licensed under Mulan PSL v2.
+ * Copyright (c) 2020 ~ 2024 KylinSec Co., Ltd.
+ * kiran-manual is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -9,40 +9,35 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  *
- * Author:     liuxinhao <liuxinhao@kylinsec.com.cn>
+ * Author:     youzhengcai <youzhengcai@kylinsec.com.cn>
  */
 
 #pragma once
-#include <QLineEdit>
-#include <QItemDelegate>
-#include <QStandardItemModel>
-#include <QStyleOption>
-
 #include <kiran-search-box.h>
+#include "search-dialog.h"
 
-class QStandardItemModel;
-class QCompleter;
-class QListView;
-class SearchModel;
-class SearchDelegate;
 class SearchEdit : public KiranSearchBox
 {
     Q_OBJECT
 public:
     explicit SearchEdit(QWidget* parent = nullptr);
     ~SearchEdit() override;
-
+    void setSearchFiled(const QString& searchField);
+public slots:
+    void doSearch();
+private:
+    SearchDialog* m_searchDialog{};
+    QString m_searchField;
 private:
     void init();
-    static QStandardItemModel* buildSearchModel();
-    void setSearchPopupVisible(bool searchPopupVisible);
-
+    void initSearchDialog();
+protected:
+    void focusInEvent(QFocusEvent *event) override;
+    void focusOutEvent(QFocusEvent *event) override;
 signals:
-    void requestJumpTo(const QString& categoryID, const QString& subItemID, const QString& customKey = QString());
-    void requestSearch(const QString& keyword);
-
-private:
-    SearchModel* m_searchModel = nullptr;
-    SearchDelegate* m_searchDelegate = nullptr;
-    QCompleter* m_completer = nullptr;
+    // 发起搜索文本浏览器请求
+    void requestSearchTextBrowserNext(const QString& keyword);
+    void requestSearchTextBrowserPrev(const QString& keyword);
+    // 发起搜索导航页菜单请求
+    void requestSearchNavItem(const QString& keyword);
 };

@@ -41,7 +41,7 @@ private:
     QStackedWidget* m_stackedWidget{};
     Navigation *m_navigation{};
     Document *m_document{};
-    SearchEdit* searchBox{};
+    SearchEdit* m_searchBox{};
 
     void init();
     void initTitleBar();

@@ -14,19 +14,20 @@
 
 #pragma once
 
-// Project config
-#define PROJECT_NAME "kiran manual"
-#define CONF_FILE_PATH ":/data/km-config.ini";
-#define IMAGE_FOLDER "/usr/local/share/kiran-manual/data/manual-books/images/"
+#include <QEvent>
+#include <QKeyEvent>
 
-// Resources
-#define RESOURCES_FOLDER ":/resources/"
-#define ICON_PATH RESOURCES_FOLDER "images/kiran-manual.png"
+class EnterFilter : public QObject {
+public:
+    bool eventFilter(QObject* obj, QEvent* event) override {
+        if (event->type() == QEvent::KeyPress) {
+            QKeyEvent* keyEvent = dynamic_cast<QKeyEvent*>(event);
+            if (keyEvent && keyEvent->key() == Qt::Key_Return) {
+                // 过滤掉回车键事件
+                return true;
+            }
+        }
+        return QObject::eventFilter(obj, event);
+    }
+};
 
-// UI
-#define WINDOW_WIDTH 1035
-#define WINDOW_HEIGHT 742
-
-// Object name
-#define NAVIGATION_OBJECT_NAME "Navigation"
-#define DOCUMENT_OBJECT_NAME "Document"

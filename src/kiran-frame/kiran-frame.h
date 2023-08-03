@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2020 ~ 2022 KylinSec Co., Ltd.
- * kiran-control-panel is licensed under Mulan PSL v2.
+ * Copyright (c) 2020 ~ 2024 KylinSec Co., Ltd.
+ * kiran-manual is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -17,7 +17,7 @@
 
 #include <QWidget>
 
-#include <style-palette.h>
+#include <kiran-style/style-palette.h>
 
 //给控制中心组件提供色块的控件,用于突出显示
 class KiranFrame : public QWidget
@@ -56,11 +56,11 @@ public:
     /**
      * 获取是否绘制边框
      */
-    bool getDrawBroder();
+    bool getDrawBorder();
     /**
      * 设置是否绘制边框
      */
-    void setDrawBroder(bool enable);
+    void setDrawBorder(bool enable);
     
     /**
      * 设置边框宽度

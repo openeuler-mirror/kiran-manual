@@ -95,7 +95,7 @@ void Window::initTitleBar()
 //    setIcon(QIcon::fromTheme("kiran-control-panel"));
     QPixmap pixmap(ICON_PATH);
     setIcon(pixmap);
-    setTitle(tr(PROJECT_NAME));
+    setTitle(tr("kiran manual"));
 
     m_searchBox = new SearchEdit(this);
     // 添加搜索框

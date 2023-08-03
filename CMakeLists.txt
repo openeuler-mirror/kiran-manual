@@ -28,11 +28,18 @@ file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h")
 file(GLOB_RECURSE FORMS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.ui")
 
+set(TS_FILES ./translations/kiran-manual.zh_CN.ts )
+find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS} LinguistTools REQUIRED)
+qt5_create_translation(QM_FILES ${CMAKE_CURRENT_SOURCE_DIR} ${TS_FILES})
+
 add_executable(${PROJECT_NAME}
     ${HEADER}
     ${SOURCES}
     ${FORMS}
-    ${PROJECT_SOURCE_DIR}/km-config.qrc)
+    ${PROJECT_SOURCE_DIR}/km-config.qrc
+    ${TS_FILES}
+    ${QM_FILES}
+        )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_CURRENT_BINARY_DIR}
@@ -48,6 +55,8 @@ target_link_libraries(${PROJECT_NAME}
         ${KIRAN_STYLE_LIBRARIES}
         ${KIRAN_WIDGETS_LIBRARIES}
         )
+
+install(FILES ${QM_FILES} DESTINATION share/${PROJECT_NAME}/data)
 
 install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION bin

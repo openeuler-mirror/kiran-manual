@@ -19,6 +19,7 @@
 #include <QStandardPaths>
 #include <QDesktopWidget>
 #include <QHBoxLayout>
+#include <QTranslator>
 
 void initKiranLog();
 
@@ -26,6 +27,11 @@ int main(int argc, char *argv[])
 {
     initKiranLog();
     QApplication app(argc, argv);
+
+    QTranslator trans;
+    if (trans.load("/usr/local/share/kiran-manual/data/kiran-manual." + QLocale().name() + ".qm")) {
+        QCoreApplication::installTranslator(&trans);
+    }
 
     Window window;
     window.resize(WINDOW_WIDTH, WINDOW_HEIGHT);

@@ -173,8 +173,6 @@ void Navigation::init()
             innerItemLayout->addWidget(iBtn);
             innerItemLayout->addWidget(titleLabel);
             innerItemWidget->setFixedSize(150, 150);
-//            innerItemWidget->setStyleSheet("background-color: #393939; border-radius: 6px;");
-
             // 添加条目块
             itemLayout->addWidget(innerItemWidget, count/4, count%numberPerRow);
             itemLayout->setSpacing(80);

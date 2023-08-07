@@ -270,7 +270,7 @@ void MarkdownParser::dfs(Node* root)
         m_content += R"(<img width="600" alt=")";
         m_content += root->elem[0];
         m_content += "\" src=\"";
-        string prePath = IMAGE_FOLDER;
+        string prePath = IMAGE_DOCS_FOLDER;
 
         string img = prePath + root->elem[1];
         m_content += prePath + root->elem[1];
@@ -507,7 +507,15 @@ string MarkdownParser::html()
         <meta charset=\"utf-8\">\
         <title>Markdown</title>\
         <style>\
-d		code { color: black;background-color: #f5f7f9 }\
+                h1 { font-weight: 400; }\
+                h2 { font-weight: 400; }\
+                h3 { font-weight: 400; }\
+                h4 { font-weight: 400; }\
+                h5 { font-weight: 400; }\
+                h6 { font-weight: 400; }\
+                strong { font-weight: 600 }\
+                ul, ol { font-weight: 400; }\
+		code { color: black;background-color: #f5f7f9 }\
 		pre { background-color: #f5f7f9;padding-left:100px; white-space: pre-wrap; margin-right: 5px}\
 		pre>code { background-color: #f5f7f9;text-intend:100px}\
         </style>\

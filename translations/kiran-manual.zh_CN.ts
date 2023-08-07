@@ -31,28 +31,28 @@
         <translation type="vanished">没有找到&quot;%1&quot;更多的匹配项。再次点击则重新搜索。</translation>
     </message>
     <message>
-        <location filename="../src/document.cpp" line="254"/>
+        <location filename="../src/document.cpp" line="244"/>
         <source>No search result</source>
         <translation>未搜索到关键词</translation>
     </message>
     <message>
-        <location filename="../src/document.cpp" line="254"/>
+        <location filename="../src/document.cpp" line="244"/>
         <source>Number of Keyword Matches: %1 .</source>
         <translation>关键词匹配数量：%1。</translation>
     </message>
     <message>
-        <location filename="../src/document.cpp" line="334"/>
-        <location filename="../src/document.cpp" line="360"/>
+        <location filename="../src/document.cpp" line="324"/>
+        <location filename="../src/document.cpp" line="350"/>
         <source>Notice!</source>
         <translation>注意！</translation>
     </message>
     <message>
-        <location filename="../src/document.cpp" line="334"/>
+        <location filename="../src/document.cpp" line="324"/>
         <source>About to open the Browser and go to: %1</source>
         <translation>尝试打开浏览器访问：&quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/document.cpp" line="360"/>
+        <location filename="../src/document.cpp" line="350"/>
         <source>Target document does not exist! 
 Document Name: </source>
         <translation>目标文档不存在！
@@ -74,7 +74,7 @@ Document Name: </source>
     <message>
         <location filename="../src/search-edit/search-dialog.cpp" line="36"/>
         <source>Count: </source>
-        <translation type="unfinished"></translation>
+        <translation>总计： </translation>
     </message>
     <message>
         <location filename="../src/search-edit/search-dialog.cpp" line="37"/>
@@ -98,12 +98,12 @@ Document Name: </source>
 <context>
     <name>Window</name>
     <message>
-        <location filename="../src/window.cpp" line="101"/>
+        <location filename="../src/window.cpp" line="98"/>
         <source>kiran manual</source>
         <translation>帮助手册</translation>
     </message>
     <message>
-        <location filename="../src/window.cpp" line="105"/>
+        <location filename="../src/window.cpp" line="102"/>
         <source>Enter keywords to search</source>
         <translation>输入关键字进行搜索</translation>
     </message>

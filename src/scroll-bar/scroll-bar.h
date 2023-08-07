@@ -12,21 +12,26 @@
  * Author:     youzhengcai <youzhengcai@kylinsec.com.cn>
  */
 
-#include "searcher.h"
+#pragma once
 
-Searcher::Searcher(QObject *parent)
-    : QObject(parent)
-{
-}
+#include <QAbstractScrollArea>
+#include <QScrollBar>
+#include "scroll-style.h"
 
-// TODO: 文档版内部关键字搜索  将搜索模块单独抽出
-QString Searcher::searchKeywordInside(const QString& keyword)
+class ScrollBar :public QScrollBar
 {
-    return nullptr;
-}
+    Q_OBJECT
+public:
+    explicit ScrollBar(QWidget* parent = nullptr);
+    ~ScrollBar() override;
+    QSize sizeHint()const override;
+    void setArea(QAbstractScrollArea * area);
+protected:
+    void paintEvent(QPaintEvent *ev) override;
 
-// TODO: 文档外部关键字搜索  将搜索模块单独抽出
-QString Searcher::searchKeywordOutside(const QString& keyword)
-{
-    return nullptr;
-}
+private slots:
+        void onSetRange(int min, int max);
+private:
+    QAbstractScrollArea* m_area = nullptr;
+    ScrollStyle* m_style = nullptr;
+};

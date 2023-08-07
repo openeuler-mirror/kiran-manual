@@ -13,8 +13,8 @@
  */
 
 #include "search-edit.h"
-#include "search-edit/search-dialog.h"
 #include "constants.h"
+#include "search-edit/search-dialog.h"
 
 #include <kiran-log/qt5-log-i.h>
 #include <kiran-message-box.h>
@@ -27,15 +27,14 @@ SearchEdit::SearchEdit(QWidget *parent)
     init();
 }
 
-SearchEdit::~SearchEdit()
-= default;
+SearchEdit::~SearchEdit() = default;
 
 void SearchEdit::init()
 {
     setPlaceholderText(tr("Enter keywords to search"));
     setClearButtonEnabled(true);
     // 绑定搜索框回车事件
-    connect(this,&QLineEdit::returnPressed,this, &SearchEdit::doSearch);
+    connect(this, &QLineEdit::returnPressed, this, &SearchEdit::doSearch);
 }
 
 void SearchEdit::initSearchDialog()
@@ -46,26 +45,28 @@ void SearchEdit::initSearchDialog()
     m_searchDialog->setSearchText(this->text());
 
     // 取消标题栏
-//    m_searchDialog->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
-      QPoint pos = mapToGlobal(QPoint(0, height())) + QPoint(0, 40);
-//    QPoint pos = mapToGlobal(QPoint(0, height()));
+    //    m_searchDialog->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
+    QPoint pos = mapToGlobal(QPoint(0, height())) + QPoint(0, 40);
+    //    QPoint pos = mapToGlobal(QPoint(0, height()));
     m_searchDialog->move(pos);
 
-    connect(m_searchDialog, &SearchDialog::sdNextClicked, [this](){
-      emit requestSearchTextBrowserNext(this->text());
+    // clang-format off
+    connect(m_searchDialog, &SearchDialog::sdNextClicked, [this]() {
+        emit requestSearchTextBrowserNext(this->text());
     });
 
-    connect(m_searchDialog, &SearchDialog::sdPrevClicked, [this](){
-      emit requestSearchTextBrowserPrev(this->text());
+    connect(m_searchDialog, &SearchDialog::sdPrevClicked, [this]() {
+        emit requestSearchTextBrowserPrev(this->text());
     });
 
-    connect(m_searchDialog, &SearchDialog::sdCloseClicked, [this](){
-      emit requestSearchTextBrowserClosed(this->text());
+    connect(m_searchDialog, &SearchDialog::sdCloseClicked, [this]() {
+        emit requestSearchTextBrowserClosed(this->text());
     });
 
-    connect(this, &SearchEdit::textChanged, [this](){
-      emit requestSearchKeywordChanged(this->text());
+    connect(this, &SearchEdit::textChanged, [this]() {
+        emit requestSearchKeywordChanged(this->text());
     });
+    // clang-format on
 }
 void SearchEdit::doSearch()
 {
@@ -74,7 +75,8 @@ void SearchEdit::doSearch()
     this->initSearchDialog();
     m_searchDialog->show();
     // 利用 StackWidget 中当前激活到页面 Object name 来判定搜索域
-    if (m_searchField == NAVIGATION_OBJECT_NAME){
+    if (m_searchField == NAVIGATION_OBJECT_NAME)
+    {
         emit requestSearchNavItem(this->text());
     }
     else if (m_searchField == DOCUMENT_OBJECT_NAME)

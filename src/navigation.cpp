@@ -21,9 +21,9 @@
 #include <QScrollArea>
 #include <QSettings>
 #include <QVBoxLayout>
+#include "kiran-frame/kiran-frame.h"
 #include "kiran-log/qt5-log-i.h"
 #include "kiran-style/style-palette.h"
-#include "kiran-frame/kiran-frame.h"
 #include "scroll-bar/scroll-bar.h"
 
 Navigation::Navigation(QWidget *parent)
@@ -32,23 +32,22 @@ Navigation::Navigation(QWidget *parent)
     init();
 }
 
-Navigation::~Navigation()
-= default;
+Navigation::~Navigation() = default;
 // 初始化视图
 void Navigation::init()
 {
     auto *outLayout = new QVBoxLayout(this);
     outLayout->setMargin(0);
-    auto* scrollArea = new QScrollArea(this);
+    auto *scrollArea = new QScrollArea(this);
     outLayout->addWidget(scrollArea);
 
-    auto*navScrollBar = new ScrollBar(this);
+    auto *navScrollBar = new ScrollBar(this);
     scrollArea->setVerticalScrollBar(navScrollBar);
 
     // 定义最外层 Widget
     auto *homeWidget = new QWidget(this);
     outLayout->addWidget(homeWidget);
-    homeWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    homeWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     homeWidget->setContentsMargins(15, 15, 15, 15);
     // 定义最外部的垂直布局容器
     auto *homeLayout = new QVBoxLayout(homeWidget);
@@ -60,7 +59,7 @@ void Navigation::init()
 
     // 获取公共信息
     settings.beginGroup("Document");
-//    QString docDir = settings.value("DocDir").toString();
+    //    QString docDir = settings.value("DocDir").toString();
 
     QStringList languageSupport = settings.value("LanguageSupport").toStringList();
     // 获取当前系统的语言环境
@@ -76,16 +75,16 @@ void Navigation::init()
 
     // 程序内 categories 使用英文，需要显示时再转为其他语言
     QStringList categories = settings.value("Categories[en_US]").toStringList();
-    QStringList categoriesLocal = settings.value("Categories"+localFlag).toStringList();
+    QStringList categoriesLocal = settings.value("Categories" + localFlag).toStringList();
     settings.endGroup();
 
     // 输出每个分类下的 FileName
     for (auto it = categories.begin(); it != categories.end(); ++it)
     {
-        int index = std::distance(categories.begin(),it);
+        int index = std::distance(categories.begin(), it);
         // "Category" 分两个，一是原始 categoryRaw 二是根据语言环境翻译后到 categoryLocal
-        const QString& categoryRaw = *it;
-        const QString& categoryLocal = categoriesLocal.at(index);
+        const QString &categoryRaw = *it;
+        const QString &categoryLocal = categoriesLocal.at(index);
         int numberPerRow = 4;
 
         // 声明分类块
@@ -107,10 +106,10 @@ void Navigation::init()
         QString itemsKey = "Document/" + categoryRaw + "Item";
         QStringList items = settings.value(itemsKey).toStringList();
         int count = 0;
-        foreach (const QString& item, items)
+        foreach (const QString &item, items)
         {
-            settings.beginGroup("Document "+categoryRaw+" "+item);
-            QString itemName = settings.value("Name"+localFlag).toString();
+            settings.beginGroup("Document " + categoryRaw + " " + item);
+            QString itemName = settings.value("Name" + localFlag).toString();
             QString fileName = settings.value("FileName").toString();
             QString filePath = DOC_FOLDER + localName + "/" + fileName;
             QString iconPath = IMAGE_ICONS_FOLDER + settings.value("Icon").toString();
@@ -128,11 +127,14 @@ void Navigation::init()
             int h = img.height();
             // 调整图片中宽高最大者至maxSide
             int maxSide = 100;
-            if(w >= h){
+            if (w >= h)
+            {
                 double scale = maxSide / double(w);
                 w = maxSide;
                 h *= scale;
-            }else{
+            }
+            else
+            {
                 double scale = maxSide / double(h);
                 h = maxSide;
                 w *= scale;
@@ -143,7 +145,9 @@ void Navigation::init()
             iBtn->setMaximumWidth(parentWidget()->width() / maxPerLine);
             QString styleSheet = QString("border-image: url(%1);").arg(iconPath);
             iBtn->setStyleSheet(styleSheet);
-            iBtn->setFixedSize(w,h);
+            iBtn->setFixedSize(w, h);
+
+            // clang-format off
             connect(iBtn, &QPushButton::clicked, this, [=]() {
                 auto *clickedButton = qobject_cast<QPushButton *>(sender());
                 if (clickedButton)
@@ -151,6 +155,7 @@ void Navigation::init()
                     emit docPageClicked(filePath);
                 }
             });
+            // clang-format on
             // 声明条目标题
             auto *titleLabel = new QLabel(itemName, innerItemWidget);
             titleLabel->setAlignment(Qt::AlignCenter);
@@ -158,8 +163,9 @@ void Navigation::init()
             // note: 要跟随主题变化要求控件不能设置样式表，如有样式表则会导致主题透传失败
             // 后期优化
             using namespace Kiran;
-            auto* stylePalette = StylePalette::instance();
-            connect(stylePalette, &StylePalette::themeChanged, this, [=](Kiran::PaletteType paletteType){
+            auto *stylePalette = StylePalette::instance();
+            // clang-format off
+            connect(stylePalette, &StylePalette::themeChanged, this, [=](Kiran::PaletteType paletteType) {
                 QColor qColor = stylePalette->color(StylePalette::Normal,
                                                     StylePalette::Widget,
                                                     StylePalette::Foreground);
@@ -168,13 +174,13 @@ void Navigation::init()
                 categoryLabel->setPalette(palette);
                 titleLabel->setPalette(palette);
             });
-
+            // clang-format on
             // 添加图片按钮和条目标题
             innerItemLayout->addWidget(iBtn);
             innerItemLayout->addWidget(titleLabel);
             innerItemWidget->setFixedSize(150, 150);
             // 添加条目块
-            itemLayout->addWidget(innerItemWidget, count/4, count%numberPerRow);
+            itemLayout->addWidget(innerItemWidget, count / 4, count % numberPerRow);
             itemLayout->setSpacing(80);
             itemLayout->setVerticalSpacing(40);
 

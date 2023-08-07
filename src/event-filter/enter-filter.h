@@ -17,12 +17,16 @@
 #include <QEvent>
 #include <QKeyEvent>
 
-class EnterFilter : public QObject {
+class EnterFilter : public QObject
+{
 public:
-    bool eventFilter(QObject* obj, QEvent* event) override {
-        if (event->type() == QEvent::KeyPress) {
+    bool eventFilter(QObject* obj, QEvent* event) override
+    {
+        if (event->type() == QEvent::KeyPress)
+        {
             QKeyEvent* keyEvent = dynamic_cast<QKeyEvent*>(event);
-            if (keyEvent && keyEvent->key() == Qt::Key_Return) {
+            if (keyEvent && keyEvent->key() == Qt::Key_Return)
+            {
                 // 过滤掉回车键事件
                 return true;
             }
@@ -30,4 +34,3 @@ public:
         return QObject::eventFilter(obj, event);
     }
 };
-

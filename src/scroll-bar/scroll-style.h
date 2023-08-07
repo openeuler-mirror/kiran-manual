@@ -19,12 +19,10 @@
 #include <QRect>
 #include <QStyleOptionSlider>
 
-class ScrollStyle :public QCommonStyle
+class ScrollStyle : public QCommonStyle
 {
 public:
     ScrollStyle();
     ~ScrollStyle() override;
-    QRect subControlRect(ComplexControl cc,const QStyleOptionComplex* opt,
-                         SubControl sc, const QWidget* widget /*= nullptr*/) const override;
+    QRect subControlRect(ComplexControl cc, const QStyleOptionComplex* opt, SubControl sc, const QWidget* widget /*= nullptr*/) const override;
 };
-

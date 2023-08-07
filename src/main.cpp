@@ -12,14 +12,14 @@
  * Author:     youzhengcai <youzhengcai@kylinsec.com.cn>
  */
 
-#include "window.h"
-#include "constants.h"
-#include "kiran-log/qt5-log-i.h"
 #include <QApplication>
-#include <QStandardPaths>
 #include <QDesktopWidget>
 #include <QHBoxLayout>
+#include <QStandardPaths>
 #include <QTranslator>
+#include "constants.h"
+#include "kiran-log/qt5-log-i.h"
+#include "window.h"
 
 void initKiranLog();
 
@@ -29,7 +29,8 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     QTranslator trans;
-    if (trans.load(DATA_FOLDER "kiran-manual." + QLocale().name() + ".qm")) {
+    if (trans.load(DATA_FOLDER "kiran-manual." + QLocale().name() + ".qm"))
+    {
         QCoreApplication::installTranslator(&trans);
     }
 
@@ -45,7 +46,8 @@ int main(int argc, char *argv[])
 }
 
 // 初始化日志库
-void initKiranLog(){
+void initKiranLog()
+{
     int iRet = klog_qt5_init("", "kylinsec-session", PROJECT_NAME, PROJECT_NAME);
     if (iRet != 0)
     {

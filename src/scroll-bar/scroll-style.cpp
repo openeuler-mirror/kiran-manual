@@ -13,23 +13,25 @@
  */
 
 #include "scroll-bar/scroll-style.h"
-ScrollStyle::ScrollStyle()
-= default;
+ScrollStyle::ScrollStyle() = default;
 
 QRect ScrollStyle::subControlRect(ComplexControl cc,
-                                    const QStyleOptionComplex* opt, SubControl sc, const QWidget* widget/* = nullptr*/) const
+                                  const QStyleOptionComplex* opt,
+                                  SubControl sc,
+                                  const QWidget* widget /* = nullptr*/) const
 {
     if (cc == QStyle::CC_ScrollBar)
     {
         QRect ret;
-        if (const auto* scrollbar = qstyleoption_cast<const QStyleOptionSlider*>(opt)) {
+        if (const auto* scrollbar = qstyleoption_cast<const QStyleOptionSlider*>(opt))
+        {
             const QRect scrollBarRect = scrollbar->rect;
             int sbextent = 0;
-            int maxLen = ((scrollbar->orientation == Qt::Horizontal) ?
-                          scrollBarRect.width() : scrollBarRect.height());
+            int maxLen = ((scrollbar->orientation == Qt::Horizontal) ? scrollBarRect.width() : scrollBarRect.height());
             int sliderLen;
             // 计算滑动长度
-            if (scrollbar->maximum != scrollbar->minimum) {
+            if (scrollbar->maximum != scrollbar->minimum)
+            {
                 uint range = scrollbar->maximum - scrollbar->minimum;
                 int contentLen = 0;
                 sliderLen = 2 * maxLen / 3;
@@ -37,7 +39,7 @@ QRect ScrollStyle::subControlRect(ComplexControl cc,
                 {
                     //Scrollbar设置的parent为：QAbstractScrollArea
                     auto* area = qobject_cast<QAbstractScrollArea*>(widget->parentWidget());
-                    QWidget * w = area->viewport();
+                    QWidget* w = area->viewport();
                     contentLen = w->height();
                     int nPageCount = contentLen / maxLen;
                     if (nPageCount > 0)
@@ -51,7 +53,8 @@ QRect ScrollStyle::subControlRect(ComplexControl cc,
                 if (sliderLen > maxLen)
                     sliderLen = maxLen;
             }
-            else {
+            else
+            {
                 sliderLen = maxLen;
             }
 
@@ -61,7 +64,8 @@ QRect ScrollStyle::subControlRect(ComplexControl cc,
                                                                  maxLen - sliderLen,
                                                                  scrollbar->upsideDown);
 
-            switch (sc) {
+            switch (sc)
+            {
             // top/left button
             case SC_ScrollBarSubLine:
             // bottom/right button
@@ -73,11 +77,9 @@ QRect ScrollStyle::subControlRect(ComplexControl cc,
                 break;
             case SC_ScrollBarGroove:
                 if (scrollbar->orientation == Qt::Horizontal)
-                    ret.setRect(sbextent, 0, scrollBarRect.width() - sbextent * 2,
-                                scrollBarRect.height());
+                    ret.setRect(sbextent, 0, scrollBarRect.width() - sbextent * 2, scrollBarRect.height());
                 else
-                    ret.setRect(0, sbextent, scrollBarRect.width(),
-                                scrollBarRect.height() - sbextent * 2);
+                    ret.setRect(0, sbextent, scrollBarRect.width(), scrollBarRect.height() - sbextent * 2);
                 break;
             case SC_ScrollBarSlider:
                 if (scrollbar->orientation == Qt::Horizontal)
@@ -93,5 +95,4 @@ QRect ScrollStyle::subControlRect(ComplexControl cc,
     }
     return QCommonStyle::subControlRect(cc, opt, sc, widget);
 }
-ScrollStyle::~ScrollStyle()
-= default;
+ScrollStyle::~ScrollStyle() = default;

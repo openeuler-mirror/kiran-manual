@@ -61,7 +61,7 @@ public:
      * 设置是否绘制边框
      */
     void setDrawBorder(bool enable);
-    
+
     /**
      * 设置边框宽度
     */

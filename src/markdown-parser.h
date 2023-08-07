@@ -70,6 +70,7 @@ enum HtmlToken
  * - 注意 code 标签加了盘古之白
  * - pre 与 code 之间手动加入了换行，原因是希望前端 code block 离顶部有一定到距离，通过样式系统(padding-top)暂时没实现
  */
+// clang-format off
 const std::string frontTag[] = {"", "<p>", "", "<ul>", "<ol>", "<li>", "<em>", "<strong>", "<hr color=#CCCCCC size=1 / > ", "", "<blockquote>",
                                 "<h1", "<h2", "<h3", "<h4", "<h5", "<h6", "<pre>\n\n<code>", " <strong>", ""};
 /**
@@ -77,7 +78,7 @@ const std::string frontTag[] = {"", "<p>", "", "<ul>", "<ol>", "<li>", "<em>", "
  */
 const std::string backTag[] = {"", "</p>", "", "</ul>", "</ol>", "</li>", "</em>", "</strong>", "", "", "</blockquote>",
                                "</h1>", "</h2>", "</h3>", "</h4>", "</h5>", "</h6>", "</code></pre>", "</strong> ", ""};
-
+// clang-format on
 /**
  * HTML DOM 节点
  */
@@ -103,10 +104,11 @@ struct Node
  */
 struct CatalogNode
 {
-    vector <CatalogNode *> _child;
+    vector<CatalogNode*> _child;
     string heading;
     string tag;
-    CatalogNode (string hd): heading(std::move(hd)) {}
+    CatalogNode(string hd)
+        : heading(std::move(hd)) {}
 };
 
 class MarkdownParser : public QObject
@@ -144,13 +146,13 @@ public:
     // 销毁节点
     void destory(Node* root);
     // 插入目录节点
-    void cins(CatalogNode *v, int x, const string &hd, int tag);
+    void cins(CatalogNode* v, int x, const string& hd, int tag);
     // 遍历目录节点
-    void cdfs(CatalogNode *v, const string& index);
+    void cdfs(CatalogNode* v, const string& index);
     // 构建目录节点的 JSON 结构
     // 此数据结构用于与目录渲染模块交互
     QJsonObject buildJSONTOC();
-    void cdfsForJson(CatalogNode *v, const string &index, QJsonArray& jsonArray);
+    void cdfsForJson(CatalogNode* v, const string& index, QJsonArray& jsonArray);
 
 private:
     //语法树根节点

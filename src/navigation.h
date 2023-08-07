@@ -22,7 +22,7 @@ class Navigation : public KiranColorBlock
     Q_OBJECT
 
 public:
-    explicit Navigation(QWidget *parent = nullptr);
+    explicit Navigation(QWidget* parent = nullptr);
     ~Navigation() override;
 signals:
     void docPageClicked(const QString& key);

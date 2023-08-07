@@ -24,17 +24,38 @@ Highlighter::Highlighter(QTextDocument *parent)
     keywordFormat.setFontWeight(QFont::Bold);
     // 定义关键字规则，下列为常见 C++ 关键字
     QStringList keywordPatterns;
-    keywordPatterns << "\\bchar\\b" << "\\bclass\\b" << "\\bconst\\b"
-                    << "\\bdouble\\b" << "\\benum\\b" << "\\bexplicit\\b"
-                    << "\\bfriend\\b" << "\\binline\\b" << "\\bint\\b"
-                    << "\\blong\\b" << "\\bnamespace\\b" << "\\boperator\\b"
-                    << "\\bprivate\\b" << "\\bprotected\\b" << "\\bpublic\\b"
-                    << "\\bshort\\b" << "\\bsignals\\b" << "\\bsigned\\b"
-                    << "\\bslots\\b" << "\\bstatic\\b" << "\\bstruct\\b"
-                    << "\\btemplate\\b" << "\\btypedef\\b" << "\\btypename\\b"
-                    << "\\bunion\\b" << "\\bunsigned\\b" << "\\bvirtual\\b"
-                    << "\\bvoid\\b" << "\\bvolatile\\b" << "\\bbool\\b";
-    foreach (const QString &pattern, keywordPatterns) {
+    keywordPatterns << "\\bchar\\b"
+                    << "\\bclass\\b"
+                    << "\\bconst\\b"
+                    << "\\bdouble\\b"
+                    << "\\benum\\b"
+                    << "\\bexplicit\\b"
+                    << "\\bfriend\\b"
+                    << "\\binline\\b"
+                    << "\\bint\\b"
+                    << "\\blong\\b"
+                    << "\\bnamespace\\b"
+                    << "\\boperator\\b"
+                    << "\\bprivate\\b"
+                    << "\\bprotected\\b"
+                    << "\\bpublic\\b"
+                    << "\\bshort\\b"
+                    << "\\bsignals\\b"
+                    << "\\bsigned\\b"
+                    << "\\bslots\\b"
+                    << "\\bstatic\\b"
+                    << "\\bstruct\\b"
+                    << "\\btemplate\\b"
+                    << "\\btypedef\\b"
+                    << "\\btypename\\b"
+                    << "\\bunion\\b"
+                    << "\\bunsigned\\b"
+                    << "\\bvirtual\\b"
+                    << "\\bvoid\\b"
+                    << "\\bvolatile\\b"
+                    << "\\bbool\\b";
+    foreach (const QString &pattern, keywordPatterns)
+    {
         // 定义 pattern
         rule.pattern = QRegularExpression(pattern);
         // 定义 format
@@ -52,7 +73,7 @@ Highlighter::Highlighter(QTextDocument *parent)
     singleLineCommentFormat.setForeground(Qt::red);
     rule.pattern = QRegularExpression("//[^\n]*");
     rule.format = singleLineCommentFormat;
-//    highlightingRules.append(rule);
+    //    highlightingRules.append(rule);
 
     multiLineCommentFormat.setForeground(Qt::red);
 
@@ -75,9 +96,11 @@ Highlighter::Highlighter(QTextDocument *parent)
 }
 void Highlighter::highlightBlock(const QString &text)
 {
-    foreach (const HighlightingRule &rule, highlightingRules) {
+    foreach (const HighlightingRule &rule, highlightingRules)
+    {
         QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
-        while (matchIterator.hasNext()) {
+        while (matchIterator.hasNext())
+        {
             QRegularExpressionMatch match = matchIterator.next();
             setFormat(match.capturedStart(), match.capturedLength(), rule.format);
         }
@@ -87,16 +110,19 @@ void Highlighter::highlightBlock(const QString &text)
     if (previousBlockState() != 1)
         startIndex = text.indexOf(commentStartExpression);
 
-    while (startIndex >= 0) {
+    while (startIndex >= 0)
+    {
         QRegularExpressionMatch match = commentEndExpression.match(text, startIndex);
         int endIndex = match.capturedStart();
         int commentLength = 0;
-        if (endIndex == -1) {
+        if (endIndex == -1)
+        {
             setCurrentBlockState(1);
             commentLength = text.length() - startIndex;
-        } else {
-            commentLength = endIndex - startIndex
-                            + match.capturedLength();
+        }
+        else
+        {
+            commentLength = endIndex - startIndex + match.capturedLength();
         }
         setFormat(startIndex, commentLength, multiLineCommentFormat);
         startIndex = text.indexOf(commentStartExpression, startIndex + commentLength);
@@ -106,16 +132,19 @@ void Highlighter::highlightBlock(const QString &text)
     startIndex = 0;
     if (previousBlockState() != 1)
         startIndex = text.indexOf(codeBlockStartExpression);
-    while (startIndex >= 0) {
+    while (startIndex >= 0)
+    {
         QRegularExpressionMatch match = codeBlockEndExpression.match(text, startIndex);
         int endIndex = match.capturedStart();
         int commentLength = 0;
-        if (endIndex == -1) {
+        if (endIndex == -1)
+        {
             setCurrentBlockState(1);
             commentLength = text.length() - startIndex;
-        } else {
-            commentLength = endIndex - startIndex
-                            + match.capturedLength();
+        }
+        else
+        {
+            commentLength = endIndex - startIndex + match.capturedLength();
         }
         setFormat(startIndex, commentLength, codeBlockFormat);
         startIndex = text.indexOf(codeBlockStartExpression, startIndex + commentLength);

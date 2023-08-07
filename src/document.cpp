@@ -13,12 +13,14 @@
  */
 
 #include "document.h"
-#include "ui_document.h"
 #include "highlighter.h"
 #include "scroll-bar/scroll-bar.h"
+#include "ui_document.h"
 
-#include <kiranwidgets-qt5/kiran-message-box.h>
 #include <kiran-log/qt5-log-i.h>
+#include <kiran-style/style-global-define.h>
+#include <kiran-style/style-palette.h>
+#include <kiranwidgets-qt5/kiran-message-box.h>
 #include <QDesktopServices>
 #include <QDir>
 #include <QFile>
@@ -33,16 +35,13 @@
 #include <QTreeWidget>
 #include <string>
 #include "markdown-parser.h"
-#include <kiran-style/style-global-define.h>
-#include <kiran-style/style-palette.h>
 
-Document::Document(QWidget *parent) :
-    QWidget(parent),
-    m_ui(new Ui::Document)
+Document::Document(QWidget* parent)
+    : QWidget(parent),
+      m_ui(new Ui::Document)
 {
     m_ui->setupUi(this);
     init();
-
 }
 
 Document::~Document()
@@ -52,12 +51,12 @@ Document::~Document()
 
 void Document::init()
 {
-    auto *outLayout = new QVBoxLayout(this);
+    auto* outLayout = new QVBoxLayout(this);
     outLayout->setMargin(0);
     // 组件初始化
     m_ui->pushButtonBackHome->setText(tr("Back Home"));
     // 代码高亮
-    auto *highlighter= new Highlighter(m_ui->textBrowser->document());
+    auto* highlighter = new Highlighter(m_ui->textBrowser->document());
     m_ui->treeWidget->setHeaderHidden(true);
     auto* myScrollBarForTree = new ScrollBar(this);
     m_ui->treeWidget->setVerticalScrollBar(myScrollBarForTree);
@@ -72,7 +71,7 @@ void Document::init()
     myScrollBarForText->setValue(10);
     m_ui->textBrowser->setVerticalScrollBar(myScrollBarForText);
     QPoint cuurPosition = m_ui->textBrowser->verticalScrollBar()->pos();
-    QPoint newPosition = cuurPosition + QPoint(5,0);
+    QPoint newPosition = cuurPosition + QPoint(5, 0);
     m_ui->textBrowser->verticalScrollBar()->move(newPosition);
     connect(m_ui->textBrowser, &QTextBrowser::anchorClicked, this, &Document::openDocumentURL);
 
@@ -81,7 +80,7 @@ void Document::init()
     m_ui->treeWidget->setStyleSheet("QTreeView {background-color: transparent; border: none;}"
                                     "QTreeView::branch::selected{background-color:#2eb3ff;border-radius: 6px}"
                                     "QTreeView::item::selected{background-color:#2eb3ff;");
-//                                    "border-top-left-radius: 6px;border-bottom-left-radius: 6px;border-top-right-radius: 6px;border-bottom-right-radius: 6px;}");
+    //                                    "border-top-left-radius: 6px;border-bottom-left-radius: 6px;border-top-right-radius: 6px;border-bottom-right-radius: 6px;}");
     this->setStyleSheet("QTreeView::item { height: 40px}");
 
     // Fixme: 以下代码用一种不好的方式解决 pushButtonBackHome, treeWidget, textBrowser 文字不跟随主题变化到问题
@@ -89,33 +88,35 @@ void Document::init()
     // 后期优化
     using namespace Kiran;
     auto* stylePalette = StylePalette::instance();
-    connect(stylePalette, &StylePalette::themeChanged, this, [=](Kiran::PaletteType paletteType){
-      QColor qColor = stylePalette->color(StylePalette::Normal,
-                                          StylePalette::Widget,
-                                          StylePalette::Foreground);
-      QPalette palette{};
-      palette.setColor(QPalette::ButtonText, qColor);
-      m_ui->pushButtonBackHome->setPalette(palette);
+    // clang-format off
+    connect(stylePalette, &StylePalette::themeChanged, this, [=](Kiran::PaletteType paletteType) {
+        QColor qColor = stylePalette->color(StylePalette::Normal,
+                                            StylePalette::Widget,
+                                            StylePalette::Foreground);
+        QPalette palette{};
+        palette.setColor(QPalette::ButtonText, qColor);
+        m_ui->pushButtonBackHome->setPalette(palette);
 
-      // pushButtonBackHome 可以通过单独的 setPalette 来跟随，但是 treeWidget, textBrowser 单独设置无效，暂不知道原因
-      // 因此采用如下方式来设置
+        // pushButtonBackHome 可以通过单独的 setPalette 来跟随，但是 treeWidget, textBrowser 单独设置无效，暂不知道原因
+        // 因此采用如下方式来设置
 
-      // 获取 QPushButton 的 QPalette
-      QPalette buttonPalette = m_ui->pushButtonBackHome->palette();
-      // 获取 QPushButton 文本颜色
-      const QColor& buttonTextColor = buttonPalette.color(QPalette::ButtonText);
-      QPalette followPalette{};
-      followPalette.setColor(QPalette::Text, buttonTextColor);
-      m_ui->treeWidget->setPalette(followPalette);
-      m_ui->textBrowser->setPalette(followPalette);
+        // 获取 QPushButton 的 QPalette
+        QPalette buttonPalette = m_ui->pushButtonBackHome->palette();
+        // 获取 QPushButton 文本颜色
+        const QColor& buttonTextColor = buttonPalette.color(QPalette::ButtonText);
+        QPalette followPalette{};
+        followPalette.setColor(QPalette::Text, buttonTextColor);
+        m_ui->treeWidget->setPalette(followPalette);
+        m_ui->textBrowser->setPalette(followPalette);
     });
+    // clang-format on
 }
 
- // 返回解析 Markdown 成功后的 HTML 字符串
+// 返回解析 Markdown 成功后的 HTML 字符串
 QString Document::mdFile2HtmlStr(const QString& mdPath)
 {
     using namespace std;
-    string mdFilePath = string((const char *)mdPath.toLocal8Bit());
+    string mdFilePath = string((const char*)mdPath.toLocal8Bit());
     MarkdownParser markdownParser(mdFilePath);
     markdownParser.transfer();
     string htmlStr = markdownParser.html();
@@ -125,7 +126,7 @@ QString Document::mdFile2HtmlStr(const QString& mdPath)
     return QString(QString::fromLocal8Bit(htmlStr.c_str()));
 }
 
-void Document::tocItemScrollToAnchor(QTreeWidgetItem *item, int column)
+void Document::tocItemScrollToAnchor(QTreeWidgetItem* item, int column)
 {
     QString itemName = item->text(column);
     m_ui->textBrowser->scrollToAnchor(itemName);
@@ -134,13 +135,15 @@ void Document::tocItemScrollToAnchor(QTreeWidgetItem *item, int column)
 // DEBUG 信息，当打开.md文档时，将 markdown2html 模块输出的 html 文档输出到文件，调试使用
 void Document::htmlStrSaveToFile(QString& fileName, QString& hStr)
 {
-    if (fileName.endsWith(".md")) {
+    if (fileName.endsWith(".md"))
+    {
         QString pureFileName = fileName.split(".").first();
         QString htmlFilePath = "html/" + pureFileName + ".html";
         // 创建目录
         QDir().mkpath("html");
         QFile hFile(htmlFilePath);
-        if (!hFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
+        if (!hFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+        {
             KLOG_ERROR() << "Open File Failed: " + htmlFilePath;
             return;
         }
@@ -150,20 +153,23 @@ void Document::htmlStrSaveToFile(QString& fileName, QString& hStr)
     }
 }
 
-void Document::showTOC(QTreeWidgetItem *root, const QJsonObject& obj, int level)
+void Document::showTOC(QTreeWidgetItem* root, const QJsonObject& obj, int level)
 {
-    QTreeWidgetItem *childRoot;
+    QTreeWidgetItem* childRoot;
     // 输出当前对象的 heading 属性
-    if (obj.contains("heading")) {
+    if (obj.contains("heading"))
+    {
         QJsonValue headingValue = obj.value("heading");
-        if (headingValue.isString()) {
+        if (headingValue.isString())
+        {
             QString heading = headingValue.toString();
             childRoot = new QTreeWidgetItem(QStringList() << heading);
             // 设置样式
             if (root == nullptr)
             {
                 m_ui->treeWidget->addTopLevelItem(childRoot);
-                if (level == 0 && !m_firstItemSelected) {
+                if (level == 0 && !m_firstItemSelected)
+                {
                     childRoot->setSelected(true);
                     this->m_firstItemSelected = true;
                 }
@@ -175,12 +181,16 @@ void Document::showTOC(QTreeWidgetItem *root, const QJsonObject& obj, int level)
         }
     }
     // 递归遍历当前对象的 child 数组
-    if (obj.contains("child")) {
+    if (obj.contains("child"))
+    {
         QJsonValue childValue = obj.value("child");
-        if (childValue.isArray()) {
+        if (childValue.isArray())
+        {
             QJsonArray childArray = childValue.toArray();
-            for (auto child : childArray) {
-                if (child.isObject()) {
+            for (auto child : childArray)
+            {
+                if (child.isObject())
+                {
                     showTOC(childRoot, child.toObject(), level + 1);
                 }
             }
@@ -191,7 +201,8 @@ void Document::showTOC(QTreeWidgetItem *root, const QJsonObject& obj, int level)
 void Document::reloadDocument()
 {
     // 解析并渲染目标文档
-    if (m_mdFilePath.isEmpty()){
+    if (m_mdFilePath.isEmpty())
+    {
         KLOG_ERROR() << "m_mdFilePath is empty!! " << m_mdFilePath;
         return;
     }
@@ -200,20 +211,21 @@ void Document::reloadDocument()
 
 void Document::fillMatchList(const QString& searchText)
 {
-    QTextDocument *document = m_ui->textBrowser->document();
+    QTextDocument* document = m_ui->textBrowser->document();
     QTextCursor cursor(document);
 
     // 查找所有匹配项
-    while (!cursor.isNull() && !cursor.atEnd()) {
+    while (!cursor.isNull() && !cursor.atEnd())
+    {
         cursor = document->find(searchText, cursor);
-        if (!cursor.isNull()) {
+        if (!cursor.isNull())
+        {
             // 高亮
             this->setMatchStyle(cursor);
             // 将匹配项的位置添加到列表中
             m_matchList.append(cursor);
         }
     }
-
 }
 
 void Document::searchPrevKeyword(const QString& keyword)
@@ -223,39 +235,47 @@ void Document::searchPrevKeyword(const QString& keyword)
         return;
     }
     --m_matchIndex;
-    if (m_matchIndex < 0){
+    if (m_matchIndex < 0)
+    {
         m_matchIndex = m_matchList.size() - 1;
     }
     QTextCursor prevCursor = m_matchList.at(m_matchIndex);
     // 将光标定位到匹配项的位置
-    emit keywordCountDone(m_matchList.size(), m_matchIndex+1);
+    emit keywordCountDone(m_matchList.size(), m_matchIndex + 1);
     m_ui->textBrowser->setTextCursor(prevCursor);
     m_ui->textBrowser->ensureCursorVisible();
 }
 void Document::searchNextKeyword(const QString& keyword)
 {
-    if (keyword.trimmed().isEmpty()) {
+    if (keyword.trimmed().isEmpty())
+    {
         return;
-    } else {
-        if (!m_initSearched){
+    }
+    else
+    {
+        if (!m_initSearched)
+        {
             this->fillMatchList(keyword);
             m_initSearched = true;
-            if (m_matchList.empty()){
+            if (m_matchList.empty())
+            {
                 KiranMessageBox::message(this, tr("No search result"), tr("Number of Keyword Matches: %1 .").arg(m_matchList.size()), KiranMessageBox::Yes);
                 return;
             }
         }
-        if (m_matchIndex < m_matchList.size()) {
+        if (m_matchIndex < m_matchList.size())
+        {
             // 将光标定位到匹配项的位置
-            emit keywordCountDone(m_matchList.size(), m_matchIndex+1);
+            emit keywordCountDone(m_matchList.size(), m_matchIndex + 1);
             m_ui->textBrowser->setTextCursor(m_matchList.at(m_matchIndex));
             m_ui->textBrowser->ensureCursorVisible();
             m_matchIndex++;
         }
-        else if (m_matchIndex == m_matchList.size()){
+        else if (m_matchIndex == m_matchList.size())
+        {
             m_matchIndex = 0;
             // 将光标定位到匹配项的位置
-            emit keywordCountDone(m_matchList.size(), m_matchIndex+1);
+            emit keywordCountDone(m_matchList.size(), m_matchIndex + 1);
             m_ui->textBrowser->setTextCursor(m_matchList.at(m_matchIndex));
             m_ui->textBrowser->ensureCursorVisible();
             m_matchIndex++;
@@ -265,10 +285,11 @@ void Document::searchNextKeyword(const QString& keyword)
 // 清除上一次搜索的搜索高亮
 void Document::clearSearchHighlights()
 {
-    for (QTextCursor cursor : m_matchList){
+    for (QTextCursor cursor : m_matchList)
+    {
         this->unsetMatchStyle(cursor);
     }
-//    this->m_ui->textBrowser->moveCursor(QTextCursor::Start);
+    //    this->m_ui->textBrowser->moveCursor(QTextCursor::Start);
     this->m_matchList.clear();
 }
 
@@ -278,12 +299,14 @@ void Document::clearSearchHighlights(const QString& keyword)
     m_lastMatch = QTextCursor();
     m_matchList.clear();
     m_matchIndex = 0;
-    QTextDocument *document = m_ui->textBrowser->document();
+    QTextDocument* document = m_ui->textBrowser->document();
     QTextCursor cursor(document);
 
-    while (!cursor.isNull() && !cursor.atEnd()) {
+    while (!cursor.isNull() && !cursor.atEnd())
+    {
         cursor = document->find(keyword, cursor, QTextDocument::FindWholeWords);
-        if (!cursor.isNull()) {
+        if (!cursor.isNull())
+        {
             this->unsetMatchStyle(cursor);
         }
     }
@@ -297,12 +320,15 @@ void Document::renderCatalog(QJsonObject& jsonObject)
 {
     // 获取目录到 JSON 格式
     // 重置 QTreeWidget 状态
-    m_ui->treeWidget->clear();if (m_matchIndex == m_matchList.size())
-    this->m_firstItemSelected = false;
+    m_ui->treeWidget->clear();
+    if (m_matchIndex == m_matchList.size())
+        this->m_firstItemSelected = false;
 
     QJsonArray jsonArray = jsonObject["_child"].toArray();
-    for (auto obj : jsonArray) {
-        if (obj.isObject()) {
+    for (auto obj : jsonArray)
+    {
+        if (obj.isObject())
+        {
             showTOC(nullptr, obj.toObject(), 0);
         }
     }
@@ -320,8 +346,9 @@ void Document::openDocumentURL(const QUrl& url)
     QRegExpValidator rv;
     rv.setRegExp(rx);
     QValidator::State rvState = rv.validate(strUrl, pos);
-    if (rvState == QValidator::Acceptable) {
-        auto result = KiranMessageBox::message(this,tr("Notice!"),tr("About to open the Browser and go to: %1").arg(strUrl),KiranMessageBox::Ok|KiranMessageBox::No);
+    if (rvState == QValidator::Acceptable)
+    {
+        auto result = KiranMessageBox::message(this, tr("Notice!"), tr("About to open the Browser and go to: %1").arg(strUrl), KiranMessageBox::Ok | KiranMessageBox::No);
         switch (result)
         {
         case KiranMessageBox::Ok:
@@ -348,7 +375,8 @@ void Document::openDocumentURL(const QUrl& url)
     if (targetUrl.isEmpty() || !QFile::exists(targetUrl))
     {
         KiranMessageBox::message(this, tr("Notice!"), tr("Target document does not exist! \nDocument Name: ") + strUrl, KiranMessageBox::Cancel);
-    }else
+    }
+    else
     {
         this->m_mdFilePath = targetUrl;
         this->reloadDocument();
@@ -365,7 +393,8 @@ void Document::searchKeywordChange(const QString& keyword)
     this->m_initSearched = false;
     this->m_matchIndex = 0;
     this->clearSearchHighlights();
-    if (keyword.isEmpty() || keyword.isNull()){
+    if (keyword.isEmpty() || keyword.isNull())
+    {
     }
 }
 void Document::setMatchStyle(QTextCursor& cursor)

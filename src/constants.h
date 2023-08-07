@@ -17,7 +17,8 @@
 // Project config
 #define PROJECT_NAME "kiran manual"
 #define CONF_FILE_PATH ":/data/km-config.ini";
-#define DATA_FOLDER "/usr/local/share/kiran-manual/data/"
+#define ROOT_FOLDER "/usr/local/share/kiran-manual/"
+#define DATA_FOLDER ROOT_FOLDER "data/"
 #define DOC_FOLDER DATA_FOLDER "manual-books/"
 #define IMAGE_FOLDER DATA_FOLDER "manual-books/images/"
 #define IMAGE_DOCS_FOLDER IMAGE_FOLDER "docs/"

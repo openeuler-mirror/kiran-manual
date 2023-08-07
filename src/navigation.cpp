@@ -24,7 +24,7 @@
 #include "kiran-log/qt5-log-i.h"
 #include "kiran-style/style-palette.h"
 #include "kiran-frame/kiran-frame.h"
-#include "my-scroll-bar/my-scroll-bar.h"
+#include "scroll-bar/scroll-bar.h"
 
 Navigation::Navigation(QWidget *parent)
     : KiranColorBlock(parent)
@@ -42,7 +42,7 @@ void Navigation::init()
     auto* scrollArea = new QScrollArea(this);
     outLayout->addWidget(scrollArea);
 
-    auto*navScrollBar = new MyScrollBar(this);
+    auto*navScrollBar = new ScrollBar(this);
     scrollArea->setVerticalScrollBar(navScrollBar);
 
     // 定义最外层 Widget
@@ -60,7 +60,7 @@ void Navigation::init()
 
     // 获取公共信息
     settings.beginGroup("Document");
-    QString docDir = settings.value("DocDir").toString();
+//    QString docDir = settings.value("DocDir").toString();
 
     QStringList languageSupport = settings.value("LanguageSupport").toStringList();
     // 获取当前系统的语言环境
@@ -112,8 +112,8 @@ void Navigation::init()
             settings.beginGroup("Document "+categoryRaw+" "+item);
             QString itemName = settings.value("Name"+localFlag).toString();
             QString fileName = settings.value("FileName").toString();
-            QString filePath = docDir + localName + "/" + fileName;
-            QString iconPath = docDir + "images/nav/" + settings.value("Icon").toString();
+            QString filePath = DOC_FOLDER + localName + "/" + fileName;
+            QString iconPath = IMAGE_ICONS_FOLDER + settings.value("Icon").toString();
             settings.endGroup();
             // 声明条目块
             auto *innerItemWidget = new KiranFrame();

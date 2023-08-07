@@ -15,12 +15,6 @@
 #include "highlighter.h"
 #include <QTextBlockFormat>
 
-/**
- *      rule.pattern = QRegularExpression(pattern);
- *       rule.format = keywordFormat;
- *       highlightingRules.append(rule);
- */
-
 Highlighter::Highlighter(QTextDocument *parent)
     : QSyntaxHighlighter(parent)
 {

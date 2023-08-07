@@ -67,15 +67,21 @@ void Document::init()
 
     m_ui->textBrowser->setOpenLinks(false);
     m_ui->textBrowser->setOpenExternalLinks(false);
-    m_ui->textBrowser->setStyleSheet("QTextBrowser{background-color: transparent; padding: 0 10px 10px 10px}");
+    m_ui->textBrowser->setStyleSheet("QTextBrowser{background-color: transparent; padding: 0 0 10px 5px}");
     auto* myScrollBarForText = new MyScrollBar(this);
+    myScrollBarForText->setValue(10);
     m_ui->textBrowser->setVerticalScrollBar(myScrollBarForText);
+    QPoint cuurPosition = m_ui->textBrowser->verticalScrollBar()->pos();
+    QPoint newPosition = cuurPosition + QPoint(5,0);
+    m_ui->textBrowser->verticalScrollBar()->move(newPosition);
     connect(m_ui->textBrowser, &QTextBrowser::anchorClicked, this, &Document::openDocumentURL);
 
     m_ui->pushButtonBackHome->setFlat(true);
-    m_ui->pushButtonBackHome->setStyleSheet("height: 30px; padding-left: 24px; padding-top: 5px; text-align: left");
-    m_ui->treeWidget->setStyleSheet("QTreeView {background-color: transparent; border: none;} QTreeView::branch {image: none} QTreeView::branch::selected{background-color:#2eb3ff;border-radius: 6px} QTreeView::item::selected{background-color:#2eb3ff;} ");
-//    m_ui->treeWidget->setRootIsDecorated(false);
+    m_ui->pushButtonBackHome->setStyleSheet("QPushButton { height: 30px; padding-left: 24px; padding-top: 5px; text-align: left }");
+    m_ui->treeWidget->setStyleSheet("QTreeView {background-color: transparent; border: none;}"
+                                    "QTreeView::branch::selected{background-color:#2eb3ff;border-radius: 6px}"
+                                    "QTreeView::item::selected{background-color:#2eb3ff;");
+//                                    "border-top-left-radius: 6px;border-bottom-left-radius: 6px;border-top-right-radius: 6px;border-bottom-right-radius: 6px;}");
     this->setStyleSheet("QTreeView::item { height: 40px}");
 
     // Fixme: 以下代码用一种不好的方式解决 pushButtonBackHome, treeWidget, textBrowser 文字不跟随主题变化到问题
@@ -153,9 +159,14 @@ void Document::showTOC(QTreeWidgetItem *root, const QJsonObject& obj, int level)
         if (headingValue.isString()) {
             QString heading = headingValue.toString();
             childRoot = new QTreeWidgetItem(QStringList() << heading);
+            // 设置样式
             if (root == nullptr)
             {
                 m_ui->treeWidget->addTopLevelItem(childRoot);
+                if (level == 0 && !m_firstItemSelected) {
+                    childRoot->setSelected(true);
+                    this->m_firstItemSelected = true;
+                }
             }
             else
             {
@@ -202,90 +213,91 @@ void Document::fillMatchList(const QString& searchText)
     QTextDocument *document = m_ui->textBrowser->document();
     QTextCursor cursor(document);
 
-    // 清空匹配项列表
-    m_matchList.clear();
-
     // 查找所有匹配项
     while (!cursor.isNull() && !cursor.atEnd()) {
         cursor = document->find(searchText, cursor);
         if (!cursor.isNull()) {
+            // 高亮
+            this->setMatchStyle(cursor);
             // 将匹配项的位置添加到列表中
             m_matchList.append(cursor);
         }
     }
+
 }
 
 void Document::searchPrevKeyword(const QString& keyword)
 {
+    if (m_matchList.size() < 2)
+    {
+        return;
+    }
+    --m_matchIndex;
+    if (m_matchIndex < 0){
+        m_matchIndex = m_matchList.size() - 1;
+    }
+    QTextCursor prevCursor = m_matchList.at(m_matchIndex);
     // 将光标定位到匹配项的位置
-    m_ui->textBrowser->setTextCursor(m_matchList.at(m_matchIndex-1));
+    emit keywordCountDone(m_matchList.size(), m_matchIndex+1);
+    m_ui->textBrowser->setTextCursor(prevCursor);
     m_ui->textBrowser->ensureCursorVisible();
-    // 记录匹配项的位置
-    m_lastMatch = m_matchList.at(m_matchIndex-1);
 }
 void Document::searchNextKeyword(const QString& keyword)
 {
     if (keyword.trimmed().isEmpty()) {
         return;
     } else {
-        fillMatchList(keyword);
-        QTextDocument *document = m_ui->textBrowser->document();
-        QTextCursor cursor(document);
-
-        // 搜索文本
-        int count = 0;
-        QTextCharFormat format;
-        format.setBackground(Qt::yellow);
-
-        // 从上一次匹配项的位置开始搜索
-        if (!m_lastMatch.isNull()) {
-            cursor.setPosition(m_lastMatch.position() + m_lastMatch.selectedText().length());
-        }
-        while (!cursor.isNull() && !cursor.atEnd()) {
-            cursor = document->find(keyword, cursor, QTextDocument::FindWholeWords);
-            if (!cursor.isNull()) {
-                cursor.mergeCharFormat(format);
-                ++count;
-                // 将光标定位到匹配项的位置
-                m_ui->textBrowser->setTextCursor(cursor);
-                m_ui->textBrowser->ensureCursorVisible();
-                // 记录匹配项的位置
-                m_lastMatch = cursor;
-                // 只找下一项
-                break;
+        if (!m_initSearched){
+            this->fillMatchList(keyword);
+            m_initSearched = true;
+            if (m_matchList.empty()){
+                KiranMessageBox::message(this, tr("No search result"), tr("Number of Keyword Matches: %1 .").arg(m_matchList.size()), KiranMessageBox::Yes);
+                return;
             }
         }
-        // 显示搜索结果
-        if (count > 0) {
-//            KiranMessageBox::message(this, tr("Search results"), tr("Found %1 occurrences of '%2'.").arg(count).arg(keyword), KiranMessageBox::Yes);
+        if (m_matchIndex < m_matchList.size()) {
+            // 将光标定位到匹配项的位置
+            emit keywordCountDone(m_matchList.size(), m_matchIndex+1);
+            m_ui->textBrowser->setTextCursor(m_matchList.at(m_matchIndex));
+            m_ui->textBrowser->ensureCursorVisible();
             m_matchIndex++;
-        } else
-        {
-            auto clickedButton = KiranMessageBox::message(this, tr("Search results"), tr("No more occurrences of '%1' found.").arg(keyword), KiranMessageBox::Ok | KiranMessageBox::No);
-            if (clickedButton == KiranMessageBox::Ok)
-            {
-
-            }
-            m_lastMatch = QTextCursor();
-            clearSearchHighlights(keyword);
+        }
+        else if (m_matchIndex == m_matchList.size()){
+            m_matchIndex = 0;
+            // 将光标定位到匹配项的位置
+            emit keywordCountDone(m_matchList.size(), m_matchIndex+1);
+            m_ui->textBrowser->setTextCursor(m_matchList.at(m_matchIndex));
+            m_ui->textBrowser->ensureCursorVisible();
+            m_matchIndex++;
         }
     }
 }
+// 清除上一次搜索的搜索高亮
+void Document::clearSearchHighlights()
+{
+    for (QTextCursor cursor : m_matchList){
+        this->unsetMatchStyle(cursor);
+    }
+//    this->m_ui->textBrowser->moveCursor(QTextCursor::Start);
+    this->m_matchList.clear();
+}
+
+// 清除关键词的高亮
 void Document::clearSearchHighlights(const QString& keyword)
 {
+    m_lastMatch = QTextCursor();
+    m_matchList.clear();
+    m_matchIndex = 0;
     QTextDocument *document = m_ui->textBrowser->document();
     QTextCursor cursor(document);
-
-    // 清除上次高亮的文本
-    QTextCharFormat format;
-    format.clearBackground();
 
     while (!cursor.isNull() && !cursor.atEnd()) {
         cursor = document->find(keyword, cursor, QTextDocument::FindWholeWords);
         if (!cursor.isNull()) {
-            cursor.mergeCharFormat(format);
+            this->unsetMatchStyle(cursor);
         }
     }
+    this->m_matchList.clear();
 }
 void Document::backHome()
 {
@@ -294,12 +306,14 @@ void Document::backHome()
 void Document::renderCatalog(QJsonObject& jsonObject)
 {
     // 获取目录到 JSON 格式
-    m_ui->treeWidget->clear();
+    // 重置 QTreeWidget 状态
+    m_ui->treeWidget->clear();if (m_matchIndex == m_matchList.size())
+    this->m_firstItemSelected = false;
 
     QJsonArray jsonArray = jsonObject["_child"].toArray();
     for (auto obj : jsonArray) {
         if (obj.isObject()) {
-            showTOC(nullptr, obj.toObject());
+            showTOC(nullptr, obj.toObject(), 0);
         }
     }
     m_ui->treeWidget->expandAll();
@@ -349,4 +363,30 @@ void Document::openDocumentURL(const QUrl& url)
         this->m_mdFilePath = targetUrl;
         this->reloadDocument();
     }
+}
+void Document::searchKeywordClose(const QString& keyword)
+{
+    this->m_initSearched = false;
+    this->m_matchIndex = 0;
+    this->clearSearchHighlights();
+}
+void Document::searchKeywordChange(const QString& keyword)
+{
+    this->m_initSearched = false;
+    this->m_matchIndex = 0;
+    this->clearSearchHighlights();
+    if (keyword.isEmpty() || keyword.isNull()){
+    }
+}
+void Document::setMatchStyle(QTextCursor& cursor)
+{
+    QTextCharFormat format;
+    format.setBackground(Qt::yellow);
+    cursor.mergeCharFormat(format);
+}
+void Document::unsetMatchStyle(QTextCursor& cursor)
+{
+    QTextCharFormat format;
+    format.setBackground(Qt::transparent);
+    cursor.mergeCharFormat(format);
 }

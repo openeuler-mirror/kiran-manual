@@ -39,6 +39,10 @@ public:
     // 重新渲染文档
     void reloadDocument();
     void renderCatalog(QJsonObject& jsonObject);
+    // 设置搜索命中样式
+    void setMatchStyle(QTextCursor& cursor);
+    // 清除搜索命中样式
+    void unsetMatchStyle(QTextCursor& cursor);
 
 private slots:
     void tocItemScrollToAnchor(QTreeWidgetItem *item, int column);
@@ -47,11 +51,17 @@ private slots:
 public slots:
     void searchNextKeyword(const QString& keyword);
     void searchPrevKeyword(const QString& keyword);
+    void searchKeywordClose(const QString& keyword);
+    void searchKeywordChange(const QString& keyword);
+    // 清除搜索项的高亮颜色
+    void clearSearchHighlights(const QString& keyword);
+    void clearSearchHighlights();
     // 处理 a 标签的点击事件，用于文档之间的跳转
     void openDocumentURL(const QUrl& url);
 
 signals:
     void backHomeClicked(const QString& key);
+    void keywordCountDone(int sum, int index);
 
 private:
     Ui::Document *m_ui;
@@ -63,13 +73,16 @@ private:
     QTreeWidget *m_treeWidget{};
     // 记录上一次搜索匹配项的位置
     QTextCursor m_lastMatch;
-    QList<QTextCursor> m_matchList; // 用于存储所有匹配项的位置
+    // 用于存储所有匹配项的位置
+    QList<QTextCursor> m_matchList;
     int m_matchIndex = 0;
+    // 首个 QTreeWidget 是否选中
+    bool m_firstItemSelected = false;
+    // 搜索初始化
+    bool m_initSearched = false;
     // 初始化视图
     void init();
     // HTML 字符串保存到文件
     static void htmlStrSaveToFile(QString& fileName, QString& hStr);
-    // 清除搜索项的高亮颜色
-    void clearSearchHighlights(const QString& keyword);
     void fillMatchList(const QString& searchText);
 };

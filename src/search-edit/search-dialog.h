@@ -1,6 +1,16 @@
-//
-// Created by skyzcyou on 2023/8/2.
-//
+/**
+ * Copyright (c) 2020 ~ 2024 KylinSec Co., Ltd.
+ * kiran-manual is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *          http://license.coscl.org.cn/MulanPSL2
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ *
+ * Author:     youzhengcai <youzhengcai@kylinsec.com.cn>
+ */
 
 #pragma once
 
@@ -21,15 +31,14 @@ public:
     ~SearchDialog() override;
     // 设置搜索的文本
     void setSearchText(const QString &text);
+    // 设置匹配数量
+    void setMatchCount(int count, int index);
 
 signals:
     // 发送上一个和下一个信号
-    void prevClicked();
-    void nextClicked();
-
-private slots:
-    void prevPosition();
-    void nextPosition();
+    void sdPrevClicked();
+    void sdNextClicked();
+    void sdCloseClicked();
 
 private:
     QPushButton *m_prevButton{};

@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     QTranslator trans;
-    if (trans.load(ROOT_FOLDER "translations/kiran-manual." + QLocale().name() + ".qm"))
+    if (trans.load(TRANSLATE_PREFIX "kiran-manual." + QLocale().name() + ".qm"))
     {
         QCoreApplication::installTranslator(&trans);
     }

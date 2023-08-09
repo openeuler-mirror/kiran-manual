@@ -6,14 +6,14 @@
     <message>
         <location filename="../src/document.ui" line="14"/>
         <location filename="../build/kiran-manual_autogen/include/ui_document.h" line="120"/>
-        <location filename="../cmake-build-debug/kiran-manual_autogen/include/ui_document.h" line="115"/>
+        <location filename="../cmake-build-debug/kiran-manual_autogen/include/ui_document.h" line="120"/>
         <source>Document</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../src/document.ui" line="60"/>
         <location filename="../build/kiran-manual_autogen/include/ui_document.h" line="121"/>
-        <location filename="../cmake-build-debug/kiran-manual_autogen/include/ui_document.h" line="116"/>
+        <location filename="../cmake-build-debug/kiran-manual_autogen/include/ui_document.h" line="121"/>
         <source>HOME</source>
         <translation></translation>
     </message>
@@ -23,22 +23,14 @@
         <translation>返回主页</translation>
     </message>
     <message>
-        <source>Search results</source>
-        <translation type="vanished">搜索结果</translation>
-    </message>
-    <message>
-        <source>No more occurrences of &apos;%1&apos; found.</source>
-        <translation type="vanished">没有找到&quot;%1&quot;更多的匹配项。再次点击则重新搜索。</translation>
-    </message>
-    <message>
         <location filename="../src/document.cpp" line="262"/>
         <source>No search result</source>
-        <translation>未搜索到关键词</translation>
+        <translation>未找到关键字</translation>
     </message>
     <message>
         <location filename="../src/document.cpp" line="262"/>
         <source>Number of Keyword Matches: %1 .</source>
-        <translation>关键词匹配数量：%1。</translation>
+        <translation>关键字匹配数量： %1 。</translation>
     </message>
     <message>
         <location filename="../src/document.cpp" line="351"/>
@@ -49,7 +41,7 @@
     <message>
         <location filename="../src/document.cpp" line="351"/>
         <source>About to open the Browser and go to: %1</source>
-        <translation>尝试打开浏览器访问：&quot;%1&quot;</translation>
+        <translation>即将打开浏览器前往：%1</translation>
     </message>
     <message>
         <location filename="../src/document.cpp" line="377"/>
@@ -87,7 +79,7 @@ Document Name: </source>
     <message>
         <location filename="../src/search-edit/search-edit.cpp" line="34"/>
         <source>Enter keywords to search</source>
-        <translation>输入关键字进行搜索</translation>
+        <translation>请输入搜索关键字</translation>
     </message>
     <message>
         <location filename="../src/search-edit/search-edit.cpp" line="43"/>
@@ -105,7 +97,7 @@ Document Name: </source>
     <message>
         <location filename="../src/window.cpp" line="102"/>
         <source>Enter keywords to search</source>
-        <translation>输入关键字进行搜索</translation>
+        <translation>请输入搜索关键字</translation>
     </message>
 </context>
 </TS>

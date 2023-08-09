@@ -522,9 +522,8 @@ string MarkdownParser::html()
                 h6 { font-weight: 400; }\
                 strong { font-weight: 600 }\
                 ul, ol { font-weight: 400; }\
-		code { color: black;background-color: #f5f7f9 }\
-		pre { background-color: #f5f7f9;padding-left:100px; white-space: pre-wrap; margin-right: 5px}\
-		pre>code { background-color: #f5f7f9;text-intend:100px}\
+		pre { background-color: #f2f2f2;padding-left:100px; white-space: pre-wrap; margin-right: 5px}\
+		pre>code { color: black; background-color: #f2f2f2;text-intend:100px}\
         </style>\
         </head><body><article class=\"markdown-body\">";
     std::string end = "</article></body></html>";

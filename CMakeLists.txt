@@ -27,6 +27,7 @@ pkg_search_module(KIRAN_STYLE REQUIRED kiran-style-helper)
 pkg_search_module(KIRAN_WIDGETS REQUIRED kiranwidgets-qt5)
 
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(RESOURCE ./resources/kiran-manual-resources.qrc)
 
 file(GLOB_RECURSE SOURCES "${PROJECT_SOURCE_DIR}/*.cpp")
 file(GLOB_RECURSE HEADERS "${PROJECT_SOURCE_DIR}/*.h")
@@ -38,12 +39,13 @@ set(TS_FILES ./translations/kiran-manual.zh_CN.ts)
 set(CMAKE_INSTALL_PREFIX "/usr")
 include(install-location-define.cmake)
 configure_file(${CMAKE_SOURCE_DIR}/data/config.h.in ${CMAKE_BINARY_DIR}/config.h)
+configure_file(${CMAKE_SOURCE_DIR}/data/${PROJECT_NAME}.desktop.in ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.desktop)
 # 生成 .qm 翻译文件
 qt5_create_translation(QM_FILES ${CMAKE_CURRENT_SOURCE_DIR} ${TS_FILES})
 
 add_executable(
   ${PROJECT_NAME} ${HEADER} ${SOURCES} ${FORMS}
-                  ${PROJECT_SOURCE_DIR}/km-config.qrc ${TS_FILES} ${QM_FILES})
+                  ${RESOURCE} ${TS_FILES} ${QM_FILES})
 
 target_include_directories(
   ${PROJECT_NAME}
@@ -62,3 +64,7 @@ install(FILES ${QM_FILES} DESTINATION share/${PROJECT_NAME}/translations)
 # 安装 data 文件夹
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data
         DESTINATION share/${PROJECT_NAME})
+#安装 kiran-manual.desktop
+install(FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.desktop" DESTINATION "${INSTALL_DATADIR}/applications/")
+#安装 kiran-icon icon文件
+install(FILES "${CMAKE_SOURCE_DIR}/data/kiran-manual.png" DESTINATION ${INSTALL_DATADIR}/icons/hicolor/)

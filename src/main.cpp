@@ -37,10 +37,10 @@ int main(int argc, char *argv[])
     Window window;
     window.resize(WINDOW_WIDTH, WINDOW_HEIGHT);
     // 居中显示
-    QRect availableGeometry = QApplication::desktop()->availableGeometry();
-    int x = (availableGeometry.width() - window.width()) / 2;
-    int y = (availableGeometry.height() - window.height()) / 2;
-    window.move(x, y);
+    int screeNum = QApplication::desktop()->screenNumber(QCursor::pos());
+    QRect screenGeometry = QApplication::desktop()->screenGeometry(screeNum);
+    window.move(screenGeometry.x() + (screenGeometry.width() - window.width()) / 2,
+           screenGeometry.y() + (screenGeometry.height() - window.height()) / 2);
     window.show();
     return QApplication::exec();
 }

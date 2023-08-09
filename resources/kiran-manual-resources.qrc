@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>../data/km-config.ini</file>
+        <file>../data/km.ini</file>
         <file>../resources/images/kiran-manual.png</file>
     </qresource>
 </RCC>

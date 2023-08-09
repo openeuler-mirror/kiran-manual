@@ -66,7 +66,7 @@ void Document::init()
 
     m_ui->textBrowser->setOpenLinks(false);
     m_ui->textBrowser->setOpenExternalLinks(false);
-    m_ui->textBrowser->setStyleSheet("QTextBrowser{background-color: transparent; padding: 0 0 10px 5px}");
+    m_ui->textBrowser->setStyleSheet("QTextBrowser{background-color: transparent; padding: 15px 0 10px 5px}");
     auto* myScrollBarForText = new ScrollBar(this);
     myScrollBarForText->setValue(10);
     m_ui->textBrowser->setVerticalScrollBar(myScrollBarForText);

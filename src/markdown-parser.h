@@ -37,6 +37,8 @@ enum Token
 
     blockcode = 17,  //代码块
     code = 18,       //单行代码
+
+    space = 19,  // space
 };
 
 /**
@@ -85,19 +87,19 @@ public:
             destory(m_root);
         }
     }
-    void transferm();									// 打开文件读取数据
+    void transferm();                                   // 打开文件读取数据
     void dfs(Node* root);                               // 语法树转换成HTML源代码//深度优先遍历 DFS
     const char* processStr(const char* str);            // 去除行首空格
     void insert(Node* curNode, const char* str);        // 逐字符内容插入
     pair<int, const char*> parseType(const char* str);  // 解析行首语法  返回:语法类型 + 对应内容起始位置
     bool isCutLine(const char* str);                    // 打开文件读取数据判断水平分割线 "---"
     string html();
-    void destory(Node* root);  							// 销毁
+    void destory(Node* root);  // 销毁
 
 private:
-    Node* m_root;       								//语法树根节点
-    string m_filename;  								//文件名
-    string m_content;   								//存放HTML文档内容
+    Node* m_root;       //语法树根节点
+    string m_filename;  //文件名
+    string m_content;   //存放HTML文档内容
 };
 
 #endif  // MARKDOWNPARSER_H

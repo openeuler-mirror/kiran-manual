@@ -1,19 +1,21 @@
 #include "markdown-parser.h"
 
-MarkdownParser::MarkdownParser(QObject *parent) : QObject(parent)
+MarkdownParser::MarkdownParser(QObject* parent)
+    : QObject(parent)
 {
-
 }
 void MarkdownParser::transferm()
 {
     // 若不是 .md 文档，直接退出
     string suffix = ".md";
-    if (m_filename.length() < suffix.length() && m_filename.substr(m_filename.length() - suffix.length()) != suffix){
+    if (m_filename.length() < suffix.length() && m_filename.substr(m_filename.length() - suffix.length()) != suffix)
+    {
         return;
     }
     //打开文件
     ifstream fin(m_filename);
-    if (!fin.is_open()) {	//打开失败
+    if (!fin.is_open())
+    {  //打开失败
         cerr << "打开文件失败" << endl;
         return;
     }
@@ -21,16 +23,23 @@ void MarkdownParser::transferm()
     bool inblock = false;
     //读取内容(按行读取)
     string rowStr;
-    while (fin.peek() != EOF) {	//fin.eof()
+    while (fin.peek() != EOF)
+    {  //fin.eof()
         getline(fin, rowStr);
 
         //预处理:处理行首空格
         const char* start = processStr(rowStr.c_str());
-        //忽略空内容
-        if (!inblock && start == nullptr)	continue;
+
+        // 忽略空内容
+        // TODO: 将空内容转为空行
+        if (!inblock && start == nullptr)
+        {
+            continue;
+        }
 
         //判断是否为水平分割线
-        if (!inblock && isCutLine(start)) {
+        if (!inblock && isCutLine(start))
+        {
             m_root->_child.push_back(new Node(hr));
             continue;
         }
@@ -41,9 +50,11 @@ void MarkdownParser::transferm()
         //创建语法结点
 
         //代码块结点
-        if (typeRet.first == blockcode) {
+        if (typeRet.first == blockcode)
+        {
             //判断代码块起始还是结束
-            if (!inblock) {
+            if (!inblock)
+            {
                 //代码块起始
                 //创建代码块结点
                 m_root->_child.push_back(new Node(blockcode));
@@ -56,14 +67,16 @@ void MarkdownParser::transferm()
         }
 
         //判断是否为代码块中代码
-        if (inblock) {
+        if (inblock)
+        {
             m_root->_child.back()->elem[0] += rowStr;
             m_root->_child.back()->elem[0] += '\n';
             continue;
         }
 
         //段落结点
-        if (typeRet.first == paragraph) {
+        if (typeRet.first == paragraph)
+        {
             //创建一个段落结点
             m_root->_child.push_back(new Node(paragraph));
             //逐字符插入
@@ -72,7 +85,8 @@ void MarkdownParser::transferm()
         }
 
         //标题结点
-        if (typeRet.first >= h1 && typeRet.first <= h6) {
+        if (typeRet.first >= h1 && typeRet.first <= h6)
+        {
             //创建标题结点
             m_root->_child.push_back(new Node(typeRet.first));
             //插入标题内容
@@ -81,10 +95,12 @@ void MarkdownParser::transferm()
         }
 
         //无序列表
-        if (typeRet.first == ul) {
+        if (typeRet.first == ul)
+        {
             //判断是否为无序列表的第一项
             //文档开始,或者语法书最后一个结点不是无序列表结点
-            if (m_root->_child.empty() || m_root->_child.back()->type != ul) {
+            if (m_root->_child.empty() || m_root->_child.back()->type != ul)
+            {
                 //创建无序列表
                 m_root->_child.push_back(new Node(ul));
             }
@@ -97,8 +113,10 @@ void MarkdownParser::transferm()
         }
 
         //有序列表
-        if (typeRet.first == ol) {
-            if (m_root->_child.empty() || m_root->_child.back()->type != ol) {
+        if (typeRet.first == ol)
+        {
+            if (m_root->_child.empty() || m_root->_child.back()->type != ol)
+            {
                 m_root->_child.push_back(new Node(ol));
             }
             Node* oNode = m_root->_child.back();
@@ -108,7 +126,8 @@ void MarkdownParser::transferm()
         }
 
         //引用
-        if (typeRet.first == quote) {
+        if (typeRet.first == quote)
+        {
             //创建引用结点
             m_root->_child.push_back(new Node(quote));
             insert(m_root->_child.back(), typeRet.second);
@@ -126,7 +145,8 @@ void MarkdownParser::dfs(Node* root)
     //插入内容
 
     //网址
-    if (root->type == href) {
+    if (root->type == href)
+    {
         m_content += "<a href=\"";
         m_content += root->elem[1];
         m_content += "\">";
@@ -134,7 +154,8 @@ void MarkdownParser::dfs(Node* root)
         m_content += "</a>";
     }
     //图片
-    else if (root->type == image) {
+    else if (root->type == image)
+    {
         m_content += "<img alt=\"";
         m_content += root->elem[0];
         m_content += "\" src=\"";
@@ -142,12 +163,14 @@ void MarkdownParser::dfs(Node* root)
         m_content += "\" />";
     }
     //其他
-    else {
+    else
+    {
         m_content += root->elem[0];
     }
 
-    //处理孩子结点
-    for (Node* ch : root->_child) {
+    // 处理孩子结点
+    for (Node* ch : root->_child)
+    {
         dfs(ch);
     }
 
@@ -157,31 +180,45 @@ void MarkdownParser::dfs(Node* root)
 
 const char* MarkdownParser::processStr(const char* str)
 {
-    while (*str) {
-        if (*str == ' ' || *str == '\t')	++str;
-        else break;
+    while (*str)
+    {
+        if (*str == ' ' || *str == '\t')
+        {
+            ++str;
+        }
+        else
+        {
+            break;
+        }
     }
-    if (*str == '\0')	return nullptr;
+    if (*str == '\0')
+    {
+        return nullptr;
+    }
     return str;
 }
 
 void MarkdownParser::insert(Node* curNode, const char* str)
 {
-    bool incode = false;	//是否为行内代码
-    bool instrong = false;	//粗体
-    bool inem = false;		//斜体
+    bool incode = false;    //是否为行内代码
+    bool instrong = false;  //粗体
+    bool inem = false;      //斜体
     int len = strlen(str);
     //解析内容为纯文本,可以放入纯文本结点中
-    //先创建一个纯文本孩子结点
+    //先创建一incode个纯文本孩子结点
     curNode->_child.push_back(new Node(nul));
-    for (int i = 0; i < len; ++i) {
+    for (int i = 0; i < len; ++i)
+    {
         //1.行内代码
-        if (str[i] == '`') {
-            if (incode) {
+        if (str[i] == '`')
+        {
+            if (incode)
+            {
                 //行内代码结束,则创建一个新的孩子结点,存放后序内容
                 curNode->_child.push_back(new Node(nul));
             }
-            else {
+            else
+            {
                 //创建行内代码
                 curNode->_child.push_back(new Node(code));
             }
@@ -191,12 +228,15 @@ void MarkdownParser::insert(Node* curNode, const char* str)
 
         //2.粗体: "**  **"
         //出现"**"且不在行内代码中
-        if (str[i] == '*' && i + 1 < len && str[i + 1] == '*' && !incode) {
-            if (instrong) {
+        if (str[i] == '*' && i + 1 < len && str[i + 1] == '*' && !incode)
+        {
+            if (instrong)
+            {
                 //粗体结束,创建新结点
                 curNode->_child.push_back(new Node(nul));
             }
-            else {
+            else
+            {
                 //创建新的粗体结点
                 curNode->_child.push_back(new Node(strong));
             }
@@ -208,11 +248,14 @@ void MarkdownParser::insert(Node* curNode, const char* str)
         }
 
         //3.斜体:	"_   _"
-        if (str[i] == '_' && !incode) {
-            if (inem) {
+        if (str[i] == '_' && !incode)
+        {
+            if (inem)
+            {
                 curNode->_child.push_back(new Node(nul));
             }
-            else {
+            else
+            {
                 curNode->_child.push_back(new Node(em));
             }
             inem = !inem;
@@ -220,18 +263,21 @@ void MarkdownParser::insert(Node* curNode, const char* str)
         }
 
         //4.图片:	![图片名称](图片地址)
-        if (str[i] == '!' && i + 1 < len && str[i + 1] == '[') {
+        if (str[i] == '!' && i + 1 < len && str[i + 1] == '[')
+        {
             //创建图片结点
             curNode->_child.push_back(new Node(image));
             Node* iNode = curNode->_child.back();
             i += 2;
             //存放图片名称在elem[0]
-            for (; i < len && str[i] != ']'; ++i) {
+            for (; i < len && str[i] != ']'; ++i)
+            {
                 iNode->elem[0] += str[i];
             }
             //存放图片地址在elem[1]
             i += 2;
-            for (; i < len && str[i] != ')'; ++i) {
+            for (; i < len && str[i] != ')'; ++i)
+            {
                 iNode->elem[1] += str[i];
             }
 
@@ -242,31 +288,32 @@ void MarkdownParser::insert(Node* curNode, const char* str)
 
         //5.链接:[链接名](网址)
         //有左括号,且不在行内代码
-        if (str[i] == '[' && !incode) {
+        if (str[i] == '[' && !incode)
+        {
             //创建链接结点
             curNode->_child.push_back(new Node(href));
             Node* hNode = curNode->_child.back();
             ++i;
             //存放链接名在elem[0]
-            for (; i < len && str[i] != ']'; ++i) {
+            for (; i < len && str[i] != ']'; ++i)
+            {
                 hNode->elem[0] += str[i];
             }
             //存放链接地址在elem[1]
             i += 2;
-            for (; i < len && str[i] != ')'; ++i) {
+            for (; i < len && str[i] != ')'; ++i)
+            {
                 hNode->elem[1] += str[i];
             }
 
             //创建新结点处理后续内容
             curNode->_child.push_back(new Node(nul));
             continue;
-
         }
 
         //6.普通纯文本
         curNode->_child.back()->elem[0] += str[i];
     }
-
 }
 
 pair<int, const char*> MarkdownParser::parseType(const char* str)
@@ -274,40 +321,48 @@ pair<int, const char*> MarkdownParser::parseType(const char* str)
     //解析标题:# + 空格
     const char* ptr = str;
     int titleNum = 0;
-    while (*ptr && *ptr == '#') {
+    while (*ptr && *ptr == '#')
+    {
         ++ptr;
         ++titleNum;
     }
     //1.标题
-    if (*ptr == ' ' && titleNum > 0 && titleNum <= 6) {
+    if (*ptr == ' ' && titleNum > 0 && titleNum <= 6)
+    {
         return make_pair(h1 + titleNum - 1, ptr + 1);
     }
     //不符合标题语法,需要重新解析
     ptr = str;
 
     //2.代码块:```代码内容```
-    if (strncmp(ptr, "```", 3) == 0) {
+    if (strncmp(ptr, "```", 3) == 0)
+    {
         return make_pair(blockcode, ptr + 3);
     }
 
     //3.无序列表: - + 空格
-    if (strncmp(ptr, "- ", 2) == 0) {
+    if (strncmp(ptr, "- ", 2) == 0)
+    {
         return make_pair(ul, ptr + 2);
     }
 
     //4.有序列表:数字字符 + "." + 空格
-    if (*ptr >= '0' && *ptr <= '9') {
+    if (*ptr >= '0' && *ptr <= '9')
+    {
         //遍历完数字
-        while (*ptr && (*ptr >= '0' && *ptr <= '9'))	++ptr;
-        if (*ptr && *ptr == '.') {
+        while (*ptr && (*ptr >= '0' && *ptr <= '9')) ++ptr;
+        if (*ptr && *ptr == '.')
+        {
             ++ptr;
-            if (*ptr && *ptr == ' ')	return make_pair(ol, ptr + 1);
+            if (*ptr && *ptr == ' ')
+                return make_pair(ol, ptr + 1);
         }
     }
     //重置
     ptr = str;
     //5.引用:">" + 空格
-    if (strncmp(ptr, "> ", 2) == 0) {
+    if (strncmp(ptr, "> ", 2) == 0)
+    {
         return make_pair(quote, ptr + 2);
     }
 
@@ -318,7 +373,8 @@ pair<int, const char*> MarkdownParser::parseType(const char* str)
 bool MarkdownParser::isCutLine(const char* str)
 {
     int cnt = 0;
-    while (*str && *str == '-') {
+    while (*str && *str == '-')
+    {
         ++str;
         ++cnt;
     }
@@ -327,6 +383,9 @@ bool MarkdownParser::isCutLine(const char* str)
 
 string MarkdownParser::html()
 {
+    /**
+      * TODO: 使用 link css 将 样式和主要代码分开
+    */
     std::string head =
         "<!DOCTYPE html><html><head>\
         <meta charset=\"utf-8\">\
@@ -344,12 +403,13 @@ string MarkdownParser::html()
 
 void MarkdownParser::destory(Node* root)
 {
-    if (root) {
-        for (Node* ch : root->_child) {
+    if (root)
+    {
+        for (Node* ch : root->_child)
+        {
             destory(ch);
         }
 
         delete root;
     }
 }
-

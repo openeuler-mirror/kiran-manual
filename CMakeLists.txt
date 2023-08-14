@@ -1,44 +1,56 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(kiran-manual LANGUAGES CXX)
-
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
-
-find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
+project(kiran-manual VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(SOURCES
-    src/article-page.cpp
-    src/home-page.cpp
-    src/main-window.cpp
-    src/main.cpp
-    src/markdown-parser.cpp
-    src/searcher.cpp
-)
-set(HEADER_DIR src)
-set(HEADER_FILES
-	${HEADER_DIR}/
-	article-page.h
-	home-page.h
-        main-window.h
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
+if(CMAKE_VERSION VERSION_LESS "3.7.0")
+    set(CMAKE_INCLUDE_CURRENT_DIR ON)
+endif()
+
+find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
+
+
+set(PROJECT_SOURCE_DIR src)
+
+set(HEADER
+	${PROJECT_SOURCE_DIR}/
+        window.h
+	navigation.h
+	article.h
         markdown-parser.h
         searcher.h	
 )
+set(SOURCES
+	${PROJECT_SOURCE_DIR}/
+    	main.cpp
+    	window.cpp
+    	navigation.cpp
+    	article.cpp
+    	markdown-parser.cpp
+    	searcher.cpp
+)
 
 add_executable(kiran-manual
-	${SOURCES}
-	forms/article-page.ui
-	forms/home-page.ui
-	forms/main-window.ui
+        src/window.h
+	src/navigation.h
+	src/article.h
+        src/markdown-parser.h
+        src/searcher.h	
+    	src/main.cpp
+    	src/window.cpp
+    	src/navigation.cpp
+    	src/article.cpp
+    	src/markdown-parser.cpp
+    	src/searcher.cpp
+	src/window.ui
+	src/navigation.ui
+	src/article.ui
 	km-config.qrc
 )
-foreach(HEADER_FILE ${HEADER_FILES})
-    message("Adding header file: ${HEADER_FILE}")
-    target_include_directories(kiran-manual PRIVATE ${HEADER_FILE})
-endforeach()
 target_link_libraries(kiran-manual PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)

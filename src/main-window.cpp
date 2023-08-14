@@ -1,7 +1,9 @@
 #include "main-window.h"
-#include "article-page.h"
+#include "article-pages.h"
 #include "home-page.h"
-#include "ui_mainwindow.h"
+#include "ui_main-window.h"
+
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
@@ -16,6 +18,17 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::switchArticlePage(QString key)
+{
+    qDebug() << key << endl;
+    ui->stackedWidget->setCurrentIndex(3);
+}
+void MainWindow::switchHomePage(QString key)
+{
+    qDebug() << key << endl;
+    ui->stackedWidget->setCurrentIndex(2);
+}
+
 // 初始化起始页视图
 void MainWindow::initView()
 {
@@ -25,4 +38,8 @@ void MainWindow::initView()
     ui->stackedWidget->addWidget(hp);
     ui->stackedWidget->addWidget(ap);
     ui->stackedWidget->setCurrentWidget(hp);
+
+    connect(hp, &HomePage::entryArticlePage, this, &MainWindow::switchArticlePage);
+    connect(ap, &ArticlePage::backHome, this, &MainWindow::switchHomePage);
+
 }

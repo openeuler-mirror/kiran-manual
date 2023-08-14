@@ -17,21 +17,18 @@
 #include "markdown-parser.h"
 #include "search.h"
 
-
 ArticlePage::ArticlePage(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ArticlePage)
 {
     ui->setupUi(this);
     initView();
-
 }
 
 ArticlePage::~ArticlePage()
 {
     delete ui;
 }
-
 void ArticlePage::initView()
 {
     // 组件初始化

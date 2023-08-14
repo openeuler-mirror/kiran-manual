@@ -1,6 +1,4 @@
 #include "article-page.h"
-#include "ui_article-page.h"
-
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
@@ -16,15 +14,14 @@
 #include <string>
 #include "markdown-parser.h"
 #include "search.h"
+#include "ui_articlepage.h"
 
-
-ArticlePage::ArticlePage(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::ArticlePage)
+ArticlePage::ArticlePage(QWidget *parent)
+    : QWidget(parent),
+      ui(new Ui::ArticlePage)
 {
     ui->setupUi(this);
     initView();
-
 }
 
 ArticlePage::~ArticlePage()
@@ -176,12 +173,6 @@ QFileInfoList ArticlePage::ShowDirTree(QTreeWidgetItem *root, QString path, QJso
 void ArticlePage::on_pushButtonSearch_clicked()
 {
     QString keyword = ui->lineEditKeyword->text();
-}
-
-void ArticlePage::on_pushButtonBackHome_clicked()
-{
-    //用 emit 发信号
-    emit backHome("HOME");
 }
 
 void ArticlePage::on_textBrowser_backwardAvailable(bool arg1)

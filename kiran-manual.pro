@@ -32,7 +32,6 @@ HEADERS += \
 
 FORMS += \
     forms/article-page.ui \
-    forms/article-pages.ui \
     forms/home-page.ui \
     forms/main-window.ui
 

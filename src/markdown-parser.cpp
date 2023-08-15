@@ -34,6 +34,7 @@ void MarkdownParser::transferm()
         // TODO: 将空内容转为空行
         if (!inblock && start == nullptr)
         {
+            m_root->_child.push_back(new Node(blankrow));
             continue;
         }
 
@@ -161,6 +162,11 @@ void MarkdownParser::dfs(Node* root)
         m_content += "\" src=\"";
         m_content += root->elem[1];
         m_content += "\" />";
+    }
+    // 处理空行
+    else if (root->type == blankrow)
+    {
+        m_content += "\n";
     }
     //其他
     else
@@ -393,7 +399,7 @@ string MarkdownParser::html()
         <link rel=\"stylesheet\" href=\"github-markdown.css\">\
         <link rel=\"stylesheet\" href=\"index.css\">\
         <style>\
-        code { background-color: #e9e9fb }\
+        code {display: block; background-color: #e9e9fb;}\
         </style>\
         </head><body><article class=\"markdown-body\">";
     std::string end = "</article></body></html>";

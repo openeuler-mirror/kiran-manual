@@ -1,5 +1,4 @@
-#ifndef MARKDOWNPARSER_H
-#define MARKDOWNPARSER_H
+#pragma once
 
 #include <QObject>
 #pragma once
@@ -38,7 +37,7 @@ enum Token
     blockcode = 17,  //代码块
     code = 18,       //单行代码
 
-    space = 19,  // space
+    blankrow = 19,  // space
 };
 
 /**
@@ -101,5 +100,3 @@ private:
     string m_filename;  //文件名
     string m_content;   //存放HTML文档内容
 };
-
-#endif  // MARKDOWNPARSER_H

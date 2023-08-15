@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>../../../Documents/km-config.json</file>
+        <file>../conf/km-config.json</file>
     </qresource>
 </RCC>

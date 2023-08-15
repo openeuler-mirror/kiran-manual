@@ -60,6 +60,37 @@ void Document::init()
     connect(m_ui->treeWidget, &QTreeWidget::itemDoubleClicked, this, &Document::tocItemScrollToAnchor);
     connect(m_ui->pushButtonSearch, &QPushButton::clicked, this, &Document::searchKeyword);
     connect(m_ui->pushButtonBackHome, &QPushButton::clicked, this, &Document::backHome);
+
+    m_ui->pushButtonBackHome->setFlat(true);
+    m_ui->pushButtonBackHome->setStyleSheet("background-color: #393939;color:white");
+    m_ui->treeWidget->setStyleSheet(" background-color: #393939; color:white; QTreeView::branch::selected{background-color:#2eb3ff;} QTreeView::item::selected{background-color:#2eb3ff;} ");
+    this->setStyleSheet("QTreeView::item { height: 40px}");
+    m_ui->textBrowser->setStyleSheet("background-color: #393939;color:white");
+
+    m_ui->widgetLeft->setStyleSheet("background-color: #393939;color:white");
+    m_ui->widgetRight->setStyleSheet("background-color: #393939;color:white");
+
+
+    // 连接returnPressed()信号到槽函数
+    connect(m_ui->lineEditKeyword, &QLineEdit::returnPressed, this, [=]() {
+                searchKeyword();
+    });
+
+
+//    QWidget *ttWidget = new QWidget(this);
+//    ttWidget->setLayout(m_ui->verticalLayoutForTree);
+//    ttWidget->setStyleSheet("background-color: #ffffff");
+
+    // 让树形控件自动适应项的宽度，并显示水平滚动条
+    // 让树形控件自动显示水平滚动条
+//    m_ui->treeWidget->header()->viewport()->setAutoFillBackground(false);
+//    m_ui->treeWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+//    m_ui->treeWidget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+//    m_ui->treeWidget->header()->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+
+    // 设置 Item 的高度为 40 像素
+    // 添加蓝色边框
+//    this->setStyleSheet("QTreeView::item:selected { border: 2px solid blue; }");
 }
 
  // 返回解析 Markdown 成功后的 HTML 字符串
@@ -151,8 +182,8 @@ void Document::reloadDocument()
 #else
     QString hStr = mdFile2HtmlStr(m_mdFilePath);
     // DELETE ME . DEBUG 需要，保存解析后的 html 到文件
-    //QString testFileName = "testFileName.md";
-    //htmlStrSaveToFile(testFileName,hStr);
+    QString testFileName = "testFileName.md";
+    htmlStrSaveToFile(testFileName,hStr);
     m_ui->textBrowser->setHtml(hStr);
 #endif
 }

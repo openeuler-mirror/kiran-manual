@@ -70,12 +70,12 @@ enum HtmlToken
  * - pre 与 code 之间手动加入了换行，原因是希望前端 code block 离顶部有一定到距离，通过样式系统(padding-top)暂时没实现
  */
 const std::string frontTag[] = {"", "<p>", "", "<ul>", "<ol>", "<li>", "<em>", "<strong>", "<hr color=#CCCCCC size=1 / > ", "", "<blockquote>",
-                                "<h1", "<h2", "<h3", "<h4", "<h5", "<h6", "<pre>\n\n<code>", "<code> ", ""};
+                                "<h1", "<h2", "<h3", "<h4", "<h5", "<h6", "<pre>\n\n<code>", " <code> ", ""};
 /**
  * HTML 后置标签
  */
 const std::string backTag[] = {"", "</p>", "", "</ul>", "</ol>", "</li>", "</em>", "</strong>", "", "", "</blockquote>",
-                               "</h1>", "</h2>", "</h3>", "</h4>", "</h5>", "</h6>", "</code></pre>", " </code>", ""};
+                               "</h1>", "</h2>", "</h3>", "</h4>", "</h5>", "</h6>", "</code></pre>", "</code> ", ""};
 
 /**
  * HTML DOM 节点

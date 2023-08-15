@@ -46,6 +46,8 @@ void Window::navigationPageLoader(const QString& key)
 // 初始化导航页视图
 void Window::init()
 {
+    // 隐藏 TitleBar
+    this->setWindowFlags(Qt::FramelessWindowHint);
     // 页面颜色
     QPalette pal(this->palette());
     pal.setColor(QPalette::Window, QColor(45,45,45)); // #2d2d2d

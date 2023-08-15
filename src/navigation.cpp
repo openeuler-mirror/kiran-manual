@@ -19,6 +19,7 @@
 #include <QFile>
 #include <QLabel>
 #include <QMessageBox>
+#include <QPainter>
 #include <QPushButton>
 #include <QSettings>
 #include <QVBoxLayout>
@@ -89,7 +90,7 @@ void Navigation::init()
 
         QHBoxLayout *itemLayout = new QHBoxLayout();
         itemLayout->setAlignment(Qt::AlignLeft);
-        itemLayout->setMargin(10);
+        itemLayout->setMargin(30);
 
         typeLayout->addWidget(new QLabel(categoryLocal));
         typeLayout->addLayout(itemLayout);
@@ -103,22 +104,24 @@ void Navigation::init()
             QString itemName = settings.value("Name"+localFlag).toString();
             QString fileName = settings.value("FileName").toString();
             QString filePath = docDir + localName + "/" + fileName;
-            QString iconPath = docDir + "icon/" + settings.value("Icon").toString();
+            QString iconPath = docDir + "images/nav/" + settings.value("Icon").toString();
             settings.endGroup();
             // 声明条目块
             QWidget *innerItemWidget = new QWidget();
+//            innerItemWidget->setStyleSheet("border-style: outset;"
+//                                           "    border-radius: 6px;"
+//                                           "margin:10px"
+//                                           );
             QVBoxLayout *innerItemLayout = new QVBoxLayout(innerItemWidget);
             innerItemLayout->setAlignment(Qt::AlignCenter);
 
-            // ==========
-            QString imgPathStr = ":/images/Qt.png"; // 背景图片文件路径
-            QString styleSheet = QString("QPushButton{border-image: url(%1);}").arg(imgPathStr);
-            QPushButton *btn = new QPushButton(this);
-            btn->setStyleSheet(styleSheet);
-            QImage img(imgPathStr);
+            // 背景图片文件路径
+            QImage img(iconPath);
             int w = img.width();
-            int h = img.height();  // 图片宽高等比例缩放
-            int maxSide = 100;     // 调整图片中宽高最大者至maxSide
+            // 图片宽高等比例缩放
+            int h = img.height();
+            // 调整图片中宽高最大者至maxSide
+            int maxSide = 100;
             if(w >= h){
                 double scale = maxSide / double(w);
                 w = maxSide;
@@ -128,14 +131,13 @@ void Navigation::init()
                 h = maxSide;
                 w *= scale;
             }
-            btn->setFixedSize(w,h);
-            //=============
 
-            QPushButton *iBtn = new QPushButton(innerItemWidget);
+            // 声明图片按钮
+            QPushButton *iBtn = new QPushButton();
             iBtn->setMaximumWidth(parentWidget()->width() / maxPerLine);
-            iBtn->setIcon(QIcon("/usr/local/share/kiran-manual/data/manual-books/images/nav/clion.png"));
-            iBtn->setIconSize(QSize(parentWidget()->width() / maxPerLine, parentWidget()->width() / maxPerLine));
-            iBtn->setStyleSheet("background-color: #393939;");
+            QString styleSheet = QString("border-image: url(%1);").arg(iconPath);
+            iBtn->setStyleSheet(styleSheet);
+            iBtn->setFixedSize(w,h);
             connect(iBtn, &QPushButton::clicked, this, [=]() {
                 QPushButton *clickedButton = qobject_cast<QPushButton *>(sender());
                 if (clickedButton)
@@ -143,8 +145,12 @@ void Navigation::init()
                     emit docPageClicked(filePath);
                 }
             });
+            // 声明条目标题
+            QLabel *titleLabel = new QLabel(itemName);
+            titleLabel->setAlignment(Qt::AlignCenter);
+            // 添加图片按钮和条目标题
             innerItemLayout->addWidget(iBtn);
-            innerItemLayout->addWidget(new QLabel(itemName));
+            innerItemLayout->addWidget(titleLabel);
 
             // 样式调整
             QPalette pal(innerItemWidget->palette());
@@ -152,6 +158,16 @@ void Navigation::init()
             innerItemWidget->setAutoFillBackground(true);
             innerItemWidget->setPalette(pal);
 
+//            innerItemWidget->setStyleSheet("background-color: #2d2d2d;"
+//                                           "background-clip: margin;"
+//                                            "border-style: outset;"
+//                                           "border-radius: 6px;"
+//                                           "margin:10px"
+//                                           );
+
+                // 创建一个 QMargins 对象，设置左右间距为20像素
+//                QMargins margins(20, 0, 20, 0);
+//                innerItemWidget->setContentsMargins(margins);
             // 添加条目块
             itemLayout->addWidget(innerItemWidget);
         }

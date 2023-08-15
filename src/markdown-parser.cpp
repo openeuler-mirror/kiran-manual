@@ -507,9 +507,9 @@ string MarkdownParser::html()
         <meta charset=\"utf-8\">\
         <title>Markdown</title>\
         <style>\
-		code { background-color: #f5f5f5 }\
-		pre { background-color: #f5f5f5;padding-left:100px; white-space: pre-wrap;}\
-		pre>code { background-color: #f5f5f5;width:100%;text-intend:100px}\
+		code { color: black;background-color: #797979 }\
+		pre { background-color: #797979;padding-left:100px; white-space: pre-wrap;}\
+		pre>code { color:black;background-color: #797979;width:100%;text-intend:100px}\
         </style>\
         </head><body><article class=\"markdown-body\">";
     std::string end = "</article></body></html>";

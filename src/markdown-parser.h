@@ -57,19 +57,20 @@ enum HtmlToken
     HTML_TOKEN_H6 = 16,
 
     //代码块
-    HTML_TOKEN_BLOCKCODE = 17,
+    HTML_TOKEN_BLOCK_CODE = 17,
     //单行代码
     HTML_TOKEN_CODE = 18,
     // 空行
-    HTML_TOKEN_BLANKROW = 19,
+    HTML_TOKEN_BLANK_ROW = 19,
 };
 
 /**
- * HTML 前置标签
- * 注意 code 标签加了盘古之白
+ * HTML 前置标签 自定义到标签设置为空即可
+ * - 注意 code 标签加了盘古之白
+ * - pre 与 code 之间手动加入了换行，原因是希望前端 code block 离顶部有一定到距离，通过样式系统(padding-top)暂时没实现
  */
 const std::string frontTag[] = {"", "<p>", "", "<ul>", "<ol>", "<li>", "<em>", "<strong>", "<hr color=#CCCCCC size=1 / > ", "", "<blockquote>",
-                                "<h1>", "<h2>", "<h3>", "<h4>", "<h5>", "<h6>", "<pre><code>", "<code> ", ""};
+                                "<h1", "<h2", "<h3", "<h4", "<h5", "<h6", "<pre>\n\n<code>", "<code> ", ""};
 /**
  * HTML 后置标签
  */
@@ -96,6 +97,18 @@ struct Node
     }
 };
 
+/**
+ * 目录结构
+ */
+struct CatalogNode
+{
+    int _type;
+    vector <CatalogNode *> _child;
+    string heading;
+    string tag;
+    CatalogNode (const string &hd): heading(hd) {}
+};
+
 class MarkdownParser : public QObject
 {
     Q_OBJECT
@@ -104,6 +117,7 @@ public:
     explicit MarkdownParser(const string& filename)
     {
         m_root = new Node(HTML_TOKEN_NUL);
+        m_croot = new CatalogNode("");
         m_filename = filename;
     }
     ~MarkdownParser() override
@@ -129,12 +143,24 @@ public:
     string html();
     // 销毁节点
     void destory(Node* root);
+    // 插入目录节点
+    void Cins(CatalogNode *v, int x, const string &hd, int tag);
+    // 遍历目录节点
+    void Cdfs(CatalogNode *v, string index);
+    // 构建目录节点的 JSON 结构
+    // 此数据结构用于与目录渲染模块交互
+    QJsonObject buildJSONTOC();
+    void CdfsForJSON(CatalogNode *v, const string &index, QJsonArray& jsonArray);
 
 private:
     //语法树根节点
     Node* m_root{};
+    // 目录节点
+    CatalogNode* m_croot{};
     //文件名
     string m_filename;
     //存放HTML文档内容
     string m_content;
+    // 存放目录
+    string m_toc;
 };

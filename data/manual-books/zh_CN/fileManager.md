@@ -1,124 +1,425 @@
-# 信号2
-#### 1. `pause`
-```c
-    #include <unistd.h>
+# 文件管理器
 
-    int pause(void);
-```
-调用`pause`函数的进程将一直堵塞到(即放弃cpu)有信号递达将其唤醒。
-+ 返回值：
-    + 如果信号的默认动作是终止进程，则进程终止。
-    + 如果信号的默认动作是忽略，继承基于处于挂起状态，`pause`不返回。
-    + 如果信号处理动作是捕捉，则信号处理函数调用结束，**`pause`返回-1, `errno`设置为`EINTR`**。
-    + `pause`接受到的信号被屏蔽，`puase`就将会永远不被唤醒。
-+ 实现`sleep`函数功能：`alarm() + pause() `
-#### 2.`sigsuspend`
-```c
-    #include <signal.h>
+# Xfce 用户指南
 
-    int sigsuspend(const sigset_t *mask); // mask是临时的，在函数执行时有效
-```
-+ 特点。这是一个原子操作，将**设置mask指的屏蔽字** + **使得进程休眠（pause）** 变成原子操作。可用来替代`pause`具有的时许竞争隐患。比如用`alarm() + pause() `实现的`sleep`函数功能。
-+ 返回。和`pause`一样，无成功返回值。如果返回调用进程，返回-1，并且`errno=EINTR`。
-```c
-    alarm(secs);
-    pause();
-```
-+ 原因：  
-  
-    如果在调用`alarm`之后，调用进程失去了cpu控制权，但是在cpu控制权回到这个进程之前`alarm`的计时时候到达，当cpu控制权回归调用进程时先处理`SIGALRM`信号，再调用`pause`函数，这就导致`pause`再也接受不到信号，因此这个进程就永远堵塞。
-+ 解决方案：  
-  
-    使得`sigsuspend(sus_mask) = alarm() + pause() `成为一个原子操作。
-    + 先使用`sigprocmask`设置信号屏蔽集合，使得cpu在`sigsuspend`之前不处理。
-    + 比如同样发生上述调用进程失去cpu控制权的情况，cpu控制权返回时，并不会先处理`SIGALRM`信号
-    + 因此到`sigsuspend`函数时，在这个函数的`sus_mask`中解除对`SIGALRM`的屏蔽，使得 **信号处理函数的执行后直接返回，唤醒cpu（这是因为pause的堵塞导致）**。
 
-+ 关键点: **调用进程的堵塞原因**
-    + 调用进程失去cpu的控制权
-    + 调用`pause`导致的cpu挂起
+## 一 概述
 
-#### 3.全局变量异步I/O
- 尽量避免使用全局变量。类似于多线程中的多个线程对同一个变量进行操作，很容易造成异常。
+Xfce是运行在类Unix操作系统中的一款轻量级桌面环境。Xfce提供了多个功能部件，包括 所有应用程序 等，本文主要描述 Xfce 的使用。
 
-#### 4.不可/可重入函数
- + 定义可重入函数，函数内部不能含有全局变量或者`static`变量，以及`malloc`和`free`。
- + 信号捕捉函数应该设计为可重入函数。
- + 信号处理函数可以调用的可重入函数，参考 man 7 signal
- + 其他大多是不可重入的，因为：
-    + 使用静态数据结构
-    + 调用`malloc/free`
-    + 是标准I/O函数
-#### 5.`SIGCHLD`
-这是子进程向父进程发送的信号，那么可否利用这个信号来回收子进程？
-+ 要求
-    + 在父进程中注册对信号`SIGCHLD`的捕捉函数。
-    + 循环产生十个子进程
-    + 十个子进程在父进程前终止
-    + 能顺利回收十个子进程
+界面如下图所示。
 
-+ 信号处理函数
-```c
-    void exe_sigchld(int singo) {
-        pid_t pid;
-        int statloc;
-        // 这里的while很关键
-        while(pid = waitpid(0, &statloc, WNOHANG) > 0) {
-            if(WIFEXITED(statloc))  
-                printf("child process pid=%d, exited  status:%d.\n", pid, WEXITSTATUS(statloc));
-            else if(WIFSIGNALED(statloc))
-                printf("child process pid=%d, signaled stauts:%d.\n", pid, WTERMSIG(statloc)); 
-        }
-    }
-```
-上面都`while`处理很关键，不是`if`而是`while`，是因为：
-+ 对于多个子进程同时发送终止信号`SINCHLD`，父进程只调用一次信号处理函数。
-+ 如果是`if`那么进入一次信号处理函数，只能处理一个终止的子进程，那么对于同时终止的其他进程就无法处理，剩下的就只能成为僵死进程。
-+ 选用`while`就可以一次进入信号处理函数，但是可以处理多个终止的子进程。
-#### 6.信号传参
-信号不能携带大量参数，实在有特殊需求时也可以。有相关的函数：
-+ 发送信号传参
-```c
-    #include <signal.h>
+![图 1 桌面主界面-big](./figures/xfce-1.png)
 
-    int sigqueue(pid_t pid, int sig, const union sigval value);
+<br>
+
+## 二 桌面
+
+### 2.1 桌面图标
+
+系统默认放置了文件系统、主文件夹、挂载目录等图标，鼠标左键双击即可打开页面。 
+
+![图 2 主界面默认图标-big](./figures/xfce-2.png)
+
+### 2.2 右键菜单
+
+在桌面空白处单击鼠标右键，出现的菜单如下图所示，为用户提供了一些快捷功能。
+
+![图 3 右键菜单](./figures/xfce-3.png)
+
+部分选项说明如表。
+
+| 选项 | 说明|
+| :------------ | :------------ |
+| 在新窗口中打开 | 打开对应登录用户的Desktop目录 |
+| 创建启动器 | 启动器的自行创建 |
+| 创建URL链接 | URL链接的自行创建 |
+| 创建文件夹 | 新建文件夹 |
+| 创建文档 | 新建文本文档 |
+| Open Terminal Here | 新建终端 |
+| 排列桌面图标 | 自动排列桌面图标 |
+| 桌面设置 | 提供关于背景、菜单、图标的设置 |
+| 属性 | 提供关于Desktop的一般、徽标、权限等属性设置 |
+| 应用程序 | 所有应用程序 |
+
+<br>
+
+## 三 任务栏
+
+### 3.1 基本功能
+
+任务栏位于顶部，包括所有应用程序菜单、窗口显示区、多视图切换、托盘菜单。
+
+![图 4 任务栏](./figures/xfce-4.png)
+
+| 组件	| 说明 |
+| :------------ | :------------ |
+| 所有应用程序 | 用于弹出所有程序以及设置，可查找应用和设置。|
+| 窗口显示区 | 横条中间空白部分；显示正在运行的程序或打开的文档，可进行最小化、最大化、关闭窗口、窗口置顶等操作。|
+| 多视图切换 | 可在多个工作区互不干扰进行操作。 |
+| 托盘 | 包含了对网络连接、声音、电源、通知中心、日历、登录用户动作的设置。|
+
+#### 3.1.1 所有应用程序
+
+![图 5 所有应用程序-big](./figures/xfce-5.png)
+
+#### 3.1.2 窗口显示区
+
+![图 6 窗口显示区-big](./figures/xfce-6.png)
+
+#### 3.1.3 多视图切换
+
+点击任务栏“![](./figures/xfce-7.png)”中的每个区域图标，即可进入对应的工作区域。
+
+例如，通过鼠标在多个工作区内切换选择当下需要工作的操作区。
+
+![图 7 多视图切换-big](./figures/xfce-71.png)
+
+#### 3.1.4 托盘
+
+![图 8 托盘菜单-big](./figures/xfce-8.png)
+
+##### 3.1.4.1 网络
+
+用户通过鼠标左键点击任务栏上的网络“![](./figures/xfce-81.png)”图标，可根据需要选择网络连接方式。
+
+![图 9 网络连接界面](./figures/xfce-811.png)
+
+网络设置窗口
+
+用户通过鼠标右键点击任务栏上的网络“![](./figures/xfce-81.png)”图标，弹出网络设置菜单。
+
+![图 10 网络设置](./figures/xfce-812.png)
+
+点击 编辑连接，即刻进入网络设置窗口。
+
+![图 11 网络设置窗口](./figures/xfce-813.png)
+
+双击 指定的网络连接 ，例如enp1s0，进入该连接的设置界面。
+
+![图 12 有线网络设置窗口](./figures/xfce-814.png)
+
+##### 3.1.4.2 音量
+
+用户通过鼠标左键点击任务栏上的音量“![](./figures/xfce-82.png)”图标，打开声音界面。
+
+![图 13 音量设置窗口](./figures/xfce-821.png)
+
+##### 3.1.4.3 电源
+
+用户通过点击鼠标左键任务栏中电源“![](./figures/xfce-83.png)”图标。
+
+![图 14 电源设备](./figures/xfce-831.png)
+
+用户通过点击 电源管理器设置 进行 显示、节点 等配置。
+
+![图 15 电源管理器设置](./figures/xfce-832.png)
+
+##### 3.1.4.4 通知中心
+
+用户通过点击鼠标左键任务栏中通知“![](./figures/xfce-84.png)”图标。
+
+![图 16 通知中心-big](./figures/xfce-841.png)
+
+用户可通过选择“请勿打扰”关闭通知。
+
+通知中心将会显示重要的近期最新的重要信息列表，选择“清除日志”可将信息列表清空。
+
+用户可通过选择“通知设置”跳转进入控制面板的通知设置界面，能设置显示信息的应用，以及信息的数量。
+
+![图 17 通知中心-big](./figures/xfce-842.png)
+
+##### 3.1.4.5 日历
+
+用户通过鼠标左键点击任务栏上的时间日期弹出日历窗口，查看日历、月历、年历窗口。
+
+用户可通过筛选年 > 月 > 日查看一日信息。
+
+![图 18 日历-big](./figures/xfce-85.png)
+
+用户通过鼠标右键点击任务栏上的时间日期,点击 属性 进行时间设置。
+
+![图 19 日期设置-big](./figures/xfce-851.png)
+
+#### 3.1.4.6 高级设置
+
+右键单击任务栏，出现的菜单中点击 面板。
+
+![图 20 任务栏右键菜单](./figures/xfce-86.png)
+
+用户可对任务栏的布局进行设定，可进行项目的添加、删除等相关设置。
+
+![图 21 任务栏右键菜单](./figures/xfce-861.png)
+
+
+##### 3.1.4.7 登录用户动作
+
+用户通过鼠标左键点击任务栏上的登录用户，查看相关动作。
+
+![图 22 登录用户动作](./figures/xfce-87.png)
+
+###### 3.1.4.7.1 锁屏
+
+当用户暂时不需要使用计算机时，可以选择锁屏（不会影响系统当前的运行状态），防止误操作；用户返回后，输入密码即可重新进入系统。
+
+在默认设置下，系统在一段空闲时间后，将自动锁定屏幕。
+
+###### 3.1.4.7.2 切换用户
+
+选择其他用户登录使用计算机时，可选择“切换用户”。
+
+此时，系统会关闭所有正在运行的应用；所以，在执行此操作前，请先保存当前工作。
+
+###### 3.1.4.7.3 挂起
+
+处于环保节能考虑，可选择“挂起”。
+
+此时，相关数据读入内存，注意不能切换电源。
+
+###### 3.1.4.7.3 关机
+
+用户选择关闭计算机时，可以选择“关机”。
+
+在执行此操作前，建议先保存当前工作。
+
+###### 3.1.4.7.3 注销
+
+选择退出本次图形界面登录时，可选择“注销”。
+
+此时，系统会关闭所有正在运行的应用；所以，在执行此操作前，请先保存当前工作。
+
+<br>
+
+## 四 快捷操作栏
+
+### 4.1 基本功能
+
+快捷操作栏位于底部，包括所有显示桌面、终端、文件管理器、网络浏览器、应用程序查找、用户家目录。
+
+![图 23 快捷操作栏](./figures/xfce-9.png)
+
+| 组件  | 说明 |
+| :------------ | :------------ |
+| 显示桌面 | 最小化桌面的所有窗口，返回桌面；再次单击将恢复窗口 |
+| 终端 | 快速打开一个终端 |
+| 文件管理器 | 快速打开一个文件管理器 |
+| 网络浏览器 | 快速打开一个网络浏览器 |
+| 应用程序查找 | 快速打开应用程序查找窗口 |
+| 用户家目录 | 快速打开登录用户的家目录 |
+
+#### 4.1.1 显示桌面
+
+用户通过鼠标左键点击快捷操作栏上的“![](./figures/xfce-91.png)”图标，执行 显示桌面 相关操作。
+
+![图 24 显示桌面-big](./figures/xfce-911.png)
+
+#### 4.1.2 终端
+
+用户通过鼠标左键点击快捷操作栏上的“![](./figures/xfce-92.png)”图标，打开一个终端。
+
+![图 25 终端-big](./figures/xfce-921.png)
+
+#### 4.1.3 文件管理器
+
+用户通过鼠标左键点击快捷操作栏上的“![](./figures/xfce-93.png)”图标，打开一个文件管理器。
+
+![图 26 文件管理器-big](./figures/xfce-931.png)
+
+#### 4.1.4 网络浏览器
+
+用户通过鼠标左键点击快捷操作栏上的“![](./figures/xfce-94.png)”图标，打开一个网络浏览器。
+
+![图 27 网络浏览器-big](./figures/xfce-941.png)
+
+#### 4.1.5 应用程序查找
+
+用户通过鼠标左键点击快捷操作栏上的“![](./figures/xfce-95.png)”图标，打开一个应用程序查找界面。
+
+![图 28 应用程序查找-big](./figures/xfce-951.png)
+
+#### 4.1.6 用户家目录
+
+用户通过鼠标左键点击快捷操作栏上的“![](./figures/xfce-96.png)”图标，点击 打开文件，打开一个用户家目录界面。
+
+![图 29 用户家目录-big](./figures/xfce-961.png)
+
+用户通过鼠标左键点击快捷操作栏上的“![](./figures/xfce-96.png)”图标，点击 在终端中打开，打开一个终端，当前目录为用户家目录。
+
+![图 30 用户家目录-big](./figures/xfce-962.png)
+
+
+
+## 文件权限
+
+1. *chmod*  
+    + 数字表示法
+        + `chmod 权限命令 文件`  
+        + `chmod -R 权限命令 文件夹`   
+        加上 *-R*  表示递归的执行文件夹下面的所有文件。权限命令分为`r:4,w:2:x:1"`的组合。  
+        比如: `-rwxrwxrwx 1 szz szz 560 Nov 29 03:16 wiat_.c` 前面的权限 `-rwxrwxrwx` 就是表示777。
+    + 字符表示法  
+        + `chmod [用户类型] [+|-|=] [权限字符] 文件名`     
+        + `chmod -R [用户类型] [+|-|=] [权限字符] 文件夹`     
+        ![Movie](Movie.png)
+
         
-    union sigval {
-        int   sival_int;
-        void *sival_ptr;
-    };
-```
-类似于`kill`,但是多了一个发送参数，可以作为数据发送。联合体`sigval`在跨进程传递数据时候不要使用指针，因此各个进程之间的虚拟地址不同，指针传参是为同一个进程准备的，跨进程传参使用的是int类型。
+        比如：
+        ```bash
+        $ chmod u+rw wait.c  # 给用户 读写权限
+        $ chmod u-rw wait.c  # 去掉用户的读写权限
+        $ chmod g+rw wait.c  # 给组 读写权限
+        $ chmod g=x wait.c   # 设置组具有执行权限
+        $ chmod a=x wait.c   # 都有执行权限
+        ```
 
-+ 捕捉函数传参
-```c
-    #include <signal.h>
++ *chown* 
+    + `chown [选项]... [所有者] [:组] 文件 ...`
+    + `chown -R [所有者] [:组] 文件夹 ...`
 
-    int sigaction(int signum, const struct sigaction *act, struct sigaction *oldact);
+    比如:
+    ```c
+    $ ls -l wiat_.c 
+    ---x-wxrwx 1 szz szz 560 Nov 29 03:16 wiat_.c
 
-    struct sigaction {
-        void     (*sa_handler)(int);        
-        void     (*sa_sigaction)(int, siginfo_t *, void *);
-        sigset_t   sa_mask;
-        int        sa_flags;
-        void     (*sa_restorer)(void);
-    };
-```
-使用的结构体`sigaction`的第二项:`sa_sigaction`，此时`sa_flags = SA_SIGINFO`。
+    //修改用户
+    $ sudo chown root wiat_.c 
+    ---xrw-rwx 1 root szz 560 Nov 29 03:16 wiat_.c
 
-#### 7.中断系统调用
-系统调用分为二类：慢速系统调用和其他系统调用
-+ 慢速系统调用：可能会使进程永远堵塞的一类。如果在堵塞期间收到一个信号，该系统调用就会被中断，那么就不再被执行。也可以设定系统调用是否重启。这类函数诸如:`read、write、pause、wait`。
-+ 其他系统调用：`getpid(), getppid(),fork()...`
+    // 修改组
+    $ sudo chown .root wiat_.c 
+    ---xrw-rwx 1 root root 560 Nov 29 03:16 wiat_.c
 
-慢速系统调用**被信号中断**时的行为，和`pause`类似：
-+ 想中断`pause`，信号不能屏蔽
-+ 信号的处理方式必须是捕捉（默认和忽略都不可）
-+ 中断后返回-1，设置`errno`为`EINTR`
+    //同时修改
+    $ sudo chown szz.szz wiat_.c 
+    ---xrw-rwx 1 szz szz 560 Nov 29 03:16 wiat_.c
+    ```
 
-可修改`sa_flags`参数来设置被信号中断后系统调用是否重启。 
-+ `SA_RESTART`:重启这个慢速调用函数  
-    比如：
-    + `read`被一个信号中断，处理完信号，`read`应该继续工作，所以需要重启。
-    + `pause`被信号中断就不需要重启，因为不影响。
-+ `SA_NODEFER`:不屏蔽待捕捉信号
+3. 增加/删除用户  
+    在指定的组里添加成员。
+    + 增加组  : `groupadd groupname`
+    + 增加用户: `useradd username -g groupname` 
+    + 删除用户: `userdel username -g groupname` 
+    + 查看 : `id username`
+    + 改变用户： `sudo su - username`
+4. 对于一个文件操作  
+    假设当前环境是：       
+    + 用户有: *lam, sz, other*
+    + 组别：*family*  
+    状态如下：*lam, sz* 属于同一个组 *family*。
+    ```bash
+    $ id lam
+    uid=1001(lam) gid=1002(family) groups=1002(family)
+    $ id sz
+    uid=1002(sz) gid=1002(family) groups=1002(family)
+    ``` 
+    有文件：wait.cpp
+    ```bash
+    $ ls -l wait.cpp 
+    ---xrw-r-- 1 lam family 20 Nov 29 05:09 wait.cpp
+    ```
+    权限解释：  
+    + user : 对于用户 *lam* 具有可执行权限(*x*)
+    + gropu: 对于属于组*family*的成员都具有具有rw权限
+    + other: 对于其他人*other*具有*r*权限
+    要是想让不同的成员获得想要的权限，就可以使用 *chowm* 命令来改变。      
+    + **删除** ：删除一个文件，是看该文件所属的目录权限
+
+5. 对于一个目录的操作
+    
+    ` 目录Process: dr-x--x--- 2 lam family 4096 Nov 29 05:14 Process `
+
+    用户*other* 目前对于 *Process/* 目录没有任何的执行能力。
+    ```
+    $ cd Process/
+    -su: cd: Process/: Permission denied
+
+    $ ls Process/
+    ls: cannot open directory 'Process/': Permission denied
+    ```
+    把 *`Process/`* 的权限改为 *`dr-x--x--x`* 可以执行 *`cd`*, 再改为 *`dr-x--xr-x`* 可以执行 *`ls Process/`*。 
+    
+    + 总结
+        + 可读r: 表示具有浏览目录下面文件及目录的权限。即可用 *ls*。
+        + 可写w: 表示具有增加、删除或者修改目录内文件名的权限
+        + 可执行x: 表示居于进入目录的权限，即 *cd*。 
+    
+6. 默认权限  
+    文件权限计算方法与*umask*   
+    +  创建目录默认的最大权限是：777
+    + 创建文件最大权限是：666  
+        + 创建目录时：用 777- *umask* 即可得到所得目录权限  
+        + 创建文件时：
+            如果 *umask*得奇数位，用 666-*umask* 后，将 *umask* 的奇数位加1。  
+            比如 *umask =303*， 那么文件权限是：666-303= 363,363+101=464，即 *-r--rw-r--*
+            ```bash
+            $ umask 303
+            $ touch msk_303
+            $ ls -l
+            -r--rw-r-- 1 szz szz    0 Nov 29 06:39 msk_303
+            ```
+
+7. *uid/gid*  
++  *uid*  
+    + `uid` 应用的对象是 **命令**，而不是文件。  
+    + `suid` 仅该指令执行过程中有效。
+    +  指令经过 *suid* 后，任意用户在执行该指令时，都可获得该指令对应的拥有者所具有的权限。   
+
+    修改密码的指令权限如下，在用户位权限上有个 `s`，就是代表 *suid* ：
+    ```bash
+    $ ls -l /usr/bin/passwd
+    -rwsr-xr-x 1 root root 59640 Mar 22  2019 /usr/bin/passwd
+    ```
+    **注意**：用户权限前三位上的x位上如果有s就表示 *`suid`*,当x位置上没有x时， *`suid`* 就是 *`S`*。
+
+    现在有如下目录结构:  
+    ```bash
+    Permission/
+    └── test
+    ```
+    权限：
+    ```bash 
+    drwxrwxr-x 2 root root   4096 Nov 29 19:06 Permission
+    -rw-r--r-- 1 root root    0   Nov 29 19:06 test
+    ```
+    普通用户 `sz`想要删除文件 `test` 权限不够。  
+    ```bash
+    $ rm test
+    rm: remove write-protected regular empty file 'test'? Y
+    rm: cannot remove 'test': Permission denied
+    ```
+    经过给指令 `rm` 设置uid之后，即设置命令`rm`具有所属的用户权限。比如：
+    ```bash
+    $ which rm
+    /bin/rm
+    $ ls -l /bin/rm
+    -rw-r-xr-x 1 root root 63704 Jan 18  2018 /bin/rm
+    $ sudo chmod u+s `which rm`
+    $ ls -l /bin/rm
+    -rwsr-xr-x 1 root root 63704 Jan 18  2018 /bin/rm
+    $ rm test  # 删除成功
+    ```
+    上面都设置 *`uid`* 功能就是使得 *`rm`* 命令具有其所属的 *`root`* 具有的权限。  
+    **注意**：`rm`命令比较危险，需要将其命令改回去。
+    ```bash
+    $ sudo chmod 755 /bin/rm
+    $ ls -l /bin/rm
+    -rwxr-xr-x 1 root root 63704 Jan 18  2018 /bin/rm
+    ```
++ *sgid* 
+*sgid* 与 *suid* 不同地方是 *sgid* 即可以对文件也可以针对目录设置。
+    + 针对文件
+        + *sgid* 针对二进制程序有效
+        + 二进制命令或者程序需要可执行权限x
+        + 指令经过 *sgid* 后，任意用户在执行该指令时，都可获得该指令对应的所属组具有的权限。
+    + 对于目录
+        + 用户在此目录下创建的文件和目录，都有和此目录相同的用户组。
+
++ *suid/sgid*的数字权限设置方法   
+    *suid/sgid*位设置也是八进制。
+    + *setuid* 占用的是八进制:`4000` 
+    + *setgid* 占用的是`2000`
+    + 粘滞位:占用的是 `1000`  
+    在之前的`chmod`命令前面加上 **4/2/1** 即可。
+
++ [参考链接](https://www.bilibili.com/video/av57473824?p=14)
+

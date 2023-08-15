@@ -1,173 +1,217 @@
-## 文件权限
+# HA使用实例
 
-1. *chmod*  
-    + 数字表示法
-        + `chmod 权限命令 文件`  
-        + `chmod -R 权限命令 文件夹`   
-        加上 *-R*  表示递归的执行文件夹下面的所有文件。权限命令分为`r:4,w:2:x:1"`的组合。  
-        比如: `-rwxrwxrwx 1 szz szz 560 Nov 29 03:16 wiat_.c` 前面的权限 `-rwxrwxrwx` 就是表示777。
-    + 字符表示法  
-        + `chmod [用户类型] [+|-|=] [权限字符] 文件名`     
-        + `chmod -R [用户类型] [+|-|=] [权限字符] 文件夹`     
-        ![Movie](Movie.png)
+本章介绍如何快速使用HA高可用集群，以及添加一个实例。若不了解怎么安装，请参考[HA的安装与部署文档](./HA的安装与部署.md)。
 
-        
-        比如：
-        ```bash
-        $ chmod u+rw wait.c  # 给用户 读写权限
-        $ chmod u-rw wait.c  # 去掉用户的读写权限
-        $ chmod g+rw wait.c  # 给组 读写权限
-        $ chmod g=x wait.c   # 设置组具有执行权限
-        $ chmod a=x wait.c   # 都有执行权限
-        ```
 
-+ *chown* 
-    + `chown [选项]... [所有者] [:组] 文件 ...`
-    + `chown -R [所有者] [:组] 文件夹 ...`
+## 快速使用指南
 
-    比如:
-    ```c
-    $ ls -l wiat_.c 
-    ---x-wxrwx 1 szz szz 560 Nov 29 03:16 wiat_.c
+以下操作均以社区新开发的管理平台为例。
 
-    //修改用户
-    $ sudo chown root wiat_.c 
-    ---xrw-rwx 1 root szz 560 Nov 29 03:16 wiat_.c
+### 登陆页面
+用户名为`hacluster`，密码为该用户在主机上设置的密码。
 
-    // 修改组
-    $ sudo chown .root wiat_.c 
-    ---xrw-rwx 1 root root 560 Nov 29 03:16 wiat_.c
+![](./figures/HA-api.png)
 
-    //同时修改
-    $ sudo chown szz.szz wiat_.c 
-    ---xrw-rwx 1 szz szz 560 Nov 29 03:16 wiat_.c
+### 主页面
+登录系统后显示主页面，主页面由四部分组成：侧边导航栏、顶部操作区、资源节点列表区以及节点操作浮动区。
+
+以下将详细介绍这四部分的特点与使用方法。
+
+![](./figures/HA-home-page.png)
+
+#### 导航栏
+侧边导航栏由两部分组成：高可用集群软件名称和 logo 以及系统导航。系统导航由三项组成：【系统】、【集群配置】和【工具】。【系统】是默认选项，也是主页面的对应项，主要展示系统中所有资源的相关信息以及操作入口；【集群配置】下设【首选项配置】和【心跳配置】两项；【工具】下设【日志下载】和【集群快捷操作】两项，点击后以弹出框的形式出现。
+
+#### 顶部操作区
+登录用户是静态显示，鼠标滑过用户图标，出现操作菜单项，包括【刷新设置】和【退出登录】两项，点击【刷新设置】，弹出【刷新设置】对话框，包含【刷新设置】选项，可以设置系统的自动刷新模式，包括【不自动刷新】、【每 5 秒刷新】和【每 10 秒刷新】三种选择，默认选择【不自动刷新】、【退出登录】即可注销本次登录，系统将自动跳到登录页面，此时，如果希望继续访问系统，则需要重新进行登录。
+
+![](./figures/HA-refresh.png)
+
+#### 资源节点列表区
+资源节点列表集中展现系统中所有资源的【资源名】、【状态】、【资源类型】、【服务】、【运行节点】等资源信息，以及系统中所有的节点和节点的运行情况等节点信息。同时提供资源的【添加】、【编辑】、【启动】、【停止】、【清理】、【迁移】、【回迁】、【删除】和【关系】操作。
+
+#### 节点操作浮动区
+节点操作浮动区域默认是收起的状态，每当点击资源节点列表表头中的节点时，右侧会弹出节点操作扩展区域，如图所示，该区域由收起按钮、节点名称、停止和备用四个部分组成，提供节点的【停止】和【备用】操作。点击区域左上角的箭头，该区域收起。
+
+### 首选项配置
+以下操作均可用命令行配置，现只做简单示例，若想使用更多命令可以使用``pcs --help``进行查询。
+
+- 命令行方式
+    ```
+    # pcs property set stonith-enabled=false
+    # pcs property set no-quorum-policy=ignore
+    ```
+    执行如下命令，可以查看全部配置。
+    ```
+    pcs property
+    ```
+    ![](./figures/HA-firstchoice-cmd.png)
+
+-  图形界面方式
+    点击侧边导航栏中的【首选项配置】按钮，弹出【首选项配置】对话框。将No Quorum Policy和Stonith Enabled由默认状态改为如下对应状态；修改完成后，点击【确定】按钮完成配置。
+
+    ![](./figures/HA-firstchoice.png)
+
+### 添加资源
+
+#### 添加普通资源
+
+1. 点击【添加普通资源】，弹出【创建资源】对话框。
+    其中资源的所有必填配置项均在【基本】页面内，选择【基本】页面内的【资源类型】后会进一步给出该类资源的其他必填配置项以及选填配置项。
+	
+2. 填写资源配置信息。
+    对话框右侧会出现灰色文字区域，对当前的配置项进行解释说明。全部必填项配置完毕后，点击【确定】按钮即可创建普通资源，点击【取消】按钮，取消本次添加动作。
+	【实例属性】、【元属性】或者【操作属性】页面中的选填配置项为选填项，不配置不会影响资源的创建过程，可以根据场景需要可选择修改，否则将按照系统默认值处理。
+
+下面以Apache为例，分别以命令行方式和图形界面方式介绍添加资源的方法。
+
+- 命令行方式
+    ```
+    # pcs resource create httpd ocf:heartbeat:apache
+    ```
+    查看资源运行状态
+    ```
+    # pcs status
     ```
 
-3. 增加/删除用户  
-    在指定的组里添加成员。
-    + 增加组  : `groupadd groupname`
-    + 增加用户: `useradd username -g groupname` 
-    + 删除用户: `userdel username -g groupname` 
-    + 查看 : `id username`
-    + 改变用户： `sudo su - username`
-4. 对于一个文件操作  
-    假设当前环境是：       
-    + 用户有: *lam, sz, other*
-    + 组别：*family*  
-    状态如下：*lam, sz* 属于同一个组 *family*。
-    ```bash
-    $ id lam
-    uid=1001(lam) gid=1002(family) groups=1002(family)
-    $ id sz
-    uid=1002(sz) gid=1002(family) groups=1002(family)
-    ``` 
-    有文件：wait.cpp
-    ```bash
-    $ ls -l wait.cpp 
-    ---xrw-r-- 1 lam family 20 Nov 29 05:09 wait.cpp
-    ```
-    权限解释：  
-    + user : 对于用户 *lam* 具有可执行权限(*x*)
-    + gropu: 对于属于组*family*的成员都具有具有rw权限
-    + other: 对于其他人*other*具有*r*权限
-    要是想让不同的成员获得想要的权限，就可以使用 *chowm* 命令来改变。      
-    + **删除** ：删除一个文件，是看该文件所属的目录权限
+    ![](./figures/HA-pcs-status.png)
 
-5. 对于一个目录的操作
-    
-    ` 目录Process: dr-x--x--- 2 lam family 4096 Nov 29 05:14 Process `
+-  图形界面方式
+1. 填写资源名称和资源类型，如下图所示。
+    ![](./figures/HA-add-resource.png)
+2. 回显为如下，则资源添加成功并启动，运行于其中一个节点上，例如ha1。
 
-    用户*other* 目前对于 *Process/* 目录没有任何的执行能力。
-    ```
-    $ cd Process/
-    -su: cd: Process/: Permission denied
+    ![](./figures/HA-apache-suc.png)
+3. 访问apache界面成功。
 
-    $ ls Process/
-    ls: cannot open directory 'Process/': Permission denied
-    ```
-    把 *`Process/`* 的权限改为 *`dr-x--x--x`* 可以执行 *`cd`*, 再改为 *`dr-x--xr-x`* 可以执行 *`ls Process/`*。 
-    
-    + 总结
-        + 可读r: 表示具有浏览目录下面文件及目录的权限。即可用 *ls*。
-        + 可写w: 表示具有增加、删除或者修改目录内文件名的权限
-        + 可执行x: 表示居于进入目录的权限，即 *cd*。 
-    
-6. 默认权限  
-    文件权限计算方法与*umask*   
-    +  创建目录默认的最大权限是：777
-    + 创建文件最大权限是：666  
-        + 创建目录时：用 777- *umask* 即可得到所得目录权限  
-        + 创建文件时：
-            如果 *umask*得奇数位，用 666-*umask* 后，将 *umask* 的奇数位加1。  
-            比如 *umask =303*， 那么文件权限是：666-303= 363,363+101=464，即 *-r--rw-r--*
-            ```bash
-            $ umask 303
-            $ touch msk_303
-            $ ls -l
-            -r--rw-r-- 1 szz szz    0 Nov 29 06:39 msk_303
-            ```
+    ![](./figures/HA-apache-show.png)
 
-7. *uid/gid*  
-+  *uid*  
-    + `uid` 应用的对象是 **命令**，而不是文件。  
-    + `suid` 仅该指令执行过程中有效。
-    +  指令经过 *suid* 后，任意用户在执行该指令时，都可获得该指令对应的拥有者所具有的权限。   
+#### 添加组资源
 
-    修改密码的指令权限如下，在用户位权限上有个 `s`，就是代表 *suid* ：
-    ```bash
-    $ ls -l /usr/bin/passwd
-    -rwsr-xr-x 1 root root 59640 Mar 22  2019 /usr/bin/passwd
-    ```
-    **注意**：用户权限前三位上的x位上如果有s就表示 *`suid`*,当x位置上没有x时， *`suid`* 就是 *`S`*。
+>**须知：**
+> 添加组资源时，集群中需要至少存在一个普通资源。
 
-    现在有如下目录结构:  
-    ```bash
-    Permission/
-    └── test
-    ```
-    权限：
-    ```bash 
-    drwxrwxr-x 2 root root   4096 Nov 29 19:06 Permission
-    -rw-r--r-- 1 root root    0   Nov 29 19:06 test
-    ```
-    普通用户 `sz`想要删除文件 `test` 权限不够。  
-    ```bash
-    $ rm test
-    rm: remove write-protected regular empty file 'test'? Y
-    rm: cannot remove 'test': Permission denied
-    ```
-    经过给指令 `rm` 设置uid之后，即设置命令`rm`具有所属的用户权限。比如：
-    ```bash
-    $ which rm
-    /bin/rm
-    $ ls -l /bin/rm
-    -rw-r-xr-x 1 root root 63704 Jan 18  2018 /bin/rm
-    $ sudo chmod u+s `which rm`
-    $ ls -l /bin/rm
-    -rwsr-xr-x 1 root root 63704 Jan 18  2018 /bin/rm
-    $ rm test  # 删除成功
-    ```
-    上面都设置 *`uid`* 功能就是使得 *`rm`* 命令具有其所属的 *`root`* 具有的权限。  
-    **注意**：`rm`命令比较危险，需要将其命令改回去。
-    ```bash
-    $ sudo chmod 755 /bin/rm
-    $ ls -l /bin/rm
-    -rwxr-xr-x 1 root root 63704 Jan 18  2018 /bin/rm
-    ```
-+ *sgid* 
-*sgid* 与 *suid* 不同地方是 *sgid* 即可以对文件也可以针对目录设置。
-    + 针对文件
-        + *sgid* 针对二进制程序有效
-        + 二进制命令或者程序需要可执行权限x
-        + 指令经过 *sgid* 后，任意用户在执行该指令时，都可获得该指令对应的所属组具有的权限。
-    + 对于目录
-        + 用户在此目录下创建的文件和目录，都有和此目录相同的用户组。
+1. 点击【添加组资源】，弹出【创建资源】对话框。
+    【基本】页面内均为必填项，填写完毕后，点击【确定】按钮，即可完成资源的添加，点击【取消】按钮，取消本次添加动作。
 
-+ *suid/sgid*的数字权限设置方法   
-    *suid/sgid*位设置也是八进制。
-    + *setuid* 占用的是八进制:`4000` 
-    + *setgid* 占用的是`2000`
-    + 粘滞位:占用的是 `1000`  
-    在之前的`chmod`命令前面加上 **4/2/1** 即可。
+    ![](./figures/HA-group.png)
 
-+ [参考链接](https://www.bilibili.com/video/av57473824?p=14)
+    >**注意：**
+    > 组资源的启动是按照子资源的顺序启动的，所以选择子资源时需要注意按照顺序选择。
+
+2. 回显如下，资源添加成功。
+
+    ![](./figures/HA-group-suc.png)
+
+#### 添加克隆资源
+
+1. 点击【添加克隆资源】，弹出【创建资源】对话框。
+    【基本】页面内填写克隆对象，资源名称会自动生成，填写完毕后，点击【确定】按钮，即可完成资源的添加，点击【取消】按钮，取消本次添加动作。
+
+    ![](./figures/HA-clone.png)
+
+2. 回显如下，资源添加成功。
+
+    ![](./figures/HA-clone-suc.png)
+
+### 编辑资源
+
+-  启动资源：资源节点列表中选中一个目标资源，要求：该资源处于非运行状态。对该资源执行启动动作。
+-  停止资源：资源节点列表中选中一个目标资源，要求：该资源处于运行状态。对该资源执行停止操作。
+-  清理资源：资源节点列表中选中一个目标资源，对该资源执行清理操作。
+-  迁移资源：资源节点列表中选中一个目标资源，要求：该资源为处于运行状态的普通资源或者组资源，执行迁移操作可以将资源迁移到指定节点上运行。
+-  回迁资源：资源节点列表中选中一个目标资源，要求：该资源已经完成迁移动作，执行回迁操作，可以清除该资源的迁移设置，资源重新迁回到原来的节点上运行。
+点击按钮后，列表中该资源项的变化状态与启动资源时一致。
+-  删除资源：资源节点列表中选中一个目标资源，对该资源执行删除操作。
+
+### 设置资源关系
+
+资源关系即为目标资源设定限制条件，资源的限制条件分为三种：资源位置、资源协同和资源顺序。
+-  资源位置：设置集群中的节点对于该资源的运行级别，由此确定启动或者切换时资源在哪个节点上运行，运行级别按照从高到低的顺序依次为：Master Node、Slave 1。
+-  资源协同：设置目标资源与集群中的其他资源是否运行在同一节点上，同节点资源表示该资源与目标资源必须运行在相同节点上，互斥节点资源表示该资源与目标资源不能运行在相同的节点上。
+-  资源顺序：设置目标资源与集群中的其他资源启动时的先后顺序，前置资源是指目标资源运行之前，该资源必须已经运行；后置资源是指目标资源运行之后，该资源才能运行。
+
+## 高可用mysql实例配置
+
+### 配置虚拟IP
+
+1. 在首页中点击“添加”，再选择添加普通资源，并按如下进行配置。
+
+    ![](./figures/HA-vip.png)
+
+2. 资源创建成功并启动，运行于其中一个节点上，例如ha1。
+3. 可以ping通并连接，登录后可正常执行各种操作；资源切换到ha2运行；能够正常访问。如下图所示。
+    ![](./figures/HA-vip-suc.png)
+
+### 配置NFS存储
+
+另找一台机器作为nfs服务端进行配置，操作步骤如下：
+
+1. 安装软件包
+
+    ```
+    # yum install -y nfs-utils rpcbind
+    ```
+2. 关闭防火墙
+    ```
+    # systemctl stop firewalld && systemctl disable firewalld
+    ```
+3. 修改/etc/selinux/config文件中SELINUX状态为disabled
+    ```
+    # SELINUX=disabled
+    ```
+4. 启动服务
+    ```
+    # systemctl start rpcbind && systemctl enable rpcbind
+    # systemctl start nfs-server && systemctl enable nfs-server
+    ```
+5. 服务端创建一个共享目录
+    ```
+    # mkdir -p /test
+    ```
+6. 修改NFS配置文件
+    ```
+    # vim /etc/exports
+    # /test *(rw,no_root_squash)
+    ```
+7. 重新加载服务
+    ```
+    # systemctl reload nfs
+    ```
+
+8. 客户端安装软件包，需要先安装mysql，可以将nfs挂载到mysql数据路径。
+    ```
+    # yum install -y nfs-utils mariadb-server
+    ```
+9. 在首页中依次点击“添加”，“添加普通资源”，并按如下进行配置NFS资源。
+
+    ![](./figures/HA-nfs.png)
+
+10. 资源创建成功并启动，运行于其中一个节点上，例如ha1；nfs成功挂载到`/var/lib/mysql`路径下。资源切换到ha2运行；nfs从ha1节点取消挂载，并自动在ha2节点上挂载成功。如下图所示。
+    ![](./figures/HA-nfs-suc.png)
+
+### 配置mysql
+
+1. 在首页中依次点击“添加”，“添加普通资源”，并按如下进行配置mysql资源。
+
+    ![](./figures/HA-mariadb.png)
+
+2. 若回显为如下，则资源添加成功。
+
+    ![](./figures/HA-mariadb-suc.png)
+
+### 添加上述资源为组资源
+
+1. 按资源启动顺序添加三个资源
+
+    在首页中依次点击“添加”，“添加组资源”，并按如下进行配置组资源。
+
+    ![](./figures/HA-group-new.png)
+
+2. 组资源创建成功并启动，若回显与上述三个普通资源成功现象一致，则资源添加成功。
+
+    ![](./figures/HA-group-new-suc.png)
+
+3. 将ha1节点备用，成功迁移到ha2节点，运行正常。
+
+    ![](./figures/HA-group-new-suc2.png)

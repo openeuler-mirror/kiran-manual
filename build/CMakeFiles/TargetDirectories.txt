@@ -1,4 +1,0 @@
-/home/skyzcyou/Repositories/workspace/kiran-manual/build/CMakeFiles/rebuild_cache.dir
-/home/skyzcyou/Repositories/workspace/kiran-manual/build/CMakeFiles/kiran-manual.dir
-/home/skyzcyou/Repositories/workspace/kiran-manual/build/CMakeFiles/edit_cache.dir
-/home/skyzcyou/Repositories/workspace/kiran-manual/build/CMakeFiles/kiran-manual_autogen.dir

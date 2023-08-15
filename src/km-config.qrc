@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>../data/km-config.ini</file>
+        <file>../data/styles/navigation.qss</file>
     </qresource>
 </RCC>

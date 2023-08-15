@@ -32,7 +32,7 @@ public:
     // 要渲染的 Markdown 文档路径
     QString m_mdFilePath;
     // 显示文档目录树
-    static void showTOC(QTreeWidgetItem *root, const QJsonObject& obj, int level = 0);
+    void showTOC(QTreeWidgetItem *rootItem, const QJsonObject& obj, int level = 0);
     // 解析 Markdown 文档为 HTML 字符串
     QString mdFile2HtmlStr(const QString &mdPath);
     // 重新渲染文档

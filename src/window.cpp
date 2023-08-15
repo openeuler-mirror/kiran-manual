@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2020 ~ 2021 KylinSec Co., Ltd.
- * kiran-session-manager is licensed under Mulan PSL v2.
+ * Copyright (c) 2020 ~ 2024 KylinSec Co., Ltd.
+ * kiran-manual is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -9,7 +9,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  *
- * Author:     youzhengcai <youzhengcai@kylinse.com.cn>
+ * Author:     youzhengcai <youzhengcai@kylinsec.com.cn>
  */
 
 #include "window.h"
@@ -18,52 +18,43 @@
 #include <QDebug>
 
 Window::Window(QWidget* parent)
-    : QMainWindow(parent), ui(new Ui::Window)
+    : QMainWindow(parent), m_ui(new Ui::Window)
 {
-    ui->setupUi(this);
-    initView();
+    m_ui->setupUi(this);
+    init();
 }
 
 Window::~Window()
 {
-    delete ui;
+    delete m_ui;
 }
-/**
- * @brief Window::switchArticlePage
- * @param key: 文件名
- */
-void Window::switchArticlePage(const QString& key)
+
+// 槽函数：加载文档页面
+void Window::documentPageLoader(const QString& key)
 {
-    // 根据 key 组装完整的 md 文件路径 	fullPath
-    QString fullPath = "/home/skyzcyou/Documents/kiran_manual/" + key + ".md";
-    article->m_mdFilePath = fullPath;
-    article->reloadArticle();
+    m_document->m_mdFilePath = key;
+    m_document->reloadDocument();
     // TODO: 将路径入栈，实现前进后退功能
 
-    ui->stackedWidget->setCurrentIndex(3);
+    m_ui->stackedWidget->setCurrentIndex(3);
 }
-/**
- * @brief Window::switchHomePage
- * @param key
- */
-void Window::switchHomePage(const QString& key)
+// 槽函数：加载导航页面
+void Window::navigationPageLoader(const QString& key)
 {
-    ui->stackedWidget->setCurrentIndex(2);
+    m_ui->stackedWidget->setCurrentIndex(2);
 }
 
-/**
- * @brief Window::initView 初始化导航页视图
- */
-void Window::initView()
+// 初始化导航页视图
+void Window::init()
 {
-    // 声明 Navigation, Article 页面
-    navigation = new Navigation();
-    article = new Article();
+    // 声明 Navigation, Document 页面
+    m_navigation = new Navigation(this);
+    m_document = new Document(this);
     // 将主页和文章页面添加到 QStackedWidget 中, 并设定主页
-    ui->stackedWidget->addWidget(navigation);
-    ui->stackedWidget->addWidget(article);
-    ui->stackedWidget->setCurrentWidget(navigation);
+    m_ui->stackedWidget->addWidget(m_navigation);
+    m_ui->stackedWidget->addWidget(m_document);
+    m_ui->stackedWidget->setCurrentWidget(m_navigation);
     // 关联页面切换信号到槽函数
-    connect(navigation, &Navigation::entryArticlePage, this, &Window::switchArticlePage);
-    connect(article, &Article::backHome, this, &Window::switchHomePage);
+    connect(m_navigation, &Navigation::docPageClicked, this, &Window::documentPageLoader);
+    connect(m_document, &Document::backHomeClicked, this, &Window::navigationPageLoader);
 }

@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2020 ~ 2021 KylinSec Co., Ltd.
- * kiran-session-manager is licensed under Mulan PSL v2.
+ * Copyright (c) 2020 ~ 2024 KylinSec Co., Ltd.
+ * kiran-manual is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -9,12 +9,12 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  *
- * Author:     youzhengcai <youzhengcai@kylinse.com.cn>
+ * Author:     youzhengcai <youzhengcai@kylinsec.com.cn>
  */
 
 #pragma once
 #include <QMainWindow>
-#include "article.h"
+#include "document.h"
 #include "navigation.h"
 
 QT_BEGIN_NAMESPACE
@@ -29,17 +29,16 @@ class Window : public QMainWindow
     Q_OBJECT
 
 public:
-    Window(QWidget *parent = nullptr);
-    ~Window();
+    explicit Window(QWidget *parent = nullptr);
+    ~Window() override;
 
 public slots:
-    void switchArticlePage(const QString& mdfPath); // TODO: key -> JSON Object
-    void switchHomePage(const QString& key);
+    void documentPageLoader(const QString& mdfPath);
+    void navigationPageLoader(const QString& key);
 private:
-    Ui::Window *ui;
-    Navigation *navigation;
-    Article *article;
+    Ui::Window *m_ui;
+    Navigation *m_navigation{};
+    Document *m_document{};
 
-    void initView();
-    void initEvent();
+    void init();
 };

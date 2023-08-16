@@ -15,6 +15,7 @@
 #pragma once
 
 #include <kiranwidgets-qt5/kiran-titlebar-window.h>
+#include <search-edit/search-edit.h>
 #include <QStackedWidget>
 #include <QWidget>
 
@@ -40,6 +41,7 @@ private:
     QStackedWidget* m_stackedWidget{};
     Navigation *m_navigation{};
     Document *m_document{};
+    SearchEdit* searchBox{};
 
     void init();
     void initTitleBar();

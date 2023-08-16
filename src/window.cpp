@@ -13,15 +13,19 @@
  */
 
 #include "window.h"
-#include "constants.h"
 #include <search-edit/search-edit.h>
 #include <QAction>
 #include <QHBoxLayout>
+#include <QMessageBox>
+#include "constants.h"
 
 Window::Window(QWidget* parent) : KiranTitlebarWindow(parent)
 {
     initTitleBar();
     init();
+
+    // 关联搜索框按压搜索事件
+    connect(searchBox, &SearchEdit::requestSearch, m_document, &Document::searchKeyword);
 }
 
 Window::~Window()
@@ -82,11 +86,12 @@ void Window::initTitleBar()
     setIcon(pixmap);
     setTitle(tr(PROJECT_NAME));
 
+    searchBox = new SearchEdit(this);
     // 添加搜索框
-    auto* searchBox = new SearchEdit(this);
     searchBox->setPlaceholderText(tr("Enter keywords to search"));
     searchBox->setFixedWidth(this->width()/2);
     searchBox->setFocusPolicy(Qt::ClickFocus);
+
 
     getTitlebarCustomLayout()->addWidget(searchBox);
     setTitlebarCustomLayoutAlignHCenter(true);

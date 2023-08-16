@@ -12,9 +12,19 @@
  * Author:     youzhengcai <youzhengcai@kylinsec.com.cn>
  */
 
-#pragma once
 
-#define PROJECT_NAME "kiran-manual"
-#define CONF_FILE_PATH ":/data/km-config.ini";
-#define IMAGE_FOLDER "/usr/local/share/kiran-manual/data/manual-books/images/"
-#define RESOURCES_FOLDER ":/resources/"
+#pragma once
+#include <QtWidgets/QMainWindow>
+#include "ui_custom-title.h"
+
+class CustomTitle : public QMainWindow
+{
+	Q_OBJECT
+
+public:
+	explicit CustomTitle(QWidget *parent = nullptr);
+	~CustomTitle() override;
+
+private:
+	Ui::CustomTitleClass ui{};
+};

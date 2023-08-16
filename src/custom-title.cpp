@@ -12,9 +12,13 @@
  * Author:     youzhengcai <youzhengcai@kylinsec.com.cn>
  */
 
-#pragma once
+#include "custom-title.h"
 
-#define PROJECT_NAME "kiran-manual"
-#define CONF_FILE_PATH ":/data/km-config.ini";
-#define IMAGE_FOLDER "/usr/local/share/kiran-manual/data/manual-books/images/"
-#define RESOURCES_FOLDER ":/resources/"
+CustomTitle::CustomTitle(QWidget *parent)
+	: QMainWindow(parent)
+{
+	ui.setupUi(this);
+}
+
+CustomTitle::~CustomTitle()
+= default;

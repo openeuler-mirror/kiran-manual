@@ -46,11 +46,12 @@ Document::~Document()
 
 void Document::init()
 {
+    this->setStyleSheet("background-color: #FFFFFF");
     // 组件初始化
     m_ui->textBrowser->setOpenExternalLinks(true);
     // QTextBrowser 最外层组件样式，组件内部的渲染样式需要使用源 HTML 中到CSS来调整
     m_ui->textBrowser->setStyleSheet("\
-                                    QTextBrowser { background-color: #ffffff; padding-top: 16px; padding-left:5px;}\
+                                    QTextBrowser { padding-top: 16px; padding-left:5px;background-color: #2d2d2d; color: white; }\
     ");
     m_ui->pushButtonBackHome->setText(tr("返回主页"));
     // 代码高亮
@@ -62,14 +63,17 @@ void Document::init()
     connect(m_ui->pushButtonBackHome, &QPushButton::clicked, this, &Document::backHome);
 
     m_ui->pushButtonBackHome->setFlat(true);
-    m_ui->pushButtonBackHome->setStyleSheet("background-color: #393939;color:white");
-    m_ui->treeWidget->setStyleSheet(" background-color: #393939; color:white; QTreeView::branch::selected{background-color:#2eb3ff;} QTreeView::item::selected{background-color:#2eb3ff;} ");
+    m_ui->pushButtonBackHome->setStyleSheet("background-color: #2d2d2d;color:white");
+    m_ui->treeWidget->setStyleSheet(" background-color: #2d2d2d; color:white; QTreeView::branch::selected{background-color:#2eb3ff;} QTreeView::item::selected{background-color:#2eb3ff;} ");
     this->setStyleSheet("QTreeView::item { height: 40px}");
-    m_ui->textBrowser->setStyleSheet("background-color: #393939;color:white");
+//    m_ui->textBrowser->setStyleSheet("background-color: #2d2d2d;color:white");
 
-    m_ui->widgetLeft->setStyleSheet("background-color: #393939;color:white");
-    m_ui->widgetRight->setStyleSheet("background-color: #393939;color:white");
+    m_ui->widgetLeft->setStyleSheet("background-color: #2d2d2d;color:white");
+    m_ui->widgetRight->setStyleSheet("background-color: #2d2d2d;color:white");
 
+    // TODO：隐藏控件
+    m_ui->lineEditKeyword->hide();
+    m_ui->pushButtonSearch->hide();
 
     // 连接returnPressed()信号到槽函数
     connect(m_ui->lineEditKeyword, &QLineEdit::returnPressed, this, [=]() {
@@ -182,8 +186,8 @@ void Document::reloadDocument()
 #else
     QString hStr = mdFile2HtmlStr(m_mdFilePath);
     // DELETE ME . DEBUG 需要，保存解析后的 html 到文件
-    QString testFileName = "testFileName.md";
-    htmlStrSaveToFile(testFileName,hStr);
+//    QString testFileName = "testFileName.md";
+//    htmlStrSaveToFile(testFileName,hStr);
     m_ui->textBrowser->setHtml(hStr);
 #endif
 }

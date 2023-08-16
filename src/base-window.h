@@ -14,7 +14,28 @@
 
 #pragma once
 
-#define PROJECT_NAME "kiran-manual"
-#define CONF_FILE_PATH ":/data/km-config.ini";
-#define IMAGE_FOLDER "/usr/local/share/kiran-manual/data/manual-books/images/"
-#define RESOURCES_FOLDER ":/resources/"
+#include <QMainWindow>
+#include "my-titlebar.h"
+
+class BaseWindow : public QMainWindow
+{
+Q_OBJECT
+
+public:
+    explicit BaseWindow(QMainWindow *parent = nullptr);
+    ~BaseWindow() override;
+
+private:
+    void initTitleBar();
+    void paintEvent(QPaintEvent *event) override;
+    void loadStyleSheet(const QString &sheetName);
+
+private slots:
+    void onButtonMinClicked();
+    void onButtonRestoreClicked();
+    void onButtonMaxClicked();
+    void onButtonCloseClicked();
+
+protected:
+    MyTitleBar* m_titleBar{};
+};

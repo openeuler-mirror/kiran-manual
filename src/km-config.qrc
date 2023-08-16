@@ -2,5 +2,16 @@
     <qresource prefix="/">
         <file>../data/km-config.ini</file>
         <file>../data/styles/navigation.qss</file>
+        <file>../resources/MyTitle.css</file>
+        <file>../resources/title-icon.png</file>
+        <file>../resources/MyTitle/close.png</file>
+        <file>../resources/MyTitle/max.png</file>
+        <file>../resources/MyTitle/min.png</file>
+        <file>../resources/MyTitle/restore.png</file>
+        <file>../resources/test/add.png</file>
+        <file>../resources/test/close.png</file>
+        <file>../resources/test/subtraction.png</file>
+        <file>../resources/test/search.svg</file>
+        <file>../resources/test/addition.svg</file>
     </qresource>
 </RCC>

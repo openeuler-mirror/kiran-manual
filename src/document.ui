@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Document</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget#Document { background-color: rgb(0, 0, 0);}</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayoutUp">

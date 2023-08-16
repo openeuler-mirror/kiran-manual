@@ -20,6 +20,7 @@ find_package(PkgConfig REQUIRED)
 # 查找 Kiran 相关库
 pkg_search_module(KLOG REQUIRED klog-qt5)
 pkg_search_module(KIRAN_STYLE REQUIRED kiran-style-helper)
+pkg_search_module(KIRAN_WIDGETS REQUIRED kiranwidgets-qt5)
 
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
@@ -38,12 +39,14 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${PROJECT_SOURCE_DIR}
         ${KLOG_INCLUDE_DIRS}
         ${KIRAN_STYLE_INCLUDE_DIRS}
+        ${KIRAN_WIDGETS_INCLUDE_DIRS}
         )
 
 target_link_libraries(${PROJECT_NAME}
         ${REQUIRED_LIBS_QUALIFIED}
         ${KLOG_LIBRARIES}
         ${KIRAN_STYLE_LIBRARIES}
+        ${KIRAN_WIDGETS_LIBRARIES}
         )
 
 install(TARGETS ${PROJECT_NAME}

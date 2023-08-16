@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2020 ~ 2022 KylinSec Co., Ltd.
- * kiran-control-panel is licensed under Mulan PSL v2.
+ * Copyright (c) 2020 ~ 2024 KylinSec Co., Ltd.
+ * kiran-manual is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -11,7 +11,6 @@
  *
  * Author:     liuxinhao <liuxinhao@kylinsec.com.cn>
  */
-
 #include "kiran-frame.h"
 #include <QPainter>
 #include <QPainterPath>
@@ -69,12 +68,12 @@ void KiranFrame::unsetFixedBackgroundState()
     update();
 }
 
-bool KiranFrame::getDrawBroder()
+bool KiranFrame::getDrawBorder()
 {
     return m_drawBorder;
 }
 
-void KiranFrame::setDrawBroder(bool enable)
+void KiranFrame::setDrawBorder(bool enable)
 {
     if (m_drawBorder == enable)
         return;
@@ -119,10 +118,11 @@ void KiranFrame::paintEvent(QPaintEvent* event)
     opt.initFrom(this);
     state = opt.state;
 
+    // 绘制圆角
     QPainterPath painterPath;
-    QRectF frect = opt.rect;
-    frect.adjust(0.5,0.5,-0.5,-0.5);
-    painterPath.addRoundedRect(frect, m_radius, m_radius);
+    QRectF qRect = opt.rect;
+    qRect.adjust(0.5,0.5,-0.5,-0.5);
+    painterPath.addRoundedRect(qRect, m_radius, m_radius);
 
     auto getStateFunc = [this](QStyle::State state) -> StylePalette::ColorState
     {

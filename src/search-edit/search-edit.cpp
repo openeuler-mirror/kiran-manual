@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2020 ~ 2021 KylinSec Co., Ltd.
- * kiran-control-panel is licensed under Mulan PSL v2.
+ * Copyright (c) 2020 ~ 2024 KylinSec Co., Ltd.
+ * kiran-manual is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -9,25 +9,17 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  *
- * Author:     liuxinhao <liuxinhao@kylinsec.com.cn>
+ * Author:     youzhengcai <youzhengcai@kylinsec.com.cn>
  */
 
 #include "search-edit.h"
-#include "search-delegate.h"
-#include "search-model.h"
+#include "search-edit/search-dialog.h"
+#include "constants.h"
 
-#include <qt5-log-i.h>
-#include <QApplication>
-#include <QCompleter>
-#include <QEvent>
-#include <QTimer>
-#include <QKeyEvent>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QListView>
-#include <QSpacerItem>
-#include <QStandardItemModel>
+#include <kiran-log/qt5-log-i.h>
 #include <kiran-message-box.h>
+#include <QEvent>
+#include <QKeyEvent>
 
 SearchEdit::SearchEdit(QWidget *parent)
     : KiranSearchBox(parent)
@@ -41,43 +33,68 @@ SearchEdit::~SearchEdit()
 void SearchEdit::init()
 {
     setPlaceholderText(tr("Enter keywords to search"));
-    m_searchModel = new SearchModel(this);
-    m_searchDelegate = new SearchDelegate(this);
-
-    m_completer = new QCompleter(this);
-    m_completer->setCompletionMode(QCompleter::PopupCompletion);
-    m_completer->setModel(m_searchModel);
-    m_completer->setFilterMode(Qt::MatchContains);
-
-    m_completer->popup()->setItemDelegate(m_searchDelegate);
-    m_completer->setWidget(this);
-    m_completer->installEventFilter(this);
-
-    setCompleter(m_completer);
-    // clang-format off
-    connect(m_completer, QOverload<const QModelIndex &>::of(&QCompleter::activated), [this](const QModelIndex &index) {
-        if( !index.isValid() )
-        {
-            return ;
-        }
-        QString categoryID,subItemID,customSearchKey;
-        auto filterModel = m_completer->completionModel();
-        categoryID = filterModel->data(index,SearchModel::roleCategoryID).toString();
-        subItemID = filterModel->data(index,SearchModel::roleSubItemID).toString();
-        customSearchKey = filterModel->data(index,SearchModel::roleSearchKey).toString();
-
-        emit requestJumpTo(categoryID,subItemID,customSearchKey);
-        QTimer::singleShot(0,this,&QLineEdit::clear);
-    });
-    connect(this,&QLineEdit::returnPressed,[this](){
-      emit requestSearch(text());
-    });
-    // clang-format on
+    setClearButtonEnabled(true);
+    connect(this,&QLineEdit::returnPressed,this, &SearchEdit::doSearch);
 }
-QStandardItemModel *SearchEdit::buildSearchModel()
+
+void SearchEdit::initSearchDialog()
 {
-    return nullptr;
+    m_searchDialog = new SearchDialog(this);
+    m_searchDialog->setWindowTitle(tr("Search Keyword"));
+    m_searchDialog->setFixedWidth(this->width());
+    m_searchDialog->setSearchText(this->text());
+
+    // 取消标题栏
+//    m_searchDialog->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
+      QPoint pos = mapToGlobal(QPoint(0, height())) + QPoint(0, 40);
+//    QPoint pos = mapToGlobal(QPoint(0, height()));
+    m_searchDialog->move(pos);
+
+    connect(m_searchDialog, &SearchDialog::nextClicked, [this](){
+      emit requestSearchTextBrowserNext(this->text());
+    });
+
+    connect(m_searchDialog, &SearchDialog::prevClicked, [this](){
+      emit requestSearchTextBrowserPrev(this->text());
+    });
 }
-void SearchEdit::setSearchPopupVisible(bool searchPopupVisible)
+void SearchEdit::doSearch()
 {
+    // 初始化并显示搜索工具框
+    this->initSearchDialog();
+    m_searchDialog->show();
+    // 判定搜索域
+    if (m_searchField == NAVIGATION_OBJECT_NAME){
+        emit requestSearchNavItem(this->text());
+    }
+    else if (m_searchField == DOCUMENT_OBJECT_NAME)
+    {
+        emit requestSearchTextBrowserNext(this->text());
+    }
+}
+
+void SearchEdit::focusOutEvent(QFocusEvent *event)
+{
+    QLineEdit::focusOutEvent(event);
+//    if (m_searchDialog->isVisible())
+//    {
+//        m_searchDialog->close();
+//    }
+}
+void SearchEdit::focusInEvent(QFocusEvent *event)
+{
+    QLineEdit::focusInEvent(event);
+    // 未显示说明未初始化
+//    bool isNull = m_searchDialog == nullptr;
+//    if (isNull){
+//        initSearchDialog();
+//    }
+//    if (!m_searchDialog->isVisible())
+//    {
+//        m_searchDialog->show();
+//    }
+}
+void SearchEdit::setSearchFiled(const QString &searchField)
+{
+    this->m_searchField = searchField;
 }

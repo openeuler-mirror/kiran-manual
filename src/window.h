@@ -14,20 +14,16 @@
 
 #pragma once
 
-#include <QWidget>
 #include <kiranwidgets-qt5/kiran-titlebar-window.h>
+#include <QStackedWidget>
+#include <QWidget>
 
 #include "document.h"
 #include "navigation.h"
 
-QT_BEGIN_NAMESPACE
-namespace Ui
-{
 class Window;
-}
-QT_END_NAMESPACE
 
-class Window : public QWidget
+class Window : public KiranTitlebarWindow
 {
     Q_OBJECT
 
@@ -35,13 +31,16 @@ public:
     explicit Window(QWidget *parent = nullptr);
     ~Window() override;
 
+protected:
+    void resizeEvent(QResizeEvent* event) override;
 public slots:
     void documentPageLoader(const QString& mdfPath);
     void navigationPageLoader(const QString& key);
 private:
-    Ui::Window *m_ui;
+    QStackedWidget* m_stackedWidget{};
     Navigation *m_navigation{};
     Document *m_document{};
 
     void init();
+    void initTitleBar();
 };

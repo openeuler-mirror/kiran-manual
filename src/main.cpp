@@ -21,7 +21,6 @@
 #include <QAction>
 #include <QLineEdit>
 #include <QHBoxLayout>
-#include <kiranwidgets-qt5/kiran-titlebar-window.h>
 
 void initKiranLog();
 
@@ -30,29 +29,14 @@ int main(int argc, char *argv[])
     initKiranLog();
     QApplication app(argc, argv);
 
-    KiranTitlebarWindow kiranTitlebarWindow(nullptr);
-    kiranTitlebarWindow.setIcon(QIcon::fromTheme("window"));
-    kiranTitlebarWindow.setButtonHints(KiranTitlebarWindow::TitlebarMinMaxCloseHints);
-    kiranTitlebarWindow.setResizeable(true);
-    // 添加搜索框
-    auto* edit = new QLineEdit(&kiranTitlebarWindow);
-    edit->setPlaceholderText("请输入搜索关键词");
-    edit->setFixedWidth(kiranTitlebarWindow.width()/3);
-    edit->setFocusPolicy(Qt::ClickFocus);
-    auto* pActLeft = new QAction(edit);
-    pActLeft->setIcon(QIcon(":/resources/test/search.svg"));
-    edit->addAction(pActLeft,QLineEdit::LeadingPosition);
-    kiranTitlebarWindow.getTitlebarCustomLayout()->addWidget(edit);
-
     Window window;
-    // 将窗口移动到屏幕中心
-    int screenWidth = QApplication::desktop()->screen()->width();
-    int screenHeight = QApplication::desktop()->screen()->height();
-    kiranTitlebarWindow.move((screenWidth - window.width()) / 2, (screenHeight - window.height()) / 2);
-
-    kiranTitlebarWindow.setWindowContentWidget(&window);
-    kiranTitlebarWindow.resize(1000, 700);
-    kiranTitlebarWindow.show();
+    window.resize(1031, 742);
+    // 居中显示
+    QRect availableGeometry = QApplication::desktop()->availableGeometry();
+    int x = (availableGeometry.width() - window.width()) / 2;
+    int y = (availableGeometry.height() - window.height()) / 2;
+    window.move(x, y);
+    window.show();
     return QApplication::exec();
 }
 void initKiranLog(){

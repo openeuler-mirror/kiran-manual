@@ -1,6 +1,16 @@
-//
-// Created by skyzcyou on 2023/8/2.
-//
+/**
+ * Copyright (c) 2020 ~ 2024 KylinSec Co., Ltd.
+ * kiran-manual is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *          http://license.coscl.org.cn/MulanPSL2
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ *
+ * Author:     youzhengcai <youzhengcai@kylinsec.com.cn>
+ */
 
 #include "search-dialog.h"
 #include <kiran-color-block.h>
@@ -18,52 +28,39 @@ void SearchDialog::setSearchText(const QString &text)
     this->m_searchText = text;
 }
 
-
-void SearchDialog::prevPosition()
-{
-    emit prevClicked();
-}
-
-void SearchDialog::nextPosition()
-{
-    emit nextClicked();
-}
 void SearchDialog::init()
 {
     // 创建界面控件
     m_prevButton = new QPushButton(tr("Prev"), this);
     m_nextButton = new QPushButton(tr("Next"), this);
-//    m_countLabel = new QLabel(tr("count: "),this);
+    m_countLabel = new QLabel(tr("Count: "), this);
     m_closeButton = new QPushButton(tr("Close"), this);
-
-    // 设置按钮样式
-//    m_closeButton->setFixedSize(20, 20);
-//    m_closeButton->setStyleSheet("QPushButton {"
-//                                 "background: transparent;"
-//                                 "border: none;"
-//                                 "color: white;"
-//                                 "font-size: 16px;"
-//                                 "}"
-//                                 "QPushButton:hover {"
-//                                 "background: #F44336;"
-//                                 "}");
 
     // 设置布局
     auto* dialogLayout = new QHBoxLayout(this);
     dialogLayout->setMargin(0);
-    auto* contentWidget = new KiranColorBlock(this);
-    dialogLayout->addWidget(contentWidget);
-    auto* hLayout = new QHBoxLayout(contentWidget);
-    hLayout->addWidget(m_prevButton);
-    hLayout->addWidget(m_nextButton);
-    hLayout->addWidget(m_closeButton);
-//    auto* vLayout = new QVBoxLayout(this);
-//    vLayout->addLayout(hLayout);
-//    vLayout->addWidget(m_countLabel);
+    auto* btnToolsWidget = new KiranColorBlock(this);
+    auto* btnToolsLayout = new QHBoxLayout(btnToolsWidget);
+    btnToolsLayout->addWidget(m_countLabel);
+    btnToolsLayout->addWidget(m_prevButton);
+    btnToolsLayout->addWidget(m_nextButton);
+    btnToolsLayout->addWidget(m_closeButton);
+    dialogLayout->addWidget(btnToolsWidget);
 
-    // 连接槽函数
-    connect(m_prevButton, &QPushButton::clicked, this, &SearchDialog::prevPosition);
-    connect(m_nextButton, &QPushButton::clicked, this, &SearchDialog::nextPosition);
-    connect(m_closeButton, &QPushButton::clicked, this, &SearchDialog::close);
+    // 点击按钮发送 searchDialog 信号
+    connect(m_prevButton, &QPushButton::clicked, [this](){
+                emit sdPrevClicked();
+    });
+    connect(m_nextButton, &QPushButton::clicked, [this](){
+                emit sdNextClicked();
+    });
+    connect(m_closeButton, &QPushButton::clicked, [this](){
+                this->close();
+                emit sdCloseClicked();
+    });
 
+}
+void SearchDialog::setMatchCount(int count, int index)
+{
+    m_countLabel->setText(QString::number(index) + "/" + QString::number(count));
 }

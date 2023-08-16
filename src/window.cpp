@@ -32,6 +32,9 @@ Window::Window(QWidget* parent) : KiranTitlebarWindow(parent)
     // 关联搜索框搜索信号
     connect(m_searchBox, &SearchEdit::requestSearchTextBrowserNext, m_document, &Document::searchNextKeyword);
     connect(m_searchBox, &SearchEdit::requestSearchTextBrowserPrev, m_document, &Document::searchPrevKeyword);
+    connect(m_searchBox, &SearchEdit::requestSearchTextBrowserClosed, m_document, &Document::searchKeywordClose);
+    connect(m_searchBox, &SearchEdit::requestSearchKeywordChanged, m_document, &Document::searchKeywordChange);
+    connect(m_document, &Document::keywordCountDone, m_searchBox, &SearchEdit::updateSearchCount);
 }
 
 Window::~Window()

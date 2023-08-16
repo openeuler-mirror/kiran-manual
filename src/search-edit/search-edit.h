@@ -15,7 +15,9 @@
 #pragma once
 #include <kiran-search-box.h>
 #include "search-dialog.h"
-
+/**
+ * SearchEdit - 搜索框
+ * */
 class SearchEdit : public KiranSearchBox
 {
     Q_OBJECT
@@ -24,9 +26,13 @@ public:
     ~SearchEdit() override;
     void setSearchFiled(const QString& searchField);
 public slots:
+    // 作出搜索行为，内部会根据当前的搜索域发出不同的搜索请求
     void doSearch();
+    void updateSearchCount(int count, int index);
 private:
+    // 搜索工具框： 提供搜索时的便捷跳转功能
     SearchDialog* m_searchDialog{};
+    // 搜索域: 页面 StackWidget 切换时监听更改
     QString m_searchField;
 private:
     void init();
@@ -38,6 +44,9 @@ signals:
     // 发起搜索文本浏览器请求
     void requestSearchTextBrowserNext(const QString& keyword);
     void requestSearchTextBrowserPrev(const QString& keyword);
+    void requestSearchTextBrowserClosed(const QString& keyword);
     // 发起搜索导航页菜单请求
     void requestSearchNavItem(const QString& keyword);
+    // 文本改变信号
+    void requestSearchKeywordChanged(const QString& keyword);
 };

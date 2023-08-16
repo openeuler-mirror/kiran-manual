@@ -78,7 +78,7 @@
 
         struct itimerval {
             struct timeval it_interval; /* Interval for periodic timer */
-            struct timeval it_value;    /* Time until nextClicked expiration */
+            struct timeval it_value;    /* Time until sdNextClicked expiration */
         };
 
         struct timeval {

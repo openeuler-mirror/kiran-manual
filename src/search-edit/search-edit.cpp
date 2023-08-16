@@ -34,6 +34,7 @@ void SearchEdit::init()
 {
     setPlaceholderText(tr("Enter keywords to search"));
     setClearButtonEnabled(true);
+    // 绑定搜索框回车事件
     connect(this,&QLineEdit::returnPressed,this, &SearchEdit::doSearch);
 }
 
@@ -50,20 +51,29 @@ void SearchEdit::initSearchDialog()
 //    QPoint pos = mapToGlobal(QPoint(0, height()));
     m_searchDialog->move(pos);
 
-    connect(m_searchDialog, &SearchDialog::nextClicked, [this](){
+    connect(m_searchDialog, &SearchDialog::sdNextClicked, [this](){
       emit requestSearchTextBrowserNext(this->text());
     });
 
-    connect(m_searchDialog, &SearchDialog::prevClicked, [this](){
+    connect(m_searchDialog, &SearchDialog::sdPrevClicked, [this](){
       emit requestSearchTextBrowserPrev(this->text());
+    });
+
+    connect(m_searchDialog, &SearchDialog::sdCloseClicked, [this](){
+      emit requestSearchTextBrowserClosed(this->text());
+    });
+
+    connect(this, &SearchEdit::textChanged, [this](){
+      emit requestSearchKeywordChanged(this->text());
     });
 }
 void SearchEdit::doSearch()
 {
-    // 初始化并显示搜索工具框
+    // 作出搜索行为时，初始化并弹出搜索工具框
+    // TODO: 初始化和弹出分离, 先初始化完毕，按需弹出。现在遇到的问题是会导致位置不正确
     this->initSearchDialog();
     m_searchDialog->show();
-    // 判定搜索域
+    // 利用 StackWidget 中当前激活到页面 Object name 来判定搜索域
     if (m_searchField == NAVIGATION_OBJECT_NAME){
         emit requestSearchNavItem(this->text());
     }
@@ -76,25 +86,16 @@ void SearchEdit::doSearch()
 void SearchEdit::focusOutEvent(QFocusEvent *event)
 {
     QLineEdit::focusOutEvent(event);
-//    if (m_searchDialog->isVisible())
-//    {
-//        m_searchDialog->close();
-//    }
 }
 void SearchEdit::focusInEvent(QFocusEvent *event)
 {
     QLineEdit::focusInEvent(event);
-    // 未显示说明未初始化
-//    bool isNull = m_searchDialog == nullptr;
-//    if (isNull){
-//        initSearchDialog();
-//    }
-//    if (!m_searchDialog->isVisible())
-//    {
-//        m_searchDialog->show();
-//    }
 }
 void SearchEdit::setSearchFiled(const QString &searchField)
 {
     this->m_searchField = searchField;
+}
+void SearchEdit::updateSearchCount(int count, int index)
+{
+    this->m_searchDialog->setMatchCount(count, index);
 }

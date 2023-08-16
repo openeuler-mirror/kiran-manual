@@ -33,4 +33,6 @@ ke-edge1   Ready    agent,edge   64s   v1.19.3-kubeedge-v1.8.0
 + `fstat`：和`stat`不同之处在于获取文件描述符`fd`的状态信息。
 
 超链接：[#获取文件状态函数](#获取文件状态函数)
-图片：![MOVIE](Movie.png)
+图片：
+
+![MOVIE](Movie.png)

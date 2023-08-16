@@ -267,7 +267,7 @@ void MarkdownParser::dfs(Node* root)
     //图片
     else if (root->type == HTML_TOKEN_IMAGE)
     {
-        m_content += R"(<img width="400" alt=")";
+        m_content += R"(<img width="600" alt=")";
         m_content += root->elem[0];
         m_content += "\" src=\"";
         string prePath = IMAGE_FOLDER;

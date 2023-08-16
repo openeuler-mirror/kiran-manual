@@ -17,10 +17,12 @@
 #include "constants.h"
 
 #include <QFile>
+#include <QGraphicsDropShadowEffect>
 #include <QLabel>
 #include <QMessageBox>
 #include <QPainter>
 #include <QPushButton>
+#include <QScrollArea>
 #include <QSettings>
 #include <QVBoxLayout>
 #include "kiran-log/qt5-log-i.h"
@@ -31,8 +33,6 @@ Navigation::Navigation(QWidget *parent)
       m_ui(new Ui::Navigation)
 {
     m_ui->setupUi(this);
-    // 设定配置文件路径 (:/conf/km-config.ini)
-    this->m_confFilePath = CONF_FILE_PATH;
     // 初始化视图
     init();
 }
@@ -44,8 +44,15 @@ Navigation::~Navigation()
 // 初始化视图
 void Navigation::init()
 {
+    QVBoxLayout *outLayout = new QVBoxLayout(this);
+    outLayout->setMargin(0);
     // 定义最外层 Widget
     auto *homeWidget = new QWidget(this);
+    outLayout->addWidget(homeWidget);
+    homeWidget->setObjectName("homeWidget");
+    homeWidget->setStyleSheet("background-color: #2d2d2d");
+    homeWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    homeWidget->setContentsMargins(15, 15, 15, 15);
     // 定义最外部的垂直布局容器
     auto *homeLayout = new QVBoxLayout(homeWidget);
 
@@ -78,26 +85,32 @@ void Navigation::init()
     // 输出每个分类下的 FileName
     for (auto it = categories.begin(); it != categories.end(); ++it)
     {
-        qint8 index = std::distance(categories.begin(),it);
+        int index = std::distance(categories.begin(),it);
         // "Category" 分两个，一是原始 categoryRaw 二是根据语言环境翻译后到 categoryLocal
         const QString& categoryRaw = *it;
         const QString& categoryLocal = categoriesLocal.at(index);
+        int numberPerRow = 4;
 
         // 声明分类块
-        // 此处不会造成内存泄漏，因为两个对象会绑定到父布局
-        QVBoxLayout *typeLayout = new QVBoxLayout();
+        auto *typeWidget = new QWidget();
+        auto *typeLayout = new QVBoxLayout(typeWidget);
         int maxPerLine = 7;
 
-        QHBoxLayout *itemLayout = new QHBoxLayout();
+        auto *itemWidget = new QWidget();
+//        auto *itemLayout = new QHBoxLayout(itemWidget);
+        QGridLayout *itemLayout = new QGridLayout(itemWidget);
         itemLayout->setAlignment(Qt::AlignLeft);
-        itemLayout->setMargin(30);
+        itemLayout->setContentsMargins(50, 0, 0, 0);
 
-        typeLayout->addWidget(new QLabel(categoryLocal));
-        typeLayout->addLayout(itemLayout);
+        QLabel *categoryLabel = new QLabel(categoryLocal);
+        categoryLabel->setMaximumHeight(15);
+        typeLayout->addWidget(categoryLabel);
+        typeLayout->addWidget(itemWidget);
 
         // 获取该分类下的 item
         QString itemsKey = "Document/" + categoryRaw + "Item";
         QStringList items = settings.value(itemsKey).toStringList();
+        int count = 0;
         foreach (const QString& item, items)
         {
             settings.beginGroup("Document "+categoryRaw+" "+item);
@@ -107,12 +120,8 @@ void Navigation::init()
             QString iconPath = docDir + "images/nav/" + settings.value("Icon").toString();
             settings.endGroup();
             // 声明条目块
-            QWidget *innerItemWidget = new QWidget();
-//            innerItemWidget->setStyleSheet("border-style: outset;"
-//                                           "    border-radius: 6px;"
-//                                           "margin:10px"
-//                                           );
-            QVBoxLayout *innerItemLayout = new QVBoxLayout(innerItemWidget);
+            auto *innerItemWidget = new QWidget();
+            auto *innerItemLayout = new QVBoxLayout(innerItemWidget);
             innerItemLayout->setAlignment(Qt::AlignCenter);
 
             // 背景图片文件路径
@@ -133,48 +142,35 @@ void Navigation::init()
             }
 
             // 声明图片按钮
-            QPushButton *iBtn = new QPushButton();
+            auto *iBtn = new QPushButton();
             iBtn->setMaximumWidth(parentWidget()->width() / maxPerLine);
             QString styleSheet = QString("border-image: url(%1);").arg(iconPath);
             iBtn->setStyleSheet(styleSheet);
             iBtn->setFixedSize(w,h);
             connect(iBtn, &QPushButton::clicked, this, [=]() {
-                QPushButton *clickedButton = qobject_cast<QPushButton *>(sender());
+                auto *clickedButton = qobject_cast<QPushButton *>(sender());
                 if (clickedButton)
                 {
                     emit docPageClicked(filePath);
                 }
             });
             // 声明条目标题
-            QLabel *titleLabel = new QLabel(itemName);
+            auto *titleLabel = new QLabel(itemName);
             titleLabel->setAlignment(Qt::AlignCenter);
             // 添加图片按钮和条目标题
             innerItemLayout->addWidget(iBtn);
             innerItemLayout->addWidget(titleLabel);
+            innerItemWidget->setFixedSize(150, 150);
+            innerItemWidget->setStyleSheet("background-color: #393939; border-radius: 6px;");
 
-            // 样式调整
-            QPalette pal(innerItemWidget->palette());
-            pal.setColor(QPalette::Background, QColor(57,57,57)); // #2d2d2d
-            innerItemWidget->setAutoFillBackground(true);
-            innerItemWidget->setPalette(pal);
-
-//            innerItemWidget->setStyleSheet("background-color: #2d2d2d;"
-//                                           "background-clip: margin;"
-//                                            "border-style: outset;"
-//                                           "border-radius: 6px;"
-//                                           "margin:10px"
-//                                           );
-
-                // 创建一个 QMargins 对象，设置左右间距为20像素
-//                QMargins margins(20, 0, 20, 0);
-//                innerItemWidget->setContentsMargins(margins);
             // 添加条目块
-            itemLayout->addWidget(innerItemWidget);
+            itemLayout->addWidget(innerItemWidget, index, count%numberPerRow);
+            itemLayout->setSpacing(80);
+            count++;
         }
         // 添加分类块
-        homeLayout->addLayout(typeLayout);
+        homeLayout->addWidget(typeWidget);
     }
-    this->LoadStyleSheet(":/resources/styles/navigation.qss");
 }
 // 加载 QSS 样式文件
 bool Navigation::LoadStyleSheet(const QString &StyleSheetFile)

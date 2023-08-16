@@ -46,12 +46,13 @@ Document::~Document()
 
 void Document::init()
 {
-    this->setStyleSheet("background-color: #FFFFFF");
+    QVBoxLayout *outLayout = new QVBoxLayout(this);
+    outLayout->setMargin(0);
     // 组件初始化
     m_ui->textBrowser->setOpenExternalLinks(true);
     // QTextBrowser 最外层组件样式，组件内部的渲染样式需要使用源 HTML 中到CSS来调整
     m_ui->textBrowser->setStyleSheet("\
-                                    QTextBrowser { padding-top: 16px; padding-left:5px;background-color: #2d2d2d; color: white; }\
+                                    QTextBrowser { padding-left:5px;background-color: #2d2d2d; color: white; }\
     ");
     m_ui->pushButtonBackHome->setText(tr("返回主页"));
     // 代码高亮
@@ -59,7 +60,7 @@ void Document::init()
     m_ui->treeWidget->setHeaderHidden(true);
     // 关联到槽函数
     connect(m_ui->treeWidget, &QTreeWidget::itemDoubleClicked, this, &Document::tocItemScrollToAnchor);
-    connect(m_ui->pushButtonSearch, &QPushButton::clicked, this, &Document::searchKeyword);
+//    connect(m_ui->pushButtonSearch, &QPushButton::clicked, this, &Document::searchKeyword);
     connect(m_ui->pushButtonBackHome, &QPushButton::clicked, this, &Document::backHome);
 
     m_ui->pushButtonBackHome->setFlat(true);
@@ -72,11 +73,11 @@ void Document::init()
     m_ui->widgetRight->setStyleSheet("background-color: #2d2d2d;color:white");
 
     // TODO：隐藏控件
-    m_ui->lineEditKeyword->hide();
-    m_ui->pushButtonSearch->hide();
+//    m_ui->lineEditKeyword->hide();
+//    m_ui->pushButtonSearch->hide();
 
     // 连接returnPressed()信号到槽函数
-    connect(m_ui->lineEditKeyword, &QLineEdit::returnPressed, this, [=]() {
+    connect(lineEditKeyword, &QLineEdit::returnPressed, this, [=]() {
                 searchKeyword();
     });
 
@@ -124,7 +125,8 @@ void Document::htmlStrSaveToFile(QString& fileName, QString& hStr)
     if (fileName.endsWith(".md")) {
         QString pureFileName = fileName.split(".").first();
         QString htmlFilePath = "html/" + pureFileName + ".html";
-        QDir().mkpath("html"); // 创建目录
+        // 创建目录
+        QDir().mkpath("html");
         QFile hFile(htmlFilePath);
         if (!hFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
             KLOG_ERROR() << "Open File Failed: " + htmlFilePath;
@@ -186,15 +188,15 @@ void Document::reloadDocument()
 #else
     QString hStr = mdFile2HtmlStr(m_mdFilePath);
     // DELETE ME . DEBUG 需要，保存解析后的 html 到文件
-    QString testFileName = "testFileName.md";
-    htmlStrSaveToFile(testFileName,hStr);
+//    QString testFileName = "testFileName.md";
+//    htmlStrSaveToFile(testFileName,hStr);
     m_ui->textBrowser->setHtml(hStr);
 #endif
 }
 
 void Document::searchKeyword()
 {
-    QString keyword = m_ui->lineEditKeyword->text();
+    QString keyword = lineEditKeyword->text();
 
     if (keyword.trimmed().isEmpty()) {
         QMessageBox::information(this, tr("关键字为空"), tr("The search field is empty."));
@@ -245,7 +247,7 @@ void Document::clearSearchHighlights()
     format.clearBackground();
 
     while (!cursor.isNull() && !cursor.atEnd()) {
-        cursor = document->find(m_ui->lineEditKeyword->text(), cursor, QTextDocument::FindWholeWords);
+        cursor = document->find(lineEditKeyword->text(), cursor, QTextDocument::FindWholeWords);
         if (!cursor.isNull()) {
             cursor.mergeCharFormat(format);
         }

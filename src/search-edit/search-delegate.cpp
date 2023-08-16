@@ -20,8 +20,7 @@ SearchDelegate::SearchDelegate(QObject *parent)
 }
 
 SearchDelegate::~SearchDelegate()
-{
-}
+= default;
 
 void SearchDelegate::paint(QPainter *painter,
                                  const QStyleOptionViewItem &option,

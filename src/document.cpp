@@ -17,8 +17,10 @@
 #include "highlighter.h"
 
 #include <qt5-log-i.h>
+#include <QDesktopServices>
 #include <QDir>
 #include <QFile>
+#include <QGraphicsDropShadowEffect>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -46,56 +48,39 @@ Document::~Document()
 
 void Document::init()
 {
-    QVBoxLayout *outLayout = new QVBoxLayout(this);
+    auto *outLayout = new QVBoxLayout(this);
     outLayout->setMargin(0);
     // 组件初始化
-    m_ui->textBrowser->setOpenExternalLinks(true);
     // QTextBrowser 最外层组件样式，组件内部的渲染样式需要使用源 HTML 中到CSS来调整
     m_ui->textBrowser->setStyleSheet("\
-                                    QTextBrowser { padding-left:5px;background-color: #2d2d2d; color: white; }\
+                                    QTextBrowser { padding-left:5px; }\
     ");
     m_ui->pushButtonBackHome->setText(tr("返回主页"));
     // 代码高亮
-    Highlighter *highlighter= new Highlighter(m_ui->textBrowser->document());
+    auto *highlighter= new Highlighter(m_ui->textBrowser->document());
     m_ui->treeWidget->setHeaderHidden(true);
     // 关联到槽函数
     connect(m_ui->treeWidget, &QTreeWidget::itemDoubleClicked, this, &Document::tocItemScrollToAnchor);
 //    connect(m_ui->pushButtonSearch, &QPushButton::clicked, this, &Document::searchKeyword);
     connect(m_ui->pushButtonBackHome, &QPushButton::clicked, this, &Document::backHome);
 
+    m_ui->textBrowser->setOpenLinks(false);
+    m_ui->textBrowser->setOpenExternalLinks(false);
+    connect(m_ui->textBrowser, &QTextBrowser::anchorClicked, this, &Document::openDocumentURL);
+
     m_ui->pushButtonBackHome->setFlat(true);
-    m_ui->pushButtonBackHome->setStyleSheet("background-color: #2d2d2d;color:white");
-    m_ui->treeWidget->setStyleSheet(" background-color: #2d2d2d; color:white; QTreeView::branch::selected{background-color:#2eb3ff;} QTreeView::item::selected{background-color:#2eb3ff;} ");
+    m_ui->pushButtonBackHome->setStyleSheet("height: 30px; padding-left: 24px; padding-top: 5px; text-align: left");
+    m_ui->treeWidget->setStyleSheet("QTreeView {background-color: transparent; border: none;} QTreeView::branch::selected{background-color:#2eb3ff;border-radius: 6px} QTreeView::item::selected{background-color:#2eb3ff;} ");
+//    m_ui->treeWidget->setRootIsDecorated(false);
     this->setStyleSheet("QTreeView::item { height: 40px}");
-//    m_ui->textBrowser->setStyleSheet("background-color: #2d2d2d;color:white");
+    m_ui->textBrowser->setStyleSheet("QTextBrowser{background-color: transparent; padding-left: 20px}");
+//    this->setStyleSheet("QScrollBar{background-color: transparent}");
 
-    m_ui->widgetLeft->setStyleSheet("background-color: #2d2d2d;color:white");
-    m_ui->widgetRight->setStyleSheet("background-color: #2d2d2d;color:white");
-
-    // TODO：隐藏控件
-//    m_ui->lineEditKeyword->hide();
-//    m_ui->pushButtonSearch->hide();
 
     // 连接returnPressed()信号到槽函数
     connect(lineEditKeyword, &QLineEdit::returnPressed, this, [=]() {
                 searchKeyword();
     });
-
-
-//    QWidget *ttWidget = new QWidget(this);
-//    ttWidget->setLayout(m_ui->verticalLayoutForTree);
-//    ttWidget->setStyleSheet("background-color: #ffffff");
-
-    // 让树形控件自动适应项的宽度，并显示水平滚动条
-    // 让树形控件自动显示水平滚动条
-//    m_ui->treeWidget->header()->viewport()->setAutoFillBackground(false);
-//    m_ui->treeWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-//    m_ui->treeWidget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
-//    m_ui->treeWidget->header()->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-
-    // 设置 Item 的高度为 40 像素
-    // 添加蓝色边框
-//    this->setStyleSheet("QTreeView::item:selected { border: 2px solid blue; }");
 }
 
  // 返回解析 Markdown 成功后的 HTML 字符串
@@ -109,7 +94,6 @@ QString Document::mdFile2HtmlStr(const QString& mdPath)
 
     QJsonObject rootObject = markdownParser.buildJSONTOC();
     renderCatalog(rootObject);
-
     return QString(QString::fromLocal8Bit(htmlStr.c_str()));
 }
 
@@ -269,4 +253,50 @@ void Document::renderCatalog(QJsonObject& jsonObject)
         }
     }
     m_ui->treeWidget->expandAll();
+}
+
+// 处理 a 标签的点击事件，用于文档之间的跳转
+void Document::openDocumentURL(const QUrl& url)
+{
+    QString strUrl = url.toString();
+    int pos = 0;
+    // 首先判断是否是超链接
+    QRegExp rx;
+    rx.setPattern("(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]");
+    QRegExpValidator rv;
+    rv.setRegExp(rx);
+    QValidator::State rvState = rv.validate(strUrl, pos);
+    if (rvState == QValidator::Acceptable) {
+        QMessageBox::StandardButton result = QMessageBox::information(nullptr, QStringLiteral("提示"), QStringLiteral("即将打开浏览器前往：") + strUrl, QMessageBox::Yes | QMessageBox::No);
+        switch (result)
+        {
+        case QMessageBox::Yes:
+            QDesktopServices::openUrl(url);
+            break;
+        case QMessageBox::No:
+            break;
+        default:
+            break;
+        }
+        return;
+    }
+    // 获取当前文档父路径
+    QRegularExpression docNameRegex("(.*/)[^/]*$");
+    QRegularExpressionMatch match = docNameRegex.match(this->m_mdFilePath);
+    // 获取目标完整路径
+    QString targetUrl{};
+    if (match.hasMatch())
+    {
+        QString dirPath = match.captured(1);
+        targetUrl = dirPath + strUrl;
+    }
+    // 如果目标路径为空 且 文件不存在则提示
+    if (targetUrl.isEmpty() || !QFile::exists(targetUrl))
+    {
+        QMessageBox::information(nullptr, QStringLiteral("Notice!"), QStringLiteral("Target document does not exist! \n Document Name: ") + strUrl, QMessageBox::Yes);
+    }else
+    {
+        this->m_mdFilePath = targetUrl;
+        this->reloadDocument();
+    }
 }

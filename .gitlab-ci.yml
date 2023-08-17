@@ -1,5 +1,5 @@
 variables:
-  RPM_BUILD_REQUIRES: 'gcc-c++ cmake glib2-devel qt5-qtbase-devel qt5-linguist kiran-log-qt5-devel kiran-widgets-qt5-devel'
+  RPM_BUILD_REQUIRES: 'gcc-c++ cmake glib2-devel qt5-qtbase-devel qt5-linguist kiran-log-qt5-devel kiran-widgets-qt5-devel kiran-qt5-integration-devel'
 
 include:
   - project: 'os/gitlab-ci'

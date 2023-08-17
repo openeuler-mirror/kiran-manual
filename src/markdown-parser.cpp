@@ -13,12 +13,12 @@
  */
 
 #include "markdown-parser.h"
-#include "constants.h"
-#include <codecvt>
-#include <regex>
-#include <QJsonObject>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QJsonObject>
+#include <codecvt>
+#include <regex>
+#include "constants.h"
 
 void removeEscapeChar(char* str);
 void removeEscapeChar(string& str);
@@ -74,7 +74,8 @@ void MarkdownParser::transfer()
             continue;
         }
         // 代码块中空行,直接处理,不过类型判定
-        if (inBlock && start == nullptr){
+        if (inBlock && start == nullptr)
+        {
             m_root->_child.back()->elem[0] += rowStr;
             m_root->_child.back()->elem[0] += '\n';
             continue;
@@ -112,7 +113,8 @@ void MarkdownParser::transfer()
         if (inBlock)
         {
             // 处理 <> 否则会被 HTML 渲染为tag 同一行中存在 <> 则处理
-            if (rowStr.find('<') && rowStr.find('>')){
+            if (rowStr.find('<') && rowStr.find('>'))
+            {
                 std::regex re("<");
                 std::string result = std::regex_replace(rowStr, re, "&lt;");
                 re = std::regex(">");
@@ -203,14 +205,15 @@ void MarkdownParser::transfer()
 }
 
 // 根据已经遍历完毕的目录节点树 m_croot 生成 JSON
-QJsonObject MarkdownParser::buildJSONTOC() {
+QJsonObject MarkdownParser::buildJSONTOC()
+{
     // 构造 JSON
     QJsonObject rootObject;
     QJsonArray baseArray;
     for (int i = 0; i < (int)m_croot->_child.size(); i++)
     {
         QJsonObject baseItemObject;
-        baseItemObject.insert("heading",QString::fromStdString(m_croot->_child[i]->heading));
+        baseItemObject.insert("heading", QString::fromStdString(m_croot->_child[i]->heading));
         QJsonArray baseItemArray;
         cdfsForJson(m_croot->_child[i], to_string(i + 1) + ".", baseItemArray);
         baseItemObject.insert("child", baseItemArray);
@@ -221,12 +224,15 @@ QJsonObject MarkdownParser::buildJSONTOC() {
     return rootObject;
 }
 
-void MarkdownParser::cdfsForJson(CatalogNode *v, const string &index, QJsonArray& jsonArray) {
+void MarkdownParser::cdfsForJson(CatalogNode* v, const string& index, QJsonArray& jsonArray)
+{
     int n = (int)v->_child.size();
-    if (n) {
-        for (int i = 0; i < n; i++) {
+    if (n)
+    {
+        for (int i = 0; i < n; i++)
+        {
             QJsonObject itemObject;
-            itemObject.insert("heading",QString::fromStdString(v->_child[i]->heading));
+            itemObject.insert("heading", QString::fromStdString(v->_child[i]->heading));
             QJsonArray itemArray;
             cdfsForJson(v->_child[i], index + to_string(i + 1) + ".", itemArray);
             itemObject.insert("child", itemArray);
@@ -248,7 +254,8 @@ void MarkdownParser::dfs(Node* root)
         removeEscapeChar(idStr);
         m_content += idStr;
         m_content += "\">";
-    }else
+    }
+    else
     {
         //插入前置标签
         m_content += frontTag[root->type];
@@ -525,25 +532,30 @@ string MarkdownParser::html()
     return head + m_content + end;
 }
 // 插入目录项
-void MarkdownParser::cins(CatalogNode *v, int x, const string &hd, int tag) {
+void MarkdownParser::cins(CatalogNode* v, int x, const string& hd, int tag)
+{
     int n = (int)v->_child.size();
-    if (x == 1) {
+    if (x == 1)
+    {
         v->_child.push_back(new CatalogNode(hd));
         v->_child.back()->tag = "tag" + to_string(tag);
-        return ;
+        return;
     }
 
     if (!n || v->_child.back()->heading.empty())
         v->_child.push_back(new CatalogNode(""));
     cins(v->_child.back(), x - 1, hd, tag);
 }
-void MarkdownParser::cdfs(CatalogNode *v, const string& index) {
+void MarkdownParser::cdfs(CatalogNode* v, const string& index)
+{
     m_toc += "<li>";
     m_toc += "<a href=\"#" + v->heading + "\">" + v->heading + "</a>";
     int n = (int)v->_child.size();
-    if (n) {
+    if (n)
+    {
         m_toc += "<ul>";
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++)
+        {
             cdfs(v->_child[i], index + to_string(i + 1) + ".");
         }
         m_toc += "</ul>";

@@ -18,19 +18,21 @@
 #include <QScrollBar>
 #include "scroll-style.h"
 
-class ScrollBar :public QScrollBar
+class ScrollBar : public QScrollBar
 {
     Q_OBJECT
 public:
     explicit ScrollBar(QWidget* parent = nullptr);
     ~ScrollBar() override;
-    QSize sizeHint()const override;
-    void setArea(QAbstractScrollArea * area);
+    QSize sizeHint() const override;
+    void setArea(QAbstractScrollArea* area);
+
 protected:
-    void paintEvent(QPaintEvent *ev) override;
+    void paintEvent(QPaintEvent* ev) override;
 
 private slots:
-        void onSetRange(int min, int max);
+    void onSetRange(int min, int max);
+
 private:
     QAbstractScrollArea* m_area = nullptr;
     ScrollStyle* m_style = nullptr;

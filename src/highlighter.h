@@ -14,9 +14,9 @@
 
 #pragma once
 
+#include <QRegularExpression>
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
-#include <QRegularExpression>
 
 QT_BEGIN_NAMESPACE
 class QTextDocument;

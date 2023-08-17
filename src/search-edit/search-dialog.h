@@ -24,7 +24,7 @@
  * */
 class SearchDialog : public QDialog
 {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     explicit SearchDialog(QWidget *parent = nullptr);

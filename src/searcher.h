@@ -22,8 +22,8 @@ public:
     explicit Searcher(QObject *parent = nullptr);
 
     // TODO: 文档版内部关键字搜索  将搜索模块单独抽出
-    QString searchKeywordInside(const QString& keyword);
-    QString searchKeywordOutside(const QString& keyword);
+    QString searchKeywordInside(const QString &keyword);
+    QString searchKeywordOutside(const QString &keyword);
 
 signals:
 private:

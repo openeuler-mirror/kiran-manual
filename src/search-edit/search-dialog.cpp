@@ -15,15 +15,14 @@
 #include "search-dialog.h"
 #include <kiran-color-block.h>
 
-SearchDialog::SearchDialog(QWidget *parent)
+SearchDialog::SearchDialog(QWidget* parent)
     : QDialog(parent)
 {
     init();
 }
-SearchDialog::~SearchDialog()
-= default;
+SearchDialog::~SearchDialog() = default;
 
-void SearchDialog::setSearchText(const QString &text)
+void SearchDialog::setSearchText(const QString& text)
 {
     this->m_searchText = text;
 }
@@ -48,17 +47,18 @@ void SearchDialog::init()
     dialogLayout->addWidget(btnToolsWidget);
 
     // 点击按钮发送 searchDialog 信号
-    connect(m_prevButton, &QPushButton::clicked, [this](){
-                emit sdPrevClicked();
+    // clang-format off
+    connect(m_prevButton, &QPushButton::clicked, [this]() {
+        emit sdPrevClicked();
     });
-    connect(m_nextButton, &QPushButton::clicked, [this](){
-                emit sdNextClicked();
+    connect(m_nextButton, &QPushButton::clicked, [this]() {
+        emit sdNextClicked();
     });
-    connect(m_closeButton, &QPushButton::clicked, [this](){
-                this->close();
-                emit sdCloseClicked();
+    connect(m_closeButton, &QPushButton::clicked, [this]() {
+        this->close();
+        emit sdCloseClicked();
     });
-
+    // clang-format on
 }
 void SearchDialog::setMatchCount(int count, int index)
 {

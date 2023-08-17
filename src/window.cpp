@@ -22,7 +22,8 @@
 #include <QPainter>
 #include "constants.h"
 
-Window::Window(QWidget* parent) : KiranTitlebarWindow(parent)
+Window::Window(QWidget* parent)
+    : KiranTitlebarWindow(parent)
 {
     initTitleBar();
     init();
@@ -35,8 +36,7 @@ Window::Window(QWidget* parent) : KiranTitlebarWindow(parent)
     connect(m_document, &Document::keywordCountDone, m_searchBox, &SearchEdit::updateSearchCount);
 }
 
-Window::~Window()
-= default;
+Window::~Window() = default;
 
 // 槽函数：加载文档页面
 void Window::documentPageLoader(const QString& key)
@@ -92,7 +92,7 @@ void Window::initTitleBar()
     setTitleBarHeight(40);
     setButtonHints(KiranTitlebarWindow::TitlebarMinMaxCloseHints);
     setTitlebarColorBlockEnable(true);
-//    setIcon(QIcon::fromTheme("kiran-control-panel"));
+    //    setIcon(QIcon::fromTheme("kiran-control-panel"));
     QPixmap pixmap(ICON_PATH);
     setIcon(pixmap);
     setTitle(tr("kiran manual"));
@@ -100,9 +100,8 @@ void Window::initTitleBar()
     m_searchBox = new SearchEdit(this);
     // 添加搜索框
     m_searchBox->setPlaceholderText(tr("Enter keywords to search"));
-    m_searchBox->setFixedWidth(this->width()/2);
+    m_searchBox->setFixedWidth(this->width() / 2);
     m_searchBox->setFocusPolicy(Qt::ClickFocus);
-
 
     getTitlebarCustomLayout()->addWidget(m_searchBox);
     setTitlebarCustomLayoutAlignHCenter(true);

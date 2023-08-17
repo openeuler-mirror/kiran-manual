@@ -29,7 +29,7 @@ class Window : public KiranTitlebarWindow
     Q_OBJECT
 
 public:
-    explicit Window(QWidget *parent = nullptr);
+    explicit Window(QWidget* parent = nullptr);
     ~Window() override;
 
 protected:
@@ -37,10 +37,11 @@ protected:
 public slots:
     void documentPageLoader(const QString& mdfPath);
     void navigationPageLoader(const QString& key);
+
 private:
     QStackedWidget* m_stackedWidget{};
-    Navigation *m_navigation{};
-    Document *m_document{};
+    Navigation* m_navigation{};
+    Document* m_document{};
     SearchEdit* m_searchBox{};
 
     void init();

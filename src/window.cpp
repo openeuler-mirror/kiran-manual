@@ -13,8 +13,6 @@
  */
 
 #include "window.h"
-#include <kiran-message-box.h>
-#include <kiran-style/style-global-define.h>
 #include <kiran-style/style-palette.h>
 #include <search-edit/search-edit.h>
 #include <QAction>
@@ -70,7 +68,6 @@ void Window::init()
     m_stackedWidget->addWidget(m_navigation);
     m_stackedWidget->addWidget(m_document);
     m_stackedWidget->setCurrentWidget(m_navigation);
-//    m_stackedWidget->setStyleSheet("QStackedWidget { border-radius: 6px;}");
 
     auto outWidget = new QWidget(this);
     auto outLayout = new QVBoxLayout(outWidget);

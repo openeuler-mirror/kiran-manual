@@ -15,7 +15,7 @@
 #include "document.h"
 #include "ui_document.h"
 #include "highlighter.h"
-#include "my-scroll-bar/my-scroll-bar.h"
+#include "scroll-bar/scroll-bar.h"
 
 #include <kiranwidgets-qt5/kiran-message-box.h>
 #include <kiran-log/qt5-log-i.h>
@@ -59,7 +59,7 @@ void Document::init()
     // 代码高亮
     auto *highlighter= new Highlighter(m_ui->textBrowser->document());
     m_ui->treeWidget->setHeaderHidden(true);
-    auto* myScrollBarForTree = new MyScrollBar(this);
+    auto* myScrollBarForTree = new ScrollBar(this);
     m_ui->treeWidget->setVerticalScrollBar(myScrollBarForTree);
     // 关联到槽函数
     connect(m_ui->treeWidget, &QTreeWidget::itemClicked, this, &Document::tocItemScrollToAnchor);
@@ -68,7 +68,7 @@ void Document::init()
     m_ui->textBrowser->setOpenLinks(false);
     m_ui->textBrowser->setOpenExternalLinks(false);
     m_ui->textBrowser->setStyleSheet("QTextBrowser{background-color: transparent; padding: 0 0 10px 5px}");
-    auto* myScrollBarForText = new MyScrollBar(this);
+    auto* myScrollBarForText = new ScrollBar(this);
     myScrollBarForText->setValue(10);
     m_ui->textBrowser->setVerticalScrollBar(myScrollBarForText);
     QPoint cuurPosition = m_ui->textBrowser->verticalScrollBar()->pos();
@@ -146,7 +146,7 @@ void Document::htmlStrSaveToFile(QString& fileName, QString& hStr)
         }
         QTextStream tsOut(&hFile);
         tsOut << hStr;
-        KLOG_INFO() << htmlFilePath + " => HTML document save success" << endl;
+        KLOG_INFO() << htmlFilePath + " => HTML document save success";
     }
 }
 
@@ -195,17 +195,7 @@ void Document::reloadDocument()
         KLOG_ERROR() << "m_mdFilePath is empty!! " << m_mdFilePath;
         return;
     }
-
-    // 原生渲染无法配合当前到样式定制，当前只使用自解析渲染
-    // 不同 QT 版本调用不同 Markdown 渲染方法:
-    // QT_VERSION >= 5.14 QT 原生渲染函数
-    // QT_VERSION < 5.14     自解析渲染函数
-//#if QT_VERSION >= QT_VERSION_CHECK(6, 16, 0)
-//    m_ui->textBrowser->setSource(m_mdFilePath);
-//#else
-    QString hStr = mdFile2HtmlStr(m_mdFilePath);
-    m_ui->textBrowser->setHtml(hStr);
-//#endif
+    m_ui->textBrowser->setHtml(mdFile2HtmlStr(m_mdFilePath));
 }
 
 void Document::fillMatchList(const QString& searchText)

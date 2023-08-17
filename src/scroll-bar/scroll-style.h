@@ -12,21 +12,19 @@
  * Author:     youzhengcai <youzhengcai@kylinsec.com.cn>
  */
 
-#include "searcher.h"
+#pragma once
 
-Searcher::Searcher(QObject *parent)
-    : QObject(parent)
-{
-}
+#include <QAbstractScrollArea>
+#include <QCommonStyle>
+#include <QRect>
+#include <QStyleOptionSlider>
 
-// TODO: 文档版内部关键字搜索  将搜索模块单独抽出
-QString Searcher::searchKeywordInside(const QString& keyword)
+class ScrollStyle :public QCommonStyle
 {
-    return nullptr;
-}
+public:
+    ScrollStyle();
+    ~ScrollStyle() override;
+    QRect subControlRect(ComplexControl cc,const QStyleOptionComplex* opt,
+                         SubControl sc, const QWidget* widget /*= nullptr*/) const override;
+};
 
-// TODO: 文档外部关键字搜索  将搜索模块单独抽出
-QString Searcher::searchKeywordOutside(const QString& keyword)
-{
-    return nullptr;
-}

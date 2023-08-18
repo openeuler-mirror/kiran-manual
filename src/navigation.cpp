@@ -25,6 +25,7 @@
 #include "kiran-log/qt5-log-i.h"
 #include "kiran-style/style-palette.h"
 #include "scroll-bar/scroll-bar.h"
+#include "string"
 
 Navigation::Navigation(QWidget *parent)
     : KiranColorBlock(parent)
@@ -95,7 +96,7 @@ void Navigation::init()
         auto *itemWidget = new QWidget();
         auto *itemLayout = new QGridLayout(itemWidget);
         itemLayout->setAlignment(Qt::AlignLeft);
-        itemLayout->setContentsMargins(50, 0, 0, 0);
+        itemLayout->setContentsMargins(50, 15, 0, 0);
 
         auto *categoryLabel = new QLabel(categoryLocal);
         categoryLabel->setMaximumHeight(15);
@@ -111,8 +112,8 @@ void Navigation::init()
             settings.beginGroup("Document " + categoryRaw + " " + item);
             QString itemName = settings.value("Name" + localFlag).toString();
             QString fileName = settings.value("FileName").toString();
-            QString filePath = DOC_FOLDER + localName + "/" + fileName;
-            QString iconPath = IMAGE_ICONS_FOLDER + settings.value("Icon").toString();
+            QString filePath = MARKDOWNS_FOLDER + localName + "/" + fileName;
+            QString iconPath = IMAGE_FOR_NAV_FOLDER + settings.value("Icon").toString();
             settings.endGroup();
             // 声明条目块
             auto *innerItemWidget = new KiranFrame();

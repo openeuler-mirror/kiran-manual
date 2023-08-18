@@ -277,7 +277,7 @@ void MarkdownParser::dfs(Node* root)
         m_content += R"(<img width="600" alt=")";
         m_content += root->elem[0];
         m_content += "\" src=\"";
-        string prePath = IMAGE_DOCS_FOLDER;
+        string prePath = IMAGE_FOR_DOCS_FOLDER;
 
         string img = prePath + root->elem[1];
         m_content += prePath + root->elem[1];

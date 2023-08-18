@@ -12,32 +12,33 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# 定义查找 QT 库
+# 查找 QT 库
 set(QT_VERSION 5)
-set(REQUIRED_LIBS Core Gui Widgets)
+set(REQUIRED_LIBS Core Gui Widgets LinguistTools)
 set(REQUIRED_LIBS_QUALIFIED Qt5::Core Qt5::Gui Qt5::Widgets)
 find_package(
   Qt${QT_VERSION}
   COMPONENTS ${REQUIRED_LIBS}
   REQUIRED)
-
+# 查找 Kiran 相关组件
 find_package(PkgConfig REQUIRED)
-# 查找 Kiran 相关库
 pkg_search_module(KLOG REQUIRED klog-qt5)
 pkg_search_module(KIRAN_STYLE REQUIRED kiran-style-helper)
 pkg_search_module(KIRAN_WIDGETS REQUIRED kiranwidgets-qt5)
 
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
-file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h")
-file(GLOB_RECURSE FORMS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.ui")
+file(GLOB_RECURSE SOURCES "${PROJECT_SOURCE_DIR}/*.cpp")
+file(GLOB_RECURSE HEADERS "${PROJECT_SOURCE_DIR}/*.h")
+file(GLOB_RECURSE FORMS "${PROJECT_SOURCE_DIR}/*.ui")
 
 set(TS_FILES ./translations/kiran-manual.zh_CN.ts)
-find_package(
-  Qt${QT_VERSION}
-  COMPONENTS ${REQUIRED_LIBS} LinguistTools
-  REQUIRED)
+
+# 预定义定安装路径 （系统默认为 /usr/local）
+set(CMAKE_INSTALL_PREFIX "/usr")
+include(install-location-define.cmake)
+configure_file(${CMAKE_SOURCE_DIR}/data/config.h.in ${CMAKE_BINARY_DIR}/config.h)
+# 生成 .qm 翻译文件
 qt5_create_translation(QM_FILES ${CMAKE_CURRENT_SOURCE_DIR} ${TS_FILES})
 
 add_executable(
@@ -54,8 +55,10 @@ target_link_libraries(
   ${PROJECT_NAME} ${REQUIRED_LIBS_QUALIFIED} ${KLOG_LIBRARIES}
   ${KIRAN_STYLE_LIBRARIES} ${KIRAN_WIDGETS_LIBRARIES})
 
-install(FILES ${QM_FILES} DESTINATION share/${PROJECT_NAME}/translations)
-
+# 安装二进制文件
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/manual-books
-        DESTINATION share/${PROJECT_NAME}/data)
+# 安装翻译
+install(FILES ${QM_FILES} DESTINATION share/${PROJECT_NAME}/translations)
+# 安装 data 文件夹
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data
+        DESTINATION share/${PROJECT_NAME})

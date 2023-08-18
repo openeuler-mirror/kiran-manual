@@ -5,14 +5,12 @@
     <name>Document</name>
     <message>
         <location filename="../src/document.ui" line="14"/>
-        <location filename="../build/kiran-manual_autogen/include/ui_document.h" line="120"/>
         <location filename="../cmake-build-debug/kiran-manual_autogen/include/ui_document.h" line="120"/>
         <source>Document</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../src/document.ui" line="60"/>
-        <location filename="../build/kiran-manual_autogen/include/ui_document.h" line="121"/>
         <location filename="../cmake-build-debug/kiran-manual_autogen/include/ui_document.h" line="121"/>
         <source>HOME</source>
         <translation></translation>

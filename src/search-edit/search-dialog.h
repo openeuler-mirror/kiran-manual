@@ -41,12 +41,11 @@ signals:
     void sdCloseClicked();
 
 private:
+    void init();
+
     QPushButton *m_prevButton{};
     QPushButton *m_nextButton{};
     QLabel *m_countLabel{};
     QString m_searchText{};
     QPushButton *m_closeButton{};
-
-private:
-    void init();
 };

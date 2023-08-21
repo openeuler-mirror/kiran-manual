@@ -62,8 +62,8 @@ install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
 # 安装翻译
 install(FILES ${QM_FILES} DESTINATION share/${PROJECT_NAME}/translations)
 # 安装 data 文件夹
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data
-        DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/manual-books
+        DESTINATION share/${PROJECT_NAME}/data)
 #安装 kiran-manual.desktop
 install(FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.desktop" DESTINATION "${INSTALL_DATADIR}/applications/")
 #安装 kiran-icon icon文件

@@ -24,6 +24,7 @@ class ScrollBar : public QScrollBar
 public:
     explicit ScrollBar(QWidget* parent = nullptr);
     ~ScrollBar() override;
+
     QSize sizeHint() const override;
     void setArea(QAbstractScrollArea* area);
 

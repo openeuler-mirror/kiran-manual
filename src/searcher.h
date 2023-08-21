@@ -25,7 +25,6 @@ public:
     QString searchKeywordInside(const QString &keyword);
     QString searchKeywordOutside(const QString &keyword);
 
-signals:
 private:
     QString *m_keyword{};
     QString *m_filePath{};

@@ -29,6 +29,11 @@ SearchEdit::SearchEdit(QWidget *parent)
 
 SearchEdit::~SearchEdit() = default;
 
+void SearchEdit::setSearchField(const QString &searchField)
+{
+    this->m_searchField = searchField;
+}
+
 void SearchEdit::init()
 {
     setPlaceholderText(tr("Enter keywords to search"));
@@ -68,6 +73,7 @@ void SearchEdit::initSearchDialog()
     });
     // clang-format on
 }
+
 void SearchEdit::doSearch()
 {
     // 作出搜索行为时，初始化并弹出搜索工具框
@@ -89,14 +95,12 @@ void SearchEdit::focusOutEvent(QFocusEvent *event)
 {
     QLineEdit::focusOutEvent(event);
 }
+
 void SearchEdit::focusInEvent(QFocusEvent *event)
 {
     QLineEdit::focusInEvent(event);
 }
-void SearchEdit::setSearchFiled(const QString &searchField)
-{
-    this->m_searchField = searchField;
-}
+
 void SearchEdit::updateSearchCount(int count, int index)
 {
     this->m_searchDialog->setMatchCount(count, index);

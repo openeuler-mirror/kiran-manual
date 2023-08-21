@@ -34,33 +34,31 @@ Navigation::Navigation(QWidget *parent)
 }
 
 Navigation::~Navigation() = default;
-// 初始化视图
+
 void Navigation::init()
 {
-    auto *outLayout = new QVBoxLayout(this);
+    auto outLayout = new QVBoxLayout(this);
     outLayout->setMargin(0);
-    auto *scrollArea = new QScrollArea(this);
+    auto scrollArea = new QScrollArea(this);
     outLayout->addWidget(scrollArea);
 
-    auto *navScrollBar = new ScrollBar(this);
+    auto navScrollBar = new ScrollBar(this);
     scrollArea->setVerticalScrollBar(navScrollBar);
 
     // 定义最外层 Widget
-    auto *homeWidget = new QWidget(this);
+    auto homeWidget = new QWidget(this);
     outLayout->addWidget(homeWidget);
     homeWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     homeWidget->setContentsMargins(15, 15, 15, 15);
     // 定义最外部的垂直布局容器
-    auto *homeLayout = new QVBoxLayout(homeWidget);
+    auto homeLayout = new QVBoxLayout(homeWidget);
 
     // 载入配置文件
-    QString confIniPath = m_confFilePath;
-    QSettings settings(confIniPath, QSettings::IniFormat);
+    QSettings settings(m_confFilePath, QSettings::IniFormat);
     settings.setIniCodec("UTF-8");
 
     // 获取公共信息
     settings.beginGroup("Document");
-    //    QString docDir = settings.value("DocDir").toString();
 
     QStringList languageSupport = settings.value("LanguageSupport").toStringList();
     // 获取当前系统的语言环境
@@ -87,18 +85,18 @@ void Navigation::init()
         const QString &categoryRaw = *it;
         const QString &categoryLocal = categoriesLocal.at(index);
         int numberPerRow = 4;
-
-        // 声明分类块
-        auto *typeWidget = new QWidget();
-        auto *typeLayout = new QVBoxLayout(typeWidget);
         int maxPerLine = 7;
 
-        auto *itemWidget = new QWidget();
-        auto *itemLayout = new QGridLayout(itemWidget);
+        // 声明分类块
+        auto typeWidget = new QWidget();
+        auto typeLayout = new QVBoxLayout(typeWidget);
+
+        auto itemWidget = new QWidget();
+        auto itemLayout = new QGridLayout(itemWidget);
         itemLayout->setAlignment(Qt::AlignLeft);
         itemLayout->setContentsMargins(50, 15, 0, 0);
 
-        auto *categoryLabel = new QLabel(categoryLocal);
+        auto categoryLabel = new QLabel(categoryLocal);
         categoryLabel->setMaximumHeight(15);
         typeLayout->addWidget(categoryLabel);
         typeLayout->addWidget(itemWidget);
@@ -116,9 +114,9 @@ void Navigation::init()
             QString iconPath = IMAGE_FOR_NAV_FOLDER + settings.value("Icon").toString();
             settings.endGroup();
             // 声明条目块
-            auto *innerItemWidget = new KiranFrame();
+            auto innerItemWidget = new KiranFrame();
             innerItemWidget->setDrawBorder(false);
-            auto *innerItemLayout = new QVBoxLayout(innerItemWidget);
+            auto innerItemLayout = new QVBoxLayout(innerItemWidget);
             innerItemLayout->setAlignment(Qt::AlignCenter);
 
             // 背景图片文件路径
@@ -142,7 +140,7 @@ void Navigation::init()
             }
 
             // 声明图片按钮
-            auto *iBtn = new QPushButton();
+            auto iBtn = new QPushButton();
             iBtn->setMaximumWidth(parentWidget()->width() / maxPerLine);
             QString styleSheet = QString("border-image: url(%1);").arg(iconPath);
             iBtn->setStyleSheet(styleSheet);
@@ -150,21 +148,21 @@ void Navigation::init()
 
             // clang-format off
             connect(iBtn, &QPushButton::clicked, this, [=]() {
-                auto *clickedButton = qobject_cast<QPushButton *>(sender());
+                auto clickedButton = qobject_cast<QPushButton *>(sender());
                 if (clickedButton)
                 {
-                    emit docPageClicked(filePath);
+                    emit documentBlockClicked(filePath);
                 }
             });
             // clang-format on
             // 声明条目标题
-            auto *titleLabel = new QLabel(itemName, innerItemWidget);
+            auto titleLabel = new QLabel(itemName, innerItemWidget);
             titleLabel->setAlignment(Qt::AlignCenter);
             // Fixme: 以下代码用一种不好的方式解决 categoryLabel, titleLabel 文字不跟随主题变化到问题
             // note: 要跟随主题变化要求控件不能设置样式表，如有样式表则会导致主题透传失败
             // 后期优化
             using namespace Kiran;
-            auto *stylePalette = StylePalette::instance();
+            auto stylePalette = StylePalette::instance();
             // clang-format off
             connect(stylePalette, &StylePalette::themeChanged, this, [=](Kiran::PaletteType paletteType) {
                 QColor qColor = stylePalette->color(StylePalette::Normal,
@@ -190,7 +188,7 @@ void Navigation::init()
         // 添加分类块
         homeLayout->addWidget(typeWidget);
     }
-
+    homeLayout->addStretch();
     scrollArea->setWidget(homeWidget);
     scrollArea->setWidgetResizable(true);
 }

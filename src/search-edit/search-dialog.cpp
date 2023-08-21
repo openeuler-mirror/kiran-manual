@@ -20,11 +20,17 @@ SearchDialog::SearchDialog(QWidget* parent)
 {
     init();
 }
+
 SearchDialog::~SearchDialog() = default;
 
 void SearchDialog::setSearchText(const QString& text)
 {
     this->m_searchText = text;
+}
+
+void SearchDialog::setMatchCount(int count, int index)
+{
+    m_countLabel->setText(QString::number(index) + "/" + QString::number(count));
 }
 
 void SearchDialog::init()
@@ -36,10 +42,10 @@ void SearchDialog::init()
     m_closeButton = new QPushButton(tr("Close"), this);
 
     // 设置布局
-    auto* dialogLayout = new QHBoxLayout(this);
+    auto dialogLayout = new QHBoxLayout(this);
     dialogLayout->setMargin(0);
-    auto* btnToolsWidget = new KiranColorBlock(this);
-    auto* btnToolsLayout = new QHBoxLayout(btnToolsWidget);
+    auto btnToolsWidget = new KiranColorBlock(this);
+    auto btnToolsLayout = new QHBoxLayout(btnToolsWidget);
     btnToolsLayout->addWidget(m_countLabel);
     btnToolsLayout->addWidget(m_prevButton);
     btnToolsLayout->addWidget(m_nextButton);
@@ -60,7 +66,4 @@ void SearchDialog::init()
     });
     // clang-format on
 }
-void SearchDialog::setMatchCount(int count, int index)
-{
-    m_countLabel->setText(QString::number(index) + "/" + QString::number(count));
-}
+

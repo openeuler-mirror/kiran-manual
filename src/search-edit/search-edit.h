@@ -24,25 +24,13 @@ class SearchEdit : public KiranSearchBox
 public:
     explicit SearchEdit(QWidget* parent = nullptr);
     ~SearchEdit() override;
-    void setSearchFiled(const QString& searchField);
+    void setSearchField(const QString& searchField);
+
 public slots:
     // 作出搜索行为，内部会根据当前的搜索域发出不同的搜索请求
     void doSearch();
     void updateSearchCount(int count, int index);
 
-private:
-    // 搜索工具框： 提供搜索时的便捷跳转功能
-    SearchDialog* m_searchDialog{};
-    // 搜索域: 页面 StackWidget 切换时监听更改
-    QString m_searchField;
-
-private:
-    void init();
-    void initSearchDialog();
-
-protected:
-    void focusInEvent(QFocusEvent* event) override;
-    void focusOutEvent(QFocusEvent* event) override;
 signals:
     // 发起搜索文本浏览器请求
     void requestSearchTextBrowserNext(const QString& keyword);
@@ -52,4 +40,17 @@ signals:
     void requestSearchNavItem(const QString& keyword);
     // 文本改变信号
     void requestSearchKeywordChanged(const QString& keyword);
+
+protected:
+    void focusInEvent(QFocusEvent* event) override;
+    void focusOutEvent(QFocusEvent* event) override;
+
+private:
+    void init();
+    void initSearchDialog();
+
+    // 搜索工具框： 提供搜索时的便捷跳转功能
+    SearchDialog* m_searchDialog{};
+    // 搜索域: 页面 StackWidget 切换时监听更改
+    QString m_searchField;
 };

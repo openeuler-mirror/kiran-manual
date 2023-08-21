@@ -12,8 +12,7 @@
  * Author:     liuxinhao <liuxinhao@kylinsec.com.cn>
  */
 
-#ifndef KIRAN_CONTROL_PANEL_KIRAN_FRAME_H
-#define KIRAN_CONTROL_PANEL_KIRAN_FRAME_H
+#pragma once
 
 #include <QWidget>
 
@@ -92,5 +91,3 @@ private:
     bool m_fixedBorder = false;
     Kiran::StylePalette::ColorState m_fixedBorderState = Kiran::StylePalette::Normal;
 };
-
-#endif  // KIRAN_CONTROL_PANEL_KIRAN_FRAME_H

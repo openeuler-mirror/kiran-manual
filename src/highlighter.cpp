@@ -94,6 +94,7 @@ Highlighter::Highlighter(QTextDocument *parent)
     codeBlockStartExpression = QRegularExpression("<code>");
     codeBlockEndExpression = QRegularExpression("</code>");
 }
+
 void Highlighter::highlightBlock(const QString &text)
 {
     foreach (const HighlightingRule &rule, highlightingRules)

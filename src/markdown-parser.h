@@ -79,6 +79,7 @@ const std::string frontTag[] = {"", "<p>", "", "<ul>", "<ol>", "<li>", "<em>", "
 const std::string backTag[] = {"", "</p>", "", "</ul>", "</ol>", "</li>", "</em>", "</strong>", "", "", "</blockquote>",
                                "</h1>", "</h2>", "</h3>", "</h4>", "</h5>", "</h6>", "</code></pre>", "</strong> ", ""};
 // clang-format on
+
 /**
  * HTML DOM 节点
  */
@@ -122,6 +123,7 @@ public:
         m_croot = new CatalogNode("");
         m_filename = filename;
     }
+
     ~MarkdownParser() override
     {
         if (m_root)
@@ -129,6 +131,7 @@ public:
             destory(m_root);
         }
     }
+
     // 打开文件读取数据
     void transfer();
     // 语法树转换成HTML源代码(DFS)

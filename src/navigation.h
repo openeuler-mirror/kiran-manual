@@ -24,11 +24,12 @@ class Navigation : public KiranColorBlock
 public:
     explicit Navigation(QWidget* parent = nullptr);
     ~Navigation() override;
+
 signals:
-    void docPageClicked(const QString& key);
+    void documentBlockClicked(const QString& key);
 
 private:
+    void init();
     // 配置文件路径
     QString m_confFilePath = CONF_FILE_PATH;
-    void init();
 };

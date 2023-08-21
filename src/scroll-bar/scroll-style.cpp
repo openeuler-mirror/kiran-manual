@@ -13,6 +13,7 @@
  */
 
 #include "scroll-bar/scroll-style.h"
+
 ScrollStyle::ScrollStyle() = default;
 
 QRect ScrollStyle::subControlRect(ComplexControl cc,
@@ -23,7 +24,7 @@ QRect ScrollStyle::subControlRect(ComplexControl cc,
     if (cc == QStyle::CC_ScrollBar)
     {
         QRect ret;
-        if (const auto* scrollbar = qstyleoption_cast<const QStyleOptionSlider*>(opt))
+        if (const auto scrollbar = qstyleoption_cast<const QStyleOptionSlider*>(opt))
         {
             const QRect scrollBarRect = scrollbar->rect;
             int sbextent = 0;
@@ -38,7 +39,7 @@ QRect ScrollStyle::subControlRect(ComplexControl cc,
                 if (widget)
                 {
                     //Scrollbar设置的parent为：QAbstractScrollArea
-                    auto* area = qobject_cast<QAbstractScrollArea*>(widget->parentWidget());
+                    auto area = qobject_cast<QAbstractScrollArea*>(widget->parentWidget());
                     QWidget* w = area->viewport();
                     contentLen = w->height();
                     int nPageCount = contentLen / maxLen;
@@ -95,4 +96,5 @@ QRect ScrollStyle::subControlRect(ComplexControl cc,
     }
     return QCommonStyle::subControlRect(cc, opt, sc, widget);
 }
+
 ScrollStyle::~ScrollStyle() = default;

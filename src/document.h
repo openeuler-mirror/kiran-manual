@@ -31,15 +31,14 @@ class Document : public QWidget
 public:
     explicit Document(QWidget* parent = nullptr);
     ~Document() override;
-    // 要渲染的 Markdown 文档路径
-    QString m_mdFilePath;
-    // 显示文档目录树
-    void showTOC(QTreeWidgetItem* rootItem, const QJsonObject& obj, int level = 0);
+
     // 解析 Markdown 文档为 HTML 字符串
     QString mdFile2HtmlStr(const QString& mdPath);
-    // 重新渲染文档
-    void reloadDocument();
+    // 渲染 Markdown 文档到组件
+    void renderDocument(const QString& mdFilePath);
     void renderCatalog(QJsonObject& jsonObject);
+    // 显示文档目录树
+    void showTOC(QTreeWidgetItem* rootItem, const QJsonObject& obj, int level = 0);
     // 设置搜索命中样式
     void setMatchStyle(QTextCursor& cursor);
     // 清除搜索命中样式
@@ -47,7 +46,7 @@ public:
 
 private slots:
     void tocItemScrollToAnchor(QTreeWidgetItem* item, int column);
-    void backHome();
+    void backToNavigationPage();
 
 public slots:
     void searchNextKeyword(const QString& keyword);
@@ -55,8 +54,8 @@ public slots:
     void searchKeywordClose(const QString& keyword);
     void searchKeywordChange(const QString& keyword);
     // 清除搜索项的高亮颜色
-    void clearSearchHighlights(const QString& keyword);
     void clearSearchHighlights();
+    void clearSearchHighlights(const QString& keyword);
     // 处理 a 标签的点击事件，用于文档之间的跳转
     void openDocumentURL(const QUrl& url);
 
@@ -65,7 +64,18 @@ signals:
     void keywordCountDone(int sum, int index);
 
 private:
+    // 初始化视图
+    void init();
+    // 渲染文档
+    void renderDocument();
+    // HTML 字符串保存到文件
+    // 调试使用，当打开.md文档时，将 markdown2html 模块输出的 html 文档输出到文件，调试使用
+    static void htmlStrSaveToFile(QString& fileName, QString& hStr);
+    void fillMatchList(const QString& searchText);
+
     Ui::Document* m_ui;
+    // 要渲染的 Markdown 文档路径
+    QString m_mdFilePath;
     // 解析后的 HTML 字符串
     QString m_htmlStr;
     QLineEdit* lineEditKeyword{};
@@ -80,9 +90,4 @@ private:
     bool m_firstItemSelected = false;
     // 搜索初始化
     bool m_initSearched = false;
-    // 初始化视图
-    void init();
-    // HTML 字符串保存到文件
-    static void htmlStrSaveToFile(QString& fileName, QString& hStr);
-    void fillMatchList(const QString& searchText);
 };

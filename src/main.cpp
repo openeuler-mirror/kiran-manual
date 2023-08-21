@@ -28,20 +28,22 @@ int main(int argc, char *argv[])
     initKiranLog();
     QApplication app(argc, argv);
 
+    // 安装翻译
     QTranslator trans;
     if (trans.load(TRANSLATE_PREFIX "kiran-manual." + QLocale().name() + ".qm"))
     {
         QCoreApplication::installTranslator(&trans);
     }
 
+    // 调整窗口大小及位置
     Window window;
     window.resize(WINDOW_WIDTH, WINDOW_HEIGHT);
-    // 居中显示
     int screeNum = QApplication::desktop()->screenNumber(QCursor::pos());
     QRect screenGeometry = QApplication::desktop()->screenGeometry(screeNum);
     window.move(screenGeometry.x() + (screenGeometry.width() - window.width()) / 2,
            screenGeometry.y() + (screenGeometry.height() - window.height()) / 2);
     window.show();
+
     return QApplication::exec();
 }
 

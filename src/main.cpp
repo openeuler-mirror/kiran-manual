@@ -25,14 +25,18 @@ void initKiranLog();
 
 int main(int argc, char *argv[])
 {
-    initKiranLog();
     QApplication app(argc, argv);
+    initKiranLog();
 
     // 安装翻译
-    QTranslator trans;
-    if (trans.load(TRANSLATE_PREFIX "kiran-manual." + QLocale().name() + ".qm"))
+    QTranslator translator;
+    if (!translator.load(QLocale(), PROJECT_NAME, ".", TRANSLATE_PREFIX ,".qm"))
     {
-        QCoreApplication::installTranslator(&trans);
+        KLOG_WARNING("Load translator failed for %s.", PROJECT_NAME);
+    }
+    else
+    {
+        QCoreApplication::installTranslator(&translator);
     }
 
     // 调整窗口大小及位置
@@ -47,7 +51,6 @@ int main(int argc, char *argv[])
     return QApplication::exec();
 }
 
-// 初始化日志库
 void initKiranLog()
 {
     int iRet = klog_qt5_init("", "kylinsec-session", PROJECT_NAME, PROJECT_NAME);

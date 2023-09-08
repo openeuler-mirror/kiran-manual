@@ -18,7 +18,7 @@
 
 // Project config
 #define PROJECT_NAME "kiran-manual"
-#define CONF_FILE_PATH ":/data/km-config.ini";
+#define CONF_FILE_PATH ":/data/km.ini";
 // Project Data File Path
 #define ROOT_FOLDER INSTALL_DATADIR "/kiran-manual/"
 #define DATA_FOLDER ROOT_FOLDER "data/"
@@ -27,8 +27,6 @@
 #define IMAGE_FOLDER DOCUMENTS_FOLDER "images/"
 #define IMAGE_FOR_DOCS_FOLDER IMAGE_FOLDER "docs/"
 #define IMAGE_FOR_NAV_FOLDER IMAGE_FOLDER "nav/"
-// Using Cmake to automatically obtain the installation path
-// Reconstruct the directory structure of data files
 
 // Resources
 #define RESOURCES_FOLDER ":/resources/"

@@ -22,6 +22,11 @@ class QStackedWidget;
 class Navigation;
 class Document;
 
+namespace Ui
+{
+class Window;
+}
+
 class Window : public KiranTitlebarWindow
 {
     Q_OBJECT
@@ -38,6 +43,7 @@ private:
     void init();
     void setTitleBar();
 
+    Ui::Window* m_ui;
     SearchEdit* m_searchBox{};
     QStackedWidget* m_pageStacked{};
     Navigation* m_navigationPage{};

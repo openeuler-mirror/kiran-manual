@@ -23,28 +23,33 @@
 #include "constants.h"
 #include "document.h"
 #include "navigation.h"
+#include "ui_window.h"
 
 Window::Window(QWidget* parent)
-    : KiranTitlebarWindow(parent)
+    : KiranTitlebarWindow(parent),
+      m_ui(new Ui::Window)
 {
+    m_ui->setupUi(this);
     init();
 }
 
-Window::~Window() = default;
+Window::~Window(){
+    delete m_ui;
+}
 
 void Window::switchToDocument(const QString& mdfPath)
 {
     m_documentPage->renderDocument(mdfPath);
     m_pageStacked->setCurrentWidget(m_documentPage);
     // 改变搜索框到搜索域到文档页面
-    m_searchBox->setSearchField(m_documentPage->objectName());
+//    m_searchBox->setSearchField(m_documentPage->objectName());
 }
 
 void Window::switchToNavigation(const QString& key)
 {
     m_pageStacked->setCurrentWidget(m_navigationPage);
     // 改变搜索框到搜索域到导航页面
-    m_searchBox->setSearchField(m_navigationPage->objectName());
+//    m_searchBox->setSearchField(m_navigationPage->objectName());
 }
 
 void Window::init()
@@ -76,17 +81,16 @@ void Window::init()
     connect(m_navigationPage, &Navigation::documentBlockClicked, this, &Window::switchToDocument);
     connect(m_documentPage, &Document::backHomeClicked, this, &Window::switchToNavigation);
     // 关联搜索框搜索信号到槽函数
-    connect(m_searchBox, &SearchEdit::requestSearchTextBrowserNext, m_documentPage, &Document::searchNextKeyword);
-    connect(m_searchBox, &SearchEdit::requestSearchTextBrowserPrev, m_documentPage, &Document::searchPrevKeyword);
-    connect(m_searchBox, &SearchEdit::requestSearchTextBrowserClosed, m_documentPage, &Document::searchKeywordClose);
-    connect(m_searchBox, &SearchEdit::requestSearchKeywordChanged, m_documentPage, &Document::searchKeywordChange);
-    connect(m_documentPage, &Document::keywordCountDone, m_searchBox, &SearchEdit::updateSearchCount);
+//    connect(m_searchBox, &SearchEdit::requestSearchTextBrowserNext, m_documentPage, &Document::searchNextKeyword);
+//    connect(m_searchBox, &SearchEdit::requestSearchTextBrowserPrev, m_documentPage, &Document::searchPrevKeyword);
+//    connect(m_searchBox, &SearchEdit::requestSearchTextBrowserClosed, m_documentPage, &Document::searchKeywordClose);
+//    connect(m_searchBox, &SearchEdit::requestSearchKeywordChanged, m_documentPage, &Document::searchKeywordChange);
+//    connect(m_documentPage, &Document::keywordCountDone, m_searchBox, &SearchEdit::updateSearchCount);
 }
 
 void Window::setTitleBar()
 {
-    // 初始化标题栏
-    setTitleBarHeight(40);
+    setTitleBarHeight(TITLE_BAR_HEIGHT);
     setButtonHints(KiranTitlebarWindow::TitlebarMinMaxCloseHints);
     setTitlebarColorBlockEnable(true);
     //    setIcon(QIcon::fromTheme("kiran-control-panel"));
@@ -94,13 +98,12 @@ void Window::setTitleBar()
     setIcon(pixmap);
     setTitle(tr("kiran manual"));
 
-    m_searchBox = new SearchEdit(this);
-    // 添加搜索框
-    m_searchBox->setPlaceholderText(tr("Enter keywords to search"));
-    m_searchBox->setFixedWidth(this->width() / 2);
-    m_searchBox->setFocusPolicy(Qt::ClickFocus);
-    getTitlebarCustomLayout()->addWidget(m_searchBox);
-
-    setTitlebarCustomLayoutAlignHCenter(true);
+//    m_searchBox = new SearchEdit(this);
+//    // 添加搜索框
+//    m_searchBox->setPlaceholderText(tr("Enter keywords to search"));
+//    m_searchBox->setFixedWidth(this->width() / 2);
+//    m_searchBox->setFocusPolicy(Qt::ClickFocus);
+//    getTitlebarCustomLayout()->addWidget(m_searchBox);
+//    setTitlebarCustomLayoutAlignHCenter(true);
 }
 

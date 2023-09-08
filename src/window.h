@@ -15,14 +15,12 @@
 #pragma once
 
 #include <kiranwidgets-qt5/kiran-titlebar-window.h>
-#include <search-edit/search-edit.h>
-#include <QStackedWidget>
 #include <QWidget>
 
-#include "document.h"
-#include "navigation.h"
-
-class Window;
+class SearchEdit;
+class QStackedWidget;
+class Navigation;
+class Document;
 
 class Window : public KiranTitlebarWindow
 {
@@ -32,18 +30,16 @@ public:
     explicit Window(QWidget* parent = nullptr);
     ~Window() override;
 
-protected:
-    void resizeEvent(QResizeEvent* event) override;
 public slots:
-    void documentPageLoader(const QString& mdfPath);
-    void navigationPageLoader(const QString& key);
+    void switchToDocument(const QString& mdfPath);
+    void switchToNavigation(const QString& key);
 
 private:
-    QStackedWidget* m_stackedWidget{};
-    Navigation* m_navigation{};
-    Document* m_document{};
-    SearchEdit* m_searchBox{};
-
     void init();
-    void initTitleBar();
+    void setTitleBar();
+
+    SearchEdit* m_searchBox{};
+    QStackedWidget* m_pageStacked{};
+    Navigation* m_navigationPage{};
+    Document* m_documentPage{};
 };

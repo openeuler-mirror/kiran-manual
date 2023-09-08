@@ -22,10 +22,12 @@
 
 void removeEscapeChar(char* str);
 void removeEscapeChar(string& str);
+
 MarkdownParser::MarkdownParser(QObject* parent)
     : QObject(parent)
 {
 }
+
 void removeEscapeChar(char* str)
 {
     regex re(R"([\r\n]+$)");
@@ -33,12 +35,13 @@ void removeEscapeChar(char* str)
     s = regex_replace(s, re, "");
     strcpy(str, s.c_str());
 }
+
 void removeEscapeChar(string& str)
 {
     regex re(R"([\r\n]+$)");
     str = regex_replace(str, re, "");
 }
-// 打开文件读取数据
+
 void MarkdownParser::transfer()
 {
     // 若不是 .md 文档，直接退出
@@ -204,7 +207,6 @@ void MarkdownParser::transfer()
     buildJSONTOC();
 }
 
-// 根据已经遍历完毕的目录节点树 m_croot 生成 JSON
 QJsonObject MarkdownParser::buildJSONTOC()
 {
     // 构造 JSON
@@ -242,7 +244,6 @@ void MarkdownParser::cdfsForJson(CatalogNode* v, const string& index, QJsonArray
     }
 }
 
-// 语法树转换成HTML源代码(DFS)
 void MarkdownParser::dfs(Node* root)
 {
     // 此段只处理前置标签
@@ -530,7 +531,7 @@ string MarkdownParser::html()
 
     return head + m_content + end;
 }
-// 插入目录项
+
 void MarkdownParser::cins(CatalogNode* v, int x, const string& hd, int tag)
 {
     int n = (int)v->_child.size();
@@ -545,6 +546,7 @@ void MarkdownParser::cins(CatalogNode* v, int x, const string& hd, int tag)
         v->_child.push_back(new CatalogNode(""));
     cins(v->_child.back(), x - 1, hd, tag);
 }
+
 void MarkdownParser::cdfs(CatalogNode* v, const string& index)
 {
     m_toc += "<li>";

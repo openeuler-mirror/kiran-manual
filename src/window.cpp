@@ -16,77 +16,74 @@
 #include <kiran-style/style-palette.h>
 #include <search-edit/search-edit.h>
 #include <QAction>
+#include <QStackedWidget>
 #include <QBitmap>
 #include <QHBoxLayout>
-#include <QMessageBox>
 #include <QPainter>
 #include "constants.h"
+#include "document.h"
+#include "navigation.h"
 
 Window::Window(QWidget* parent)
     : KiranTitlebarWindow(parent)
 {
-    initTitleBar();
     init();
-
-    // 关联搜索框搜索信号
-    connect(m_searchBox, &SearchEdit::requestSearchTextBrowserNext, m_document, &Document::searchNextKeyword);
-    connect(m_searchBox, &SearchEdit::requestSearchTextBrowserPrev, m_document, &Document::searchPrevKeyword);
-    connect(m_searchBox, &SearchEdit::requestSearchTextBrowserClosed, m_document, &Document::searchKeywordClose);
-    connect(m_searchBox, &SearchEdit::requestSearchKeywordChanged, m_document, &Document::searchKeywordChange);
-    connect(m_document, &Document::keywordCountDone, m_searchBox, &SearchEdit::updateSearchCount);
 }
 
 Window::~Window() = default;
 
-// 槽函数：加载文档页面
-void Window::documentPageLoader(const QString& key)
+void Window::switchToDocument(const QString& mdfPath)
 {
-    m_document->m_mdFilePath = key;
-    m_document->reloadDocument();
-    // 将路径入栈，实现前进后退功能
-
-    m_stackedWidget->setCurrentWidget(m_document);
+    m_documentPage->renderDocument(mdfPath);
+    m_pageStacked->setCurrentWidget(m_documentPage);
     // 改变搜索框到搜索域到文档页面
-    m_searchBox->setSearchFiled(m_document->objectName());
+    m_searchBox->setSearchField(m_documentPage->objectName());
 }
-// 槽函数：加载导航页面
-void Window::navigationPageLoader(const QString& key)
+
+void Window::switchToNavigation(const QString& key)
 {
-    m_stackedWidget->setCurrentWidget(m_navigation);
+    m_pageStacked->setCurrentWidget(m_navigationPage);
     // 改变搜索框到搜索域到导航页面
-    m_searchBox->setSearchFiled(m_navigation->objectName());
+    m_searchBox->setSearchField(m_navigationPage->objectName());
 }
-// 初始化导航页视图
+
 void Window::init()
 {
+    setTitleBar();
     // 声明 Navigation, Document 页面
-    m_stackedWidget = new QStackedWidget(this);
-    m_navigation = new Navigation(this);
-    m_navigation->setObjectName("Navigation");
-    m_document = new Document(this);
-    // 将主页和文章页面添加到 QStackedWidget 中, 并设定主页
-    m_stackedWidget->addWidget(m_navigation);
-    m_stackedWidget->addWidget(m_document);
-    m_stackedWidget->setCurrentWidget(m_navigation);
+    m_pageStacked = new QStackedWidget(this);
+    m_navigationPage = new Navigation(this);
+    m_documentPage = new Document(this);
+    // 设置 objectName 用于判断搜索域
+    m_navigationPage->setObjectName(NAVIGATION_OBJECT_NAME);
+    m_documentPage->setObjectName(DOCUMENT_OBJECT_NAME);
+    // 添加导航页、文档页到 pageStacked, 并设定主页
+    m_pageStacked->addWidget(m_navigationPage);
+    m_pageStacked->addWidget(m_documentPage);
+    m_pageStacked->setCurrentWidget(m_navigationPage);
 
     auto outWidget = new QWidget(this);
     auto outLayout = new QVBoxLayout(outWidget);
-    // 缝隙宽度
     outLayout->setMargin(4);
-    // 页面颜色
     QPalette pal(this->palette());
     outWidget->setAutoFillBackground(true);
     outWidget->setPalette(pal);
     outWidget->setStyleSheet("border-radius: 6px;");
+    outLayout->addWidget(m_pageStacked);
 
-    outLayout->addWidget(m_stackedWidget);
-    // 初始化中心显示窗口
     setWindowContentWidget(outWidget);
     // 关联页面切换信号到槽函数
-    connect(m_navigation, &Navigation::docPageClicked, this, &Window::documentPageLoader);
-    connect(m_document, &Document::backHomeClicked, this, &Window::navigationPageLoader);
+    connect(m_navigationPage, &Navigation::documentBlockClicked, this, &Window::switchToDocument);
+    connect(m_documentPage, &Document::backHomeClicked, this, &Window::switchToNavigation);
+    // 关联搜索框搜索信号到槽函数
+    connect(m_searchBox, &SearchEdit::requestSearchTextBrowserNext, m_documentPage, &Document::searchNextKeyword);
+    connect(m_searchBox, &SearchEdit::requestSearchTextBrowserPrev, m_documentPage, &Document::searchPrevKeyword);
+    connect(m_searchBox, &SearchEdit::requestSearchTextBrowserClosed, m_documentPage, &Document::searchKeywordClose);
+    connect(m_searchBox, &SearchEdit::requestSearchKeywordChanged, m_documentPage, &Document::searchKeywordChange);
+    connect(m_documentPage, &Document::keywordCountDone, m_searchBox, &SearchEdit::updateSearchCount);
 }
-void Window::initTitleBar()
+
+void Window::setTitleBar()
 {
     // 初始化标题栏
     setTitleBarHeight(40);
@@ -102,11 +99,8 @@ void Window::initTitleBar()
     m_searchBox->setPlaceholderText(tr("Enter keywords to search"));
     m_searchBox->setFixedWidth(this->width() / 2);
     m_searchBox->setFocusPolicy(Qt::ClickFocus);
-
     getTitlebarCustomLayout()->addWidget(m_searchBox);
+
     setTitlebarCustomLayoutAlignHCenter(true);
 }
-void Window::resizeEvent(QResizeEvent* event)
-{
-    QWidget::resizeEvent(event);
-}
+

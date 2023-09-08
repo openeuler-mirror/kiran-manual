@@ -28,6 +28,25 @@ QSize ScrollBar::sizeHint() const
     return QScrollBar::sizeHint();
 }
 
+void ScrollBar::setArea(QAbstractScrollArea *area)
+{
+    area->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    auto bar = area->verticalScrollBar();
+    QObject::connect(
+        bar, SIGNAL(rangeChanged(int, int)), this, SLOT(onSetRange(int, int)));
+    QObject::connect(
+        bar, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
+    QObject::connect(
+        this, SIGNAL(valueChanged(int)), bar, SLOT(setValue(int)));
+    setVisible(false);
+    m_area = area;
+
+    //设置成自定义的样式
+    m_style = new ScrollStyle();
+    setStyle(m_style);
+}
+
 void ScrollBar::onSetRange(int min, int max)
 {
     if (max > 0)
@@ -37,6 +56,7 @@ void ScrollBar::onSetRange(int min, int max)
     }
     setRange(min, max);
 }
+
 void ScrollBar::paintEvent(QPaintEvent *ev)
 {
     //绘制滚动条背景
@@ -59,21 +79,4 @@ void ScrollBar::paintEvent(QPaintEvent *ev)
     p.addRoundedRect(sliderRc, 3, 3);
     painter.fillPath(p, QColor(226, 226, 226, 100));
 }
-void ScrollBar::setArea(QAbstractScrollArea *area)
-{
-    area->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    auto bar = area->verticalScrollBar();
-    QObject::connect(
-        bar, SIGNAL(rangeChanged(int, int)), this, SLOT(onSetRange(int, int)));
-    QObject::connect(
-        bar, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
-    QObject::connect(
-        this, SIGNAL(valueChanged(int)), bar, SLOT(setValue(int)));
-    setVisible(false);
-    m_area = area;
 
-    //设置成自定义的样式
-    m_style = new ScrollStyle();
-    setStyle(m_style);
-}

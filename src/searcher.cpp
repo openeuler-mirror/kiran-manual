@@ -19,13 +19,11 @@ Searcher::Searcher(QObject* parent)
 {
 }
 
-// TODO: 文档版内部关键字搜索  将搜索模块单独抽出
 QString Searcher::searchKeywordInside(const QString& keyword)
 {
     return nullptr;
 }
 
-// TODO: 文档外部关键字搜索  将搜索模块单独抽出
 QString Searcher::searchKeywordOutside(const QString& keyword)
 {
     return nullptr;

@@ -90,12 +90,12 @@ Document Name: </source>
 <context>
     <name>Window</name>
     <message>
-        <location filename="../src/window.cpp" line="98"/>
+        <location filename="../src/window.cpp" line="78"/>
         <source>kiran manual</source>
         <translation>帮助手册</translation>
     </message>
     <message>
-        <location filename="../src/window.cpp" line="102"/>
+        <location filename="../src/window.cpp" line="82"/>
         <source>Enter keywords to search</source>
         <translation>请输入搜索关键字</translation>
     </message>

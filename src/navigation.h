@@ -17,6 +17,11 @@
 #include <QWidget>
 #include "constants.h"
 
+namespace Ui
+{
+class Navigation;
+}
+
 class Navigation : public KiranColorBlock
 {
     Q_OBJECT
@@ -30,6 +35,8 @@ signals:
 
 private:
     void init();
-    // 配置文件路径
+
+
+    Ui::Navigation* m_ui;
     QString m_confFilePath = CONF_FILE_PATH;
 };

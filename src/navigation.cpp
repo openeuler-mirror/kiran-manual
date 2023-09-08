@@ -26,14 +26,20 @@
 #include "kiran-style/style-palette.h"
 #include "scroll-bar/scroll-bar.h"
 #include "string"
+#include "ui_navigation.h"
 
 Navigation::Navigation(QWidget *parent)
-    : KiranColorBlock(parent)
+    : KiranColorBlock(parent),
+      m_ui(new Ui::Navigation)
 {
+    m_ui->setupUi(this);
     init();
 }
 
-Navigation::~Navigation() = default;
+Navigation::~Navigation()
+{
+    delete m_ui;
+}
 
 void Navigation::init()
 {
@@ -84,6 +90,9 @@ void Navigation::init()
         // "Category" 分两个，一是原始 categoryRaw 二是根据语言环境翻译后到 categoryLocal
         const QString &categoryRaw = *it;
         const QString &categoryLocal = categoriesLocal.at(index);
+
+        // numberPerRow 用于规定每行数量
+        // maxPerLine 用于计算 在 numberPerRow 下每一块的宽度
         int numberPerRow = 4;
         int maxPerLine = 7;
 

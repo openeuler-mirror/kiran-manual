@@ -18,7 +18,7 @@
 
 // Project config
 #define PROJECT_NAME "kiran-manual"
-#define CONF_FILE_PATH ":/data/km.ini";
+//#define CONF_FILE_PATH ":/data/km.ini";
 // Project Data File Path
 #define ROOT_FOLDER INSTALL_DATADIR "/kiran-manual/"
 #define DATA_FOLDER ROOT_FOLDER "data/"
@@ -27,6 +27,7 @@
 #define IMAGE_FOLDER DOCUMENTS_FOLDER "images/"
 #define IMAGE_FOR_DOCS_FOLDER IMAGE_FOLDER "docs/"
 #define IMAGE_FOR_NAV_FOLDER IMAGE_FOLDER "nav/"
+#define CONF_FILE_PATH DATA_FOLDER "km.ini";
 
 // Resources
 #define RESOURCES_FOLDER ":/resources/"
@@ -35,6 +36,7 @@
 // UI
 #define WINDOW_WIDTH 1035
 #define WINDOW_HEIGHT 742
+#define TITLE_BAR_HEIGHT 40
 
 // Object name
 #define NAVIGATION_OBJECT_NAME "Navigation"

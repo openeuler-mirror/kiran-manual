@@ -61,8 +61,11 @@ target_link_libraries(
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
 # 安装翻译
 install(FILES ${QM_FILES} DESTINATION share/${PROJECT_NAME}/translations)
-# 安装 data 文件夹
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/manual-books
+# 安装 文档库配置文件
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/km.ini
+        DESTINATION share/${PROJECT_NAME}/data)
+# 安装 文档库
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/documents
         DESTINATION share/${PROJECT_NAME}/data)
 #安装 kiran-manual.desktop
 install(FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.desktop" DESTINATION "${INSTALL_DATADIR}/applications/")

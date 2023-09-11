@@ -94,7 +94,7 @@ void Window::setTitleBar()
     setButtonHints(KiranTitlebarWindow::TitlebarMinMaxCloseHints);
     setTitlebarColorBlockEnable(true);
     //    setIcon(QIcon::fromTheme("kiran-control-panel"));
-    QPixmap pixmap(ICON_PATH);
+    QPixmap pixmap(TITLE_BAR_ICON_PATH);
     setIcon(pixmap);
     setTitle(tr("kiran manual"));
 

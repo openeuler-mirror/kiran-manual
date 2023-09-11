@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>../resources/images/kiran-manual.png</file>
+        <file>../resources/kiran-manual-icons/kiran-manual-64.png</file>
     </qresource>
 </RCC>

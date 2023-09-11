@@ -31,7 +31,7 @@
 
 // Resources
 #define RESOURCES_FOLDER ":/resources/"
-#define ICON_PATH RESOURCES_FOLDER "images/kiran-manual.png"
+#define TITLE_BAR_ICON_PATH RESOURCES_FOLDER "kiran-manual-icons/kiran-manual-64.png"
 
 // UI
 #define WINDOW_WIDTH 1035

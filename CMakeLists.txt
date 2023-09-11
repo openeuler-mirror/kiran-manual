@@ -35,6 +35,8 @@ file(GLOB_RECURSE FORMS "${PROJECT_SOURCE_DIR}/*.ui")
 
 set(TS_FILES ./translations/kiran-manual.zh_CN.ts)
 
+set(KIRAN_MANUAL_ICON_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor)
+
 # 预定义定安装路径 （系统默认为 /usr/local）
 set(CMAKE_INSTALL_PREFIX "/usr")
 include(install-location-define.cmake)
@@ -70,4 +72,10 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/documents
 #安装 kiran-manual.desktop
 install(FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.desktop" DESTINATION "${INSTALL_DATADIR}/applications/")
 #安装 kiran-icon icon文件
-install(FILES "${CMAKE_SOURCE_DIR}/data/kiran-manual.png" DESTINATION ${INSTALL_DATADIR}/icons/hicolor/)
+install(FILES ${CMAKE_SOURCE_DIR}/resources/kiran-manual-icons/kiran-manual-16.png DESTINATION ${KIRAN_MANUAL_ICON_INSTALL_PATH}/16x16/apps RENAME kiran-manual.png)
+install(FILES ${CMAKE_SOURCE_DIR}/resources/kiran-manual-icons/kiran-manual-22.png DESTINATION ${KIRAN_MANUAL_ICON_INSTALL_PATH}/22x22/apps RENAME kiran-manual.png)
+install(FILES ${CMAKE_SOURCE_DIR}/resources/kiran-manual-icons/kiran-manual-24.png DESTINATION ${KIRAN_MANUAL_ICON_INSTALL_PATH}/24x24/apps RENAME kiran-manual.png)
+install(FILES ${CMAKE_SOURCE_DIR}/resources/kiran-manual-icons/kiran-manual-32.png DESTINATION ${KIRAN_MANUAL_ICON_INSTALL_PATH}/32x32/apps RENAME kiran-manual.png)
+install(FILES ${CMAKE_SOURCE_DIR}/resources/kiran-manual-icons/kiran-manual-48.png DESTINATION ${KIRAN_MANUAL_ICON_INSTALL_PATH}/48x48/apps RENAME kiran-manual.png)
+install(FILES ${CMAKE_SOURCE_DIR}/resources/kiran-manual-icons/kiran-manual-64.png DESTINATION ${KIRAN_MANUAL_ICON_INSTALL_PATH}/64x64/apps RENAME kiran-manual.png)
+install(FILES ${CMAKE_SOURCE_DIR}/resources/kiran-manual-icons/kiran-manual-96.png DESTINATION ${KIRAN_MANUAL_ICON_INSTALL_PATH}/96x96/apps RENAME kiran-manual.png)

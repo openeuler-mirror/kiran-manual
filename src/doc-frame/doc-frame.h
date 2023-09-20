@@ -14,27 +14,35 @@
 
 #pragma once
 
-#include <QAbstractScrollArea>
-#include <QScrollBar>
-#include "scroll-style.h"
+#include <QWidget>
 
-class ScrollBar : public QScrollBar
+#include <kiran-style/style-palette.h>
+
+class DocFrame : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ScrollBar(QWidget* parent = nullptr);
-    ~ScrollBar() override;
+    explicit DocFrame(QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 
-    QSize sizeHint() const override;
-    void setArea(QAbstractScrollArea* area);
+    void setDocFrame(QString& itemName, QString& iconPath, QString& filePath, int maxPerLine);
 
 protected:
-    void paintEvent(QPaintEvent* ev) override;
+    void paintEvent(QPaintEvent* event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
 
-private slots:
-    void onSetRange(int min, int max);
+signals:
+    void clicked();
 
 private:
-    QAbstractScrollArea* m_area = nullptr;
-    ScrollStyle* m_style = nullptr;
+    int m_radius = 6;
+    QPoint mousePos;
+    bool m_drawBackground = true;
+
+    QString m_itemName;
+    QString m_iconPath;
+    QString m_filePath;
+    int m_maxPerLine{};
+
+    void init();
 };

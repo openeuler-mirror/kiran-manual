@@ -17,11 +17,6 @@
 #include <kiranwidgets-qt5/kiran-titlebar-window.h>
 #include <QWidget>
 
-class SearchEdit;
-class QStackedWidget;
-class Navigation;
-class Document;
-
 namespace Ui
 {
 class Window;
@@ -43,9 +38,6 @@ private:
     void init();
     void setTitleBar();
 
+private:
     Ui::Window* m_ui;
-    SearchEdit* m_searchBox{};
-    QStackedWidget* m_pageStacked{};
-    Navigation* m_navigationPage{};
-    Document* m_documentPage{};
 };

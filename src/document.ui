@@ -56,8 +56,19 @@
           </property>
           <item>
            <widget class="QPushButton" name="pushButtonBackHome">
+            <property name="styleSheet">
+             <string notr="true">QPushButton { 
+height: 30px; 
+padding-left: 24px; 
+padding-top: 5px; 
+text-align: left 
+}</string>
+            </property>
             <property name="text">
-             <string>HOME</string>
+             <string>Back Home</string>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -68,6 +79,23 @@
               <horstretch>1</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QTreeView {
+background-color: transparent; 
+border: none
+}
+QTreeView::branch::selected {
+background-color:#2eb3ff;
+border-radius: 6px
+}
+QTreeView::item {
+height: 40px
+}
+QTreeView::item::selected{
+background-color:#2eb3ff
+}
+</string>
             </property>
             <column>
              <property name="text">
@@ -86,6 +114,9 @@
        <item>
         <widget class="KiranColorBlock" name="widgetRight" native="true">
          <layout class="QVBoxLayout" name="verticalLayout_2">
+          <property name="spacing">
+           <number>0</number>
+          </property>
           <property name="leftMargin">
            <number>0</number>
           </property>
@@ -105,6 +136,18 @@
               <horstretch>3</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QTextBrowser{
+background-color: transparent; 
+padding: 15px 0 10px 5px
+}</string>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="openLinks">
+             <bool>false</bool>
             </property>
            </widget>
           </item>

@@ -14,7 +14,6 @@
 
 #include "document.h"
 #include "highlighter.h"
-#include "scroll-bar/scroll-bar.h"
 #include "ui_document.h"
 
 #include <kiran-log/qt5-log-i.h>
@@ -33,6 +32,7 @@
 #include <QString>
 #include <QStringList>
 #include <QTreeWidget>
+#include <QScrollBar>
 #include <string>
 #include "markdown-parser.h"
 
@@ -309,34 +309,17 @@ void Document::init()
     auto outLayout = new QVBoxLayout(this);
     outLayout->setMargin(0);
     // 组件初始化
-    m_ui->pushButtonBackHome->setText(tr("Back Home"));
     // 代码高亮
     auto highlighter = new Highlighter(m_ui->textBrowser->document());
     m_ui->treeWidget->setHeaderHidden(true);
-    auto myScrollBarForTree = new ScrollBar(this);
-    m_ui->treeWidget->setVerticalScrollBar(myScrollBarForTree);
     // 关联到槽函数
     connect(m_ui->treeWidget, &QTreeWidget::itemClicked, this, &Document::tocItemScrollToAnchor);
     connect(m_ui->pushButtonBackHome, &QPushButton::clicked, this, &Document::backToNavigationPage);
 
-    m_ui->textBrowser->setOpenLinks(false);
-    m_ui->textBrowser->setOpenExternalLinks(false);
-    m_ui->textBrowser->setStyleSheet("QTextBrowser{background-color: transparent; padding: 15px 0 10px 5px}");
-    auto myScrollBarForText = new ScrollBar(this);
-    myScrollBarForText->setValue(10);
-    m_ui->textBrowser->setVerticalScrollBar(myScrollBarForText);
     QPoint cuurPosition = m_ui->textBrowser->verticalScrollBar()->pos();
     QPoint newPosition = cuurPosition + QPoint(5, 0);
     m_ui->textBrowser->verticalScrollBar()->move(newPosition);
     connect(m_ui->textBrowser, &QTextBrowser::anchorClicked, this, &Document::openDocumentURL);
-
-    m_ui->pushButtonBackHome->setFlat(true);
-    m_ui->pushButtonBackHome->setStyleSheet("QPushButton { height: 30px; padding-left: 24px; padding-top: 5px; text-align: left }");
-    m_ui->treeWidget->setStyleSheet("QTreeView {background-color: transparent; border: none;}"
-                                    "QTreeView::branch::selected{background-color:#2eb3ff;border-radius: 6px}"
-                                    "QTreeView::item::selected{background-color:#2eb3ff;");
-    //                                    "border-top-left-radius: 6px;border-bottom-left-radius: 6px;border-top-right-radius: 6px;border-bottom-right-radius: 6px;}");
-    this->setStyleSheet("QTreeView::item { height: 40px}");
 
     // Fixme: 以下代码用一种不好的方式解决 pushButtonBackHome, treeWidget, textBrowser 文字不跟随主题变化到问题
     // note: 要跟随主题变化要求控件不能设置样式表，如有样式表则会导致主题样式透传失败
@@ -369,7 +352,6 @@ void Document::init()
 
 void Document::renderDocument()
 {
-    // 解析并渲染目标文档
     if (m_mdFilePath.isEmpty() || !QFile::exists(m_mdFilePath))
     {
         KLOG_ERROR() << "m_mdFilePath value is empty or related file not found. m_mdFilePath=" << m_mdFilePath;

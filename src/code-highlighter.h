@@ -22,12 +22,12 @@ QT_BEGIN_NAMESPACE
 class QTextDocument;
 QT_END_NAMESPACE
 
-class Highlighter : public QSyntaxHighlighter
+class CodeHighlighter : public QSyntaxHighlighter
 {
     Q_OBJECT
 
 public:
-    explicit Highlighter(QTextDocument *parent = nullptr);
+    explicit CodeHighlighter(QTextDocument *parent = nullptr);
 
 protected:
     void highlightBlock(const QString &text) override;
@@ -43,10 +43,6 @@ private:
     // 多行注释起始
     QRegularExpression commentStartExpression;
     QRegularExpression commentEndExpression;
-
-    // 代码块起始
-    QRegularExpression codeBlockStartExpression;
-    QRegularExpression codeBlockEndExpression;
 
     QTextCharFormat codeBlockFormat;
     QTextCharFormat keywordFormat;

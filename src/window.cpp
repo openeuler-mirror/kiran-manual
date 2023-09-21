@@ -50,7 +50,6 @@ void Window::init()
 {
     this->setTitleBar();
     setWindowContentWidget(m_ui->palette);
-    // 关联页面切换信号到槽函数
     connect(m_ui->navigation, &Navigation::documentBlockClicked, this, &Window::switchToDocument);
     connect(m_ui->document, &Document::backHomeClicked, this, &Window::switchToNavigation);
 }

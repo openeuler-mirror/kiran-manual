@@ -53,17 +53,18 @@ void SearchDialog::init()
     dialogLayout->addWidget(btnToolsWidget);
 
     // 点击按钮发送 searchDialog 信号
-    // clang-format off
-    connect(m_prevButton, &QPushButton::clicked, [this]() {
+    connect(m_prevButton, &QPushButton::clicked, [this]()
+    {
         emit sdPrevClicked();
     });
-    connect(m_nextButton, &QPushButton::clicked, [this]() {
+    connect(m_nextButton, &QPushButton::clicked, [this]()
+    {
         emit sdNextClicked();
     });
-    connect(m_closeButton, &QPushButton::clicked, [this]() {
+    connect(m_closeButton, &QPushButton::clicked, [this]()
+    {
         this->close();
         emit sdCloseClicked();
     });
-    // clang-format on
 }
 

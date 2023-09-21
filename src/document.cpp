@@ -13,7 +13,7 @@
  */
 
 #include "document.h"
-#include "highlighter.h"
+#include "code-highlighter.h"
 #include "ui_document.h"
 
 #include <kiran-log/qt5-log-i.h>
@@ -293,7 +293,6 @@ void Document::openDocumentURL(const QUrl& url)
         QString dirPath = match.captured(1);
         targetUrl = dirPath + strUrl;
     }
-    // 如果目标路径为空 且 文件不存在则提示
     if (targetUrl.isEmpty() || !QFile::exists(targetUrl))
     {
         KiranMessageBox::message(this, tr("Notice!"), tr("Target document does not exist! \nDocument Name: ") + strUrl, KiranMessageBox::Cancel);
@@ -309,10 +308,8 @@ void Document::init()
     auto outLayout = new QVBoxLayout(this);
     outLayout->setMargin(0);
     // 组件初始化
-    // 代码高亮
-    auto highlighter = new Highlighter(m_ui->textBrowser->document());
+    auto highlighter = new CodeHighlighter(m_ui->textBrowser->document());
     m_ui->treeWidget->setHeaderHidden(true);
-    // 关联到槽函数
     connect(m_ui->treeWidget, &QTreeWidget::itemClicked, this, &Document::tocItemScrollToAnchor);
     connect(m_ui->pushButtonBackHome, &QPushButton::clicked, this, &Document::backToNavigationPage);
 
@@ -323,11 +320,10 @@ void Document::init()
 
     // Fixme: 以下代码用一种不好的方式解决 pushButtonBackHome, treeWidget, textBrowser 文字不跟随主题变化到问题
     // note: 要跟随主题变化要求控件不能设置样式表，如有样式表则会导致主题样式透传失败
-    // 后期优化
     using namespace Kiran;
     auto stylePalette = StylePalette::instance();
-    // clang-format off
-    connect(stylePalette, &StylePalette::themeChanged, this, [=](Kiran::PaletteType paletteType) {
+    connect(stylePalette, &StylePalette::themeChanged, this, [=](Kiran::PaletteType paletteType)
+    {
         QColor qColor = stylePalette->color(StylePalette::Normal,
                                             StylePalette::Widget,
                                             StylePalette::Foreground);
@@ -337,17 +333,13 @@ void Document::init()
 
         // pushButtonBackHome 可以通过单独的 setPalette 来跟随，但是 treeWidget, textBrowser 单独设置无效，暂不知道原因
         // 因此采用如下方式来设置
-
-        // 获取 QPushButton 的 QPalette
         QPalette buttonPalette = m_ui->pushButtonBackHome->palette();
-        // 获取 QPushButton 文本颜色
         const QColor& buttonTextColor = buttonPalette.color(QPalette::ButtonText);
         QPalette followPalette{};
         followPalette.setColor(QPalette::Text, buttonTextColor);
         m_ui->treeWidget->setPalette(followPalette);
         m_ui->textBrowser->setPalette(followPalette);
     });
-    // clang-format on
 }
 
 void Document::renderDocument()
@@ -367,7 +359,6 @@ void Document::htmlStrSaveToFile(QString& fileName, QString& hStr)
     {
         QString pureFileName = fileName.split(".").first();
         QString htmlFilePath = "html/" + pureFileName + ".html";
-        // 创建目录
         QDir().mkpath("html");
         QFile hFile(htmlFilePath);
         if (!hFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))

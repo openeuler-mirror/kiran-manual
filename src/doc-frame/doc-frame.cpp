@@ -65,15 +65,14 @@ void DocFrame::init()
     iBtn->setStyleSheet(styleSheet);
     iBtn->setFixedSize(w, h);
 
-    // clang-format off
-    connect(iBtn, &QPushButton::clicked, this, [=]() {
+    connect(iBtn, &QPushButton::clicked, this, [=]()
+    {
       auto clickedButton = qobject_cast<QPushButton *>(sender());
       if (clickedButton)
       {
           emit clicked();
       }
     });
-    // clang-format on
     // 声明条目标题
     auto titleLabel = new QLabel(m_itemName, this);
     titleLabel->setAlignment(Qt::AlignCenter);
@@ -106,8 +105,8 @@ void DocFrame::paintEvent(QPaintEvent* event)
     qRect.adjust(0.5, 0.5, -0.5, -0.5);
     painterPath.addRoundedRect(qRect, m_radius, m_radius);
 
-    // clang-format off
-    auto getStateFunc = [this](QStyle::State state) -> StylePalette::ColorState {
+    auto getStateFunc = [this](QStyle::State state) -> StylePalette::ColorState
+    {
         if (!(state & QStyle::State_Enabled))
         {
             return StylePalette::Disabled;
@@ -125,7 +124,6 @@ void DocFrame::paintEvent(QPaintEvent* event)
             return StylePalette::Normal;
         }
     };
-    // clang-format on
 
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);

@@ -49,35 +49,33 @@ void SearchEdit::initSearchDialog()
     m_searchDialog->setFixedWidth(this->width());
     m_searchDialog->setSearchText(this->text());
 
-    // 取消标题栏
-    //    m_searchDialog->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
     QPoint pos = mapToGlobal(QPoint(0, height())) + QPoint(0, 40);
-    //    QPoint pos = mapToGlobal(QPoint(0, height()));
     m_searchDialog->move(pos);
 
-    // clang-format off
-    connect(m_searchDialog, &SearchDialog::sdNextClicked, [this]() {
+    connect(m_searchDialog, &SearchDialog::sdNextClicked, [this]()
+    {
         emit requestSearchTextBrowserNext(this->text());
     });
 
-    connect(m_searchDialog, &SearchDialog::sdPrevClicked, [this]() {
+    connect(m_searchDialog, &SearchDialog::sdPrevClicked, [this]()
+    {
         emit requestSearchTextBrowserPrev(this->text());
     });
 
-    connect(m_searchDialog, &SearchDialog::sdCloseClicked, [this]() {
+    connect(m_searchDialog, &SearchDialog::sdCloseClicked, [this]()
+    {
         emit requestSearchTextBrowserClosed(this->text());
     });
 
-    connect(this, &SearchEdit::textChanged, [this]() {
+    connect(this, &SearchEdit::textChanged, [this]()
+    {
         emit requestSearchKeywordChanged(this->text());
     });
-    // clang-format on
 }
 
 void SearchEdit::doSearch()
 {
     // 作出搜索行为时，初始化并弹出搜索工具框
-    // TODO: 初始化和弹出分离, 先初始化完毕，按需弹出。现在遇到的问题是会导致位置不正确
     this->initSearchDialog();
     m_searchDialog->show();
     // 利用 StackWidget 中当前激活到页面 Object name 来判定搜索域

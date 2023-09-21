@@ -18,16 +18,6 @@
 
 // Project config
 #define PROJECT_NAME "kiran-manual"
-//#define CONF_FILE_PATH ":/data/km.ini";
-// Project Data File Path
-#define ROOT_FOLDER INSTALL_DATADIR "/kiran-manual/"
-#define DATA_FOLDER ROOT_FOLDER "data/"
-#define DOCUMENTS_FOLDER DATA_FOLDER "documents/"
-#define MARKDOWNS_FOLDER DOCUMENTS_FOLDER "markdowns/"
-#define IMAGE_FOLDER DOCUMENTS_FOLDER "images/"
-#define IMAGE_FOR_DOCS_FOLDER IMAGE_FOLDER "docs/"
-#define IMAGE_FOR_NAV_FOLDER IMAGE_FOLDER "nav/"
-#define CONF_FILE_PATH DATA_FOLDER "km.ini";
 
 // Resources
 #define RESOURCES_FOLDER ":/resources/"
@@ -44,3 +34,11 @@
 #define DOCUMENT_OBJECT_NAME "document"
 
 // config file
+#define CONFIG_KEY_DOCUMENT "Document"
+#define CONFIG_KEY_LANGUAGE_SUPPORT "LanguageSupport"
+#define CONFIG_KEY_CATEGORIES "Categories"
+#define CONFIG_KEY_CATEGORIES_ENUS "Categories[en_US]"
+#define CONFIG_KEY_ITEM "Item"
+#define CONFIG_KEY_NAME "Name"
+#define CONFIG_KEY_FILENAME "FileName"
+#define CONFIG_KEY_ICON "Icon"

@@ -37,8 +37,6 @@ set(TS_FILES ./translations/kiran-manual.zh_CN.ts)
 
 set(KIRAN_MANUAL_ICON_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor)
 
-# 预定义定安装路径 （系统默认为 /usr/local）
-set(CMAKE_INSTALL_PREFIX "/usr")
 include(install-location-define.cmake)
 configure_file(${CMAKE_SOURCE_DIR}/data/config.h.in ${CMAKE_BINARY_DIR}/config.h)
 configure_file(${CMAKE_SOURCE_DIR}/data/${PROJECT_NAME}.desktop.in ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.desktop)

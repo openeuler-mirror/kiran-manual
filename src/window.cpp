@@ -14,16 +14,14 @@
 
 #include "window.h"
 #include <kiran-style/style-palette.h>
-#include <search-edit/search-edit.h>
 #include <QAction>
-#include <QStackedWidget>
 #include <QBitmap>
-#include <QHBoxLayout>
 #include <QPainter>
 #include "constants.h"
-#include "document.h"
-#include "navigation.h"
+
 #include "ui_window.h"
+#include "navigation.h"
+#include "document.h"
 
 Window::Window(QWidget* parent)
     : KiranTitlebarWindow(parent),
@@ -39,53 +37,22 @@ Window::~Window(){
 
 void Window::switchToDocument(const QString& mdfPath)
 {
-    m_documentPage->renderDocument(mdfPath);
-    m_pageStacked->setCurrentWidget(m_documentPage);
-    // 改变搜索框到搜索域到文档页面
-//    m_searchBox->setSearchField(m_documentPage->objectName());
+    m_ui->document->renderDocument(mdfPath);
+    m_ui->stackedWidget->setCurrentWidget(m_ui->document);
 }
 
 void Window::switchToNavigation(const QString& key)
 {
-    m_pageStacked->setCurrentWidget(m_navigationPage);
-    // 改变搜索框到搜索域到导航页面
-//    m_searchBox->setSearchField(m_navigationPage->objectName());
+    m_ui->stackedWidget->setCurrentWidget(m_ui->navigation);
 }
 
 void Window::init()
 {
-    setTitleBar();
-    // 声明 Navigation, Document 页面
-    m_pageStacked = new QStackedWidget(this);
-    m_navigationPage = new Navigation(this);
-    m_documentPage = new Document(this);
-    // 设置 objectName 用于判断搜索域
-    m_navigationPage->setObjectName(NAVIGATION_OBJECT_NAME);
-    m_documentPage->setObjectName(DOCUMENT_OBJECT_NAME);
-    // 添加导航页、文档页到 pageStacked, 并设定主页
-    m_pageStacked->addWidget(m_navigationPage);
-    m_pageStacked->addWidget(m_documentPage);
-    m_pageStacked->setCurrentWidget(m_navigationPage);
-
-    auto outWidget = new QWidget(this);
-    auto outLayout = new QVBoxLayout(outWidget);
-    outLayout->setMargin(4);
-    QPalette pal(this->palette());
-    outWidget->setAutoFillBackground(true);
-    outWidget->setPalette(pal);
-    outWidget->setStyleSheet("border-radius: 6px;");
-    outLayout->addWidget(m_pageStacked);
-
-    setWindowContentWidget(outWidget);
+    this->setTitleBar();
+    setWindowContentWidget(m_ui->palette);
     // 关联页面切换信号到槽函数
-    connect(m_navigationPage, &Navigation::documentBlockClicked, this, &Window::switchToDocument);
-    connect(m_documentPage, &Document::backHomeClicked, this, &Window::switchToNavigation);
-    // 关联搜索框搜索信号到槽函数
-//    connect(m_searchBox, &SearchEdit::requestSearchTextBrowserNext, m_documentPage, &Document::searchNextKeyword);
-//    connect(m_searchBox, &SearchEdit::requestSearchTextBrowserPrev, m_documentPage, &Document::searchPrevKeyword);
-//    connect(m_searchBox, &SearchEdit::requestSearchTextBrowserClosed, m_documentPage, &Document::searchKeywordClose);
-//    connect(m_searchBox, &SearchEdit::requestSearchKeywordChanged, m_documentPage, &Document::searchKeywordChange);
-//    connect(m_documentPage, &Document::keywordCountDone, m_searchBox, &SearchEdit::updateSearchCount);
+    connect(m_ui->navigation, &Navigation::documentBlockClicked, this, &Window::switchToDocument);
+    connect(m_ui->document, &Document::backHomeClicked, this, &Window::switchToNavigation);
 }
 
 void Window::setTitleBar()
@@ -93,17 +60,7 @@ void Window::setTitleBar()
     setTitleBarHeight(TITLE_BAR_HEIGHT);
     setButtonHints(KiranTitlebarWindow::TitlebarMinMaxCloseHints);
     setTitlebarColorBlockEnable(true);
-    //    setIcon(QIcon::fromTheme("kiran-control-panel"));
     QPixmap pixmap(TITLE_BAR_ICON_PATH);
     setIcon(pixmap);
     setTitle(tr("kiran manual"));
-
-//    m_searchBox = new SearchEdit(this);
-//    // 添加搜索框
-//    m_searchBox->setPlaceholderText(tr("Enter keywords to search"));
-//    m_searchBox->setFixedWidth(this->width() / 2);
-//    m_searchBox->setFocusPolicy(Qt::ClickFocus);
-//    getTitlebarCustomLayout()->addWidget(m_searchBox);
-//    setTitlebarCustomLayoutAlignHCenter(true);
 }
-

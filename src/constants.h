@@ -37,7 +37,10 @@
 #define WINDOW_WIDTH 1035
 #define WINDOW_HEIGHT 742
 #define TITLE_BAR_HEIGHT 40
+#define DOC_FRAME_WIDTH 150
 
 // Object name
-#define NAVIGATION_OBJECT_NAME "Navigation"
-#define DOCUMENT_OBJECT_NAME "Document"
+#define NAVIGATION_OBJECT_NAME "navigation"
+#define DOCUMENT_OBJECT_NAME "document"
+
+// config file

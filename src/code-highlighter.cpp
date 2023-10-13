@@ -12,10 +12,10 @@
  * Author:     youzhengcai <youzhengcai@kylinsec.com.cn>
  */
 
-#include "highlighter.h"
 #include <QTextBlockFormat>
+#include "code-highlighter.h"
 
-Highlighter::Highlighter(QTextDocument *parent)
+CodeHighlighter::CodeHighlighter(QTextDocument *parent)
     : QSyntaxHighlighter(parent)
 {
     HighlightingRule rule;
@@ -23,8 +23,8 @@ Highlighter::Highlighter(QTextDocument *parent)
     keywordFormat.setForeground(Qt::darkBlue);
     keywordFormat.setFontWeight(QFont::Bold);
     // 定义关键字规则，下列为常见 C++ 关键字
-    QStringList keywordPatterns;
-    keywordPatterns << "\\bchar\\b"
+    QStringList cppKeywordPatterns;
+    cppKeywordPatterns << "\\bchar\\b"
                     << "\\bclass\\b"
                     << "\\bconst\\b"
                     << "\\bdouble\\b"
@@ -54,7 +54,7 @@ Highlighter::Highlighter(QTextDocument *parent)
                     << "\\bvoid\\b"
                     << "\\bvolatile\\b"
                     << "\\bbool\\b";
-    foreach (const QString &pattern, keywordPatterns)
+    foreach (const QString &pattern, cppKeywordPatterns)
     {
         // 定义 pattern
         rule.pattern = QRegularExpression(pattern);
@@ -63,6 +63,7 @@ Highlighter::Highlighter(QTextDocument *parent)
         // 加入规则集合
         highlightingRules.append(rule);
     }
+
     classFormat.setFontWeight(QFont::Bold);
     classFormat.setForeground(Qt::darkMagenta);
     rule.pattern = QRegularExpression("\\bQ[A-Za-z]+\\b");
@@ -87,15 +88,12 @@ Highlighter::Highlighter(QTextDocument *parent)
     rule.pattern = QRegularExpression("\\b[A-Za-z0-9_]+(?=\\()");
     rule.format = functionFormat;
     highlightingRules.append(rule);
+
     commentStartExpression = QRegularExpression("/\\*");
     commentEndExpression = QRegularExpression("\\*/");
-
-    codeBlockFormat.setForeground(Qt::yellow);
-    codeBlockStartExpression = QRegularExpression("<code>");
-    codeBlockEndExpression = QRegularExpression("</code>");
 }
 
-void Highlighter::highlightBlock(const QString &text)
+void CodeHighlighter::highlightBlock(const QString &text)
 {
     foreach (const HighlightingRule &rule, highlightingRules)
     {
@@ -127,27 +125,5 @@ void Highlighter::highlightBlock(const QString &text)
         }
         setFormat(startIndex, commentLength, multiLineCommentFormat);
         startIndex = text.indexOf(commentStartExpression, startIndex + commentLength);
-    }
-    // TODO: 实现只对 <code> 块中的代码进行高亮匹配
-    setCurrentBlockState(0);
-    startIndex = 0;
-    if (previousBlockState() != 1)
-        startIndex = text.indexOf(codeBlockStartExpression);
-    while (startIndex >= 0)
-    {
-        QRegularExpressionMatch match = codeBlockEndExpression.match(text, startIndex);
-        int endIndex = match.capturedStart();
-        int commentLength = 0;
-        if (endIndex == -1)
-        {
-            setCurrentBlockState(1);
-            commentLength = text.length() - startIndex;
-        }
-        else
-        {
-            commentLength = endIndex - startIndex + match.capturedLength();
-        }
-        setFormat(startIndex, commentLength, codeBlockFormat);
-        startIndex = text.indexOf(codeBlockStartExpression, startIndex + commentLength);
     }
 }

@@ -52,9 +52,9 @@ void Navigation::init()
   settings.setIniCodec("UTF-8");
 
   // 获取公共信息
-  settings.beginGroup("Document");
+  settings.beginGroup(CONFIG_KEY_DOCUMENT);
 
-  QStringList languageSupport = settings.value("LanguageSupport").toStringList();
+  QStringList languageSupport = settings.value(CONFIG_KEY_LANGUAGE_SUPPORT).toStringList();
   // 获取当前系统的语言环境
   QLocale locale = QLocale::system();
   QString localName = locale.name();
@@ -64,11 +64,12 @@ void Navigation::init()
     KLOG_INFO() << "dont support language-" + localName + ", auto change to en_US";
     localName = languageSupport.at(0);
   }
+
   QString localFlag = "[" + localName + "]";
 
   // 程序内 categories 使用英文，需要显示时再转为其他语言
-  QStringList categories = settings.value("Categories[en_US]").toStringList();
-  QStringList categoriesLocal = settings.value("Categories" + localFlag).toStringList();
+  QStringList categories = settings.value(CONFIG_KEY_CATEGORIES_ENUS).toStringList();
+  QStringList categoriesLocal = settings.value(CONFIG_KEY_CATEGORIES + localFlag).toStringList();
   settings.endGroup();
 
   // 输出每个分类下的 FileName
@@ -99,23 +100,26 @@ void Navigation::init()
     typeLayout->addWidget(itemWidget);
 
     // 获取该分类下的 item
-    QString itemsKey = "Document/" + categoryRaw + "Item";
+    QString itemsKey = CONFIG_KEY_DOCUMENT"/" + categoryRaw + CONFIG_KEY_ITEM;
     QStringList items = settings.value(itemsKey).toStringList();
     int count = 0;
     foreach (const QString &item, items)
     {
-      settings.beginGroup("Document " + categoryRaw + " " + item);
-      QString itemName = settings.value("Name" + localFlag).toString();
-      QString fileName = settings.value("FileName").toString();
+      settings.beginGroup(CONFIG_KEY_DOCUMENT" " + categoryRaw + " " + item);
+      QString itemName = settings.value(CONFIG_KEY_NAME + localFlag).toString();
+      QString fileName = settings.value(CONFIG_KEY_FILENAME).toString();
       QString filePath = MARKDOWNS_FOLDER + localName + "/" + fileName;
-      QString iconPath = IMAGE_FOR_NAV_FOLDER + settings.value("Icon").toString();
+      QString iconPath = IMAGE_FOR_NAV_FOLDER + settings.value(CONFIG_KEY_ICON).toString();
       settings.endGroup();
       // 声明条目块
       auto innerItemWidget = new DocFrame();
       innerItemWidget->setDocFrame(itemName,iconPath,filePath,maxPerLine);
-      connect(innerItemWidget, &DocFrame::clicked, this, [=](){
-        emit documentBlockClicked(filePath);
+
+      connect(innerItemWidget, &DocFrame::clicked, this, [=]()
+      {
+                  emit documentBlockClicked(filePath);
       });
+
       // 添加条目块
       itemLayout->addWidget(innerItemWidget, count / numberPerRow, count % numberPerRow);
       itemLayout->setSpacing(80);

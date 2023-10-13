@@ -19,10 +19,12 @@
 #include <QPainter>
 #include "constants.h"
 
-#include "ui_window.h"
-#include "navigation.h"
 #include "document.h"
+#include "navigation.h"
+#include "ui_window.h"
 
+namespace Kiran
+{
 Window::Window(QWidget* parent)
     : KiranTitlebarWindow(parent),
       m_ui(new Ui::Window)
@@ -31,7 +33,8 @@ Window::Window(QWidget* parent)
     init();
 }
 
-Window::~Window(){
+Window::~Window()
+{
     delete m_ui;
 }
 
@@ -63,3 +66,4 @@ void Window::setTitleBar()
     setIcon(pixmap);
     setTitle(tr("kiran manual"));
 }
+}  // namespace Kiran

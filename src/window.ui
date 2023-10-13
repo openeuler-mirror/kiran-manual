@@ -55,8 +55,8 @@
         <property name="currentIndex">
          <number>0</number>
         </property>
-        <widget class="Navigation" name="navigation"/>
-        <widget class="Document" name="document"/>
+        <widget class="Kiran::Navigation" name="navigation"/>
+        <widget class="Kiran::Document" name="document"/>
        </widget>
       </item>
      </layout>
@@ -66,13 +66,13 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>Navigation</class>
+   <class>Kiran::Navigation</class>
    <extends>QWidget</extends>
    <header>navigation.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>Document</class>
+   <class>Kiran::Document</class>
    <extends>QWidget</extends>
    <header>document.h</header>
    <container>1</container>

@@ -22,6 +22,8 @@
 #include <vector>
 using namespace std;
 
+namespace Kiran
+{
 /**
  * HTML 标签类型
  */
@@ -169,3 +171,4 @@ private:
     // 存放目录
     string m_toc;
 };
+}  // namespace Kiran

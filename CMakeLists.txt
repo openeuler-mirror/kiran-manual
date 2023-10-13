@@ -35,17 +35,20 @@ file(GLOB_RECURSE FORMS "${PROJECT_SOURCE_DIR}/*.ui")
 
 set(TS_FILES ./translations/kiran-manual.zh_CN.ts)
 
-set(KIRAN_MANUAL_ICON_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor)
+set(KIRAN_MANUAL_ICON_INSTALL_PATH
+    ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/share/icons/hicolor)
 
 include(install-location-define.cmake)
-configure_file(${CMAKE_SOURCE_DIR}/data/config.h.in ${CMAKE_BINARY_DIR}/config.h)
-configure_file(${CMAKE_SOURCE_DIR}/data/${PROJECT_NAME}.desktop.in ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.desktop)
+configure_file(${CMAKE_SOURCE_DIR}/data/config.h.in
+               ${CMAKE_BINARY_DIR}/config.h)
+configure_file(${CMAKE_SOURCE_DIR}/data/${PROJECT_NAME}.desktop.in
+               ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.desktop)
 # 生成 .qm 翻译文件
 qt5_create_translation(QM_FILES ${CMAKE_CURRENT_SOURCE_DIR} ${TS_FILES})
 
 add_executable(
-  ${PROJECT_NAME} ${HEADER} ${SOURCES} ${FORMS}
-                  ${RESOURCE} ${TS_FILES} ${QM_FILES})
+  ${PROJECT_NAME} ${HEADER} ${SOURCES} ${FORMS} ${RESOURCE}
+                  ${TS_FILES} ${QM_FILES})
 
 target_include_directories(
   ${PROJECT_NAME}
@@ -68,7 +71,8 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/km.ini
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data/documents
         DESTINATION share/${PROJECT_NAME}/data)
 #安装 kiran-manual.desktop
-install(FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.desktop" DESTINATION "${INSTALL_DATADIR}/applications/")
+install(FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.desktop"
+        DESTINATION "${INSTALL_DATADIR}/applications/")
 #安装 kiran-icon icon文件
 install(FILES ${CMAKE_SOURCE_DIR}/resources/kiran-manual-icons/kiran-manual-16.png DESTINATION ${KIRAN_MANUAL_ICON_INSTALL_PATH}/16x16/apps RENAME kiran-manual.png)
 install(FILES ${CMAKE_SOURCE_DIR}/resources/kiran-manual-icons/kiran-manual-22.png DESTINATION ${KIRAN_MANUAL_ICON_INSTALL_PATH}/22x22/apps RENAME kiran-manual.png)

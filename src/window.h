@@ -22,6 +22,8 @@ namespace Ui
 class Window;
 }
 
+namespace Kiran
+{
 class Window : public KiranTitlebarWindow
 {
     Q_OBJECT
@@ -41,3 +43,4 @@ private:
 private:
     Ui::Window* m_ui;
 };
+}  // namespace Kiran

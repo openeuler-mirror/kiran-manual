@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 
     // 安装翻译
     QTranslator translator;
-    if (!translator.load(QLocale(), PROJECT_NAME, ".", TRANSLATE_PREFIX ,".qm"))
+    if (!translator.load(QLocale(), PROJECT_NAME, ".", TRANSLATE_PREFIX, ".qm"))
     {
         KLOG_WARNING("Load translator failed for %s.", PROJECT_NAME);
     }
@@ -40,12 +40,12 @@ int main(int argc, char *argv[])
     }
 
     // 调整窗口大小及位置
-    Window window;
+    Kiran::Window window;
     window.resize(WINDOW_WIDTH, WINDOW_HEIGHT);
     int screeNum = QApplication::desktop()->screenNumber(QCursor::pos());
     QRect screenGeometry = QApplication::desktop()->screenGeometry(screeNum);
     window.move(screenGeometry.x() + (screenGeometry.width() - window.width()) / 2,
-           screenGeometry.y() + (screenGeometry.height() - window.height()) / 2);
+                screenGeometry.y() + (screenGeometry.height() - window.height()) / 2);
     window.show();
 
     return QApplication::exec();

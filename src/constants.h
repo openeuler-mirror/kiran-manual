@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+namespace Kiran
+{
 // Project config
 #define PROJECT_NAME "kiran-manual"
 
@@ -42,3 +44,5 @@
 #define CONFIG_KEY_NAME "Name"
 #define CONFIG_KEY_FILENAME "FileName"
 #define CONFIG_KEY_ICON "Icon"
+
+}  // namespace Kiran

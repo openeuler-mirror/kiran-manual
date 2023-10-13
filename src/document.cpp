@@ -29,13 +29,14 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QMessageBox>
+#include <QScrollBar>
 #include <QString>
 #include <QStringList>
 #include <QTreeWidget>
-#include <QScrollBar>
 #include <string>
 #include "markdown-parser.h"
-
+namespace Kiran
+{
 Document::Document(QWidget* parent)
     : QWidget(parent),
       m_ui(new Ui::Document)
@@ -53,7 +54,7 @@ QString Document::mdFile2HtmlStr(const QString& mdPath)
 {
     using namespace std;
     string mdFilePath = string((const char*)mdPath.toLocal8Bit());
-    MarkdownParser markdownParser(mdFilePath);
+    Kiran::MarkdownParser markdownParser(mdFilePath);
     markdownParser.transfer();
     string htmlStr = markdownParser.html();
 
@@ -318,28 +319,28 @@ void Document::init()
     m_ui->textBrowser->verticalScrollBar()->move(newPosition);
     connect(m_ui->textBrowser, &QTextBrowser::anchorClicked, this, &Document::openDocumentURL);
 
-    // Fixme: 以下代码用一种不好的方式解决 pushButtonBackHome, treeWidget, textBrowser 文字不跟随主题变化到问题
+    // Fixme: 以下代码用一HighlightingRule rule;种不好的方式解决 pushButtonBackHome, treeWidget, textBrowser 文字不跟随主题变化到问题
     // note: 要跟随主题变化要求控件不能设置样式表，如有样式表则会导致主题样式透传失败
     using namespace Kiran;
     auto stylePalette = StylePalette::instance();
     connect(stylePalette, &StylePalette::themeChanged, this, [=](Kiran::PaletteType paletteType)
-    {
-        QColor qColor = stylePalette->color(StylePalette::Normal,
-                                            StylePalette::Widget,
-                                            StylePalette::Foreground);
-        QPalette palette{};
-        palette.setColor(QPalette::ButtonText, qColor);
-        m_ui->pushButtonBackHome->setPalette(palette);
+            {
+                QColor qColor = stylePalette->color(StylePalette::Normal,
+                                                    StylePalette::Widget,
+                                                    StylePalette::Foreground);
+                QPalette palette{};
+                palette.setColor(QPalette::ButtonText, qColor);
+                m_ui->pushButtonBackHome->setPalette(palette);
 
-        // pushButtonBackHome 可以通过单独的 setPalette 来跟随，但是 treeWidget, textBrowser 单独设置无效，暂不知道原因
-        // 因此采用如下方式来设置
-        QPalette buttonPalette = m_ui->pushButtonBackHome->palette();
-        const QColor& buttonTextColor = buttonPalette.color(QPalette::ButtonText);
-        QPalette followPalette{};
-        followPalette.setColor(QPalette::Text, buttonTextColor);
-        m_ui->treeWidget->setPalette(followPalette);
-        m_ui->textBrowser->setPalette(followPalette);
-    });
+                // pushButtonBackHome 可以通过单独的 setPalette 来跟随，但是 treeWidget, textBrowser 单独设置无效，暂不知道原因
+                // 因此采用如下方式来设置
+                QPalette buttonPalette = m_ui->pushButtonBackHome->palette();
+                const QColor& buttonTextColor = buttonPalette.color(QPalette::ButtonText);
+                QPalette followPalette{};
+                followPalette.setColor(QPalette::Text, buttonTextColor);
+                m_ui->treeWidget->setPalette(followPalette);
+                m_ui->textBrowser->setPalette(followPalette);
+            });
 }
 
 void Document::renderDocument()
@@ -351,7 +352,6 @@ void Document::renderDocument()
     }
     m_ui->textBrowser->setHtml(mdFile2HtmlStr(m_mdFilePath));
 }
-
 
 void Document::htmlStrSaveToFile(QString& fileName, QString& hStr)
 {
@@ -390,5 +390,4 @@ void Document::fillMatchList(const QString& searchText)
         }
     }
 }
-
-
+}  // namespace Kiran

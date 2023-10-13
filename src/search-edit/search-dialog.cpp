@@ -15,6 +15,8 @@
 #include "search-dialog.h"
 #include <kiran-color-block.h>
 
+namespace Kiran
+{
 SearchDialog::SearchDialog(QWidget* parent)
     : QDialog(parent)
 {
@@ -53,6 +55,7 @@ void SearchDialog::init()
     dialogLayout->addWidget(btnToolsWidget);
 
     // 点击按钮发送 searchDialog 信号
+    // clang-format off
     connect(m_prevButton, &QPushButton::clicked, [this]()
     {
         emit sdPrevClicked();
@@ -66,5 +69,6 @@ void SearchDialog::init()
         this->close();
         emit sdCloseClicked();
     });
+    // clang-format on
 }
-
+}  // namespace Kiran

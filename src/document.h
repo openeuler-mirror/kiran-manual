@@ -24,6 +24,8 @@ namespace Ui
 class Document;
 }
 
+namespace Kiran
+{
 class Document : public QWidget
 {
     Q_OBJECT
@@ -91,3 +93,4 @@ private:
     // 搜索初始化
     bool m_initSearched = false;
 };
+}  // namespace Kiran

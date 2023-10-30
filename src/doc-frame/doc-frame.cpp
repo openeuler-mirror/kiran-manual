@@ -83,12 +83,12 @@ void DocFrame::init()
 
 void DocFrame::mousePressEvent(QMouseEvent* event)
 {
-    mousePos = QPoint(event->x(), event->y());
+    m_mousePos = QPoint(event->x(), event->y());
 }
 
 void DocFrame::mouseReleaseEvent(QMouseEvent* event)
 {
-    if (mousePos == QPoint(event->x(), event->y()))
+    if (m_mousePos == QPoint(event->x(), event->y()))
         emit clicked();
 }
 

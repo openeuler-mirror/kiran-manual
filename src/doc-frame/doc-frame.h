@@ -38,7 +38,7 @@ signals:
 
 private:
     int m_radius = 6;
-    QPoint mousePos;
+    QPoint m_mousePos;
     bool m_drawBackground = true;
 
     QString m_itemName;

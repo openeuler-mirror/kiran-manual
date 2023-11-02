@@ -75,6 +75,7 @@ private:
     static void htmlStrSaveToFile(QString& fileName, QString& hStr);
     void fillMatchList(const QString& searchText);
 
+private:
     Ui::Document* m_ui;
     // 要渲染的 Markdown 文档路径
     QString m_mdFilePath;

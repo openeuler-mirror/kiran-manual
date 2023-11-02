@@ -45,6 +45,7 @@ signals:
 private:
     void init();
 
+private:
     QPushButton *m_prevButton{};
     QPushButton *m_nextButton{};
     QLabel *m_countLabel{};

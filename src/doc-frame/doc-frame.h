@@ -37,6 +37,9 @@ signals:
     void clicked();
 
 private:
+    void init();
+
+private:
     int m_radius = 6;
     QPoint m_mousePos;
     bool m_drawBackground = true;
@@ -45,7 +48,5 @@ private:
     QString m_iconPath;
     QString m_filePath;
     int m_maxPerLine{};
-
-    void init();
 };
 }  // namespace Kiran

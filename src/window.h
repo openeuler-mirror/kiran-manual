@@ -38,7 +38,6 @@ public slots:
 
 private:
     void init();
-    void setTitleBar();
 
 private:
     Ui::Window* m_ui;

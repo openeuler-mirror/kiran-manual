@@ -313,13 +313,9 @@ void Document::init()
     m_ui->treeWidget->setHeaderHidden(true);
     connect(m_ui->treeWidget, &QTreeWidget::itemClicked, this, &Document::tocItemScrollToAnchor);
     connect(m_ui->pushButtonBackHome, &QPushButton::clicked, this, &Document::backToNavigationPage);
-
-    QPoint cuurPosition = m_ui->textBrowser->verticalScrollBar()->pos();
-    QPoint newPosition = cuurPosition + QPoint(5, 0);
-    m_ui->textBrowser->verticalScrollBar()->move(newPosition);
     connect(m_ui->textBrowser, &QTextBrowser::anchorClicked, this, &Document::openDocumentURL);
 
-    // Fixme: 以下代码用一HighlightingRule rule;种不好的方式解决 pushButtonBackHome, treeWidget, textBrowser 文字不跟随主题变化到问题
+    // Fixme: 以下代码用一种不好的方式解决 pushButtonBackHome, treeWidget, textBrowser 文字不跟随主题变化到问题
     // note: 要跟随主题变化要求控件不能设置样式表，如有样式表则会导致主题样式透传失败
     using namespace Kiran;
     auto stylePalette = StylePalette::instance();

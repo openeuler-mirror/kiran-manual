@@ -21,14 +21,17 @@
 #include "kiran-log/qt5-log-i.h"
 #include "window.h"
 
-void initKiranLog();
-
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    initKiranLog();
 
-    // 安装翻译
+    int iRet = klog_qt5_init("", "kylinsec-session", PROJECT_NAME, PROJECT_NAME);
+    if (iRet != 0)
+    {
+        fprintf(stderr, "klog_qt5_init field,res:%d\n", iRet);
+    }
+    KLOG_INFO() << PROJECT_NAME << "Start ^_^";
+
     QTranslator translator;
     if (!translator.load(QLocale(), PROJECT_NAME, ".", TRANSLATE_PREFIX, ".qm"))
     {
@@ -39,7 +42,6 @@ int main(int argc, char *argv[])
         QCoreApplication::installTranslator(&translator);
     }
 
-    // 调整窗口大小及位置
     Kiran::Window window;
     window.resize(WINDOW_WIDTH, WINDOW_HEIGHT);
     int screeNum = QApplication::desktop()->screenNumber(QCursor::pos());
@@ -49,14 +51,4 @@ int main(int argc, char *argv[])
     window.show();
 
     return QApplication::exec();
-}
-
-void initKiranLog()
-{
-    int iRet = klog_qt5_init("", "kylinsec-session", PROJECT_NAME, PROJECT_NAME);
-    if (iRet != 0)
-    {
-        fprintf(stderr, "klog_qt5_init field,res:%d\n", iRet);
-    }
-    KLOG_INFO() << PROJECT_NAME << "Start ^_^";
 }

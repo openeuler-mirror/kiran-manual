@@ -49,6 +49,7 @@ private:
     void init();
     void initSearchDialog();
 
+private:
     // 搜索工具框： 提供搜索时的便捷跳转功能
     SearchDialog* m_searchDialog{};
     // 搜索域: 页面 StackWidget 切换时监听更改

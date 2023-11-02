@@ -37,6 +37,7 @@ signals:
 private:
     void init();
 
+private:
     Ui::Navigation* m_ui;
     QString m_confFilePath = CONF_FILE_PATH;
 };

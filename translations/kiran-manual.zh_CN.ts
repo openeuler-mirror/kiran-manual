@@ -5,9 +5,8 @@
     <name>Document</name>
     <message>
         <location filename="../src/document.ui" line="14"/>
-        <location filename="../build/kiran-manual_autogen/include/ui_document.h" line="149"/>
-        <location filename="../cmake-build-debug/kiran-manual_autogen/include/ui_document.h" line="144"/>
-        <location filename="../debug/kiran-manual_autogen/include/ui_document.h" line="149"/>
+        <location filename="../build/kiran-manual_autogen/include/ui_document.h" line="144"/>
+        <location filename="../cmake-build-debug/kiran-manual_autogen/include/ui_document.h" line="149"/>
         <source>Document</source>
         <translation>文档</translation>
     </message>
@@ -35,9 +34,8 @@ Document Name: </source>
     </message>
     <message>
         <location filename="../src/document.ui" line="68"/>
-        <location filename="../build/kiran-manual_autogen/include/ui_document.h" line="150"/>
-        <location filename="../cmake-build-debug/kiran-manual_autogen/include/ui_document.h" line="145"/>
-        <location filename="../debug/kiran-manual_autogen/include/ui_document.h" line="150"/>
+        <location filename="../build/kiran-manual_autogen/include/ui_document.h" line="145"/>
+        <location filename="../cmake-build-debug/kiran-manual_autogen/include/ui_document.h" line="150"/>
         <source>Back Home</source>
         <translation>返回主页</translation>
     </message>
@@ -131,7 +129,7 @@ Document Name: </source>
 <context>
     <name>Kiran::Window</name>
     <message>
-        <location filename="../src/window.cpp" line="67"/>
+        <location filename="../src/window.cpp" line="59"/>
         <source>kiran manual</source>
         <translation>帮助手册</translation>
     </message>
@@ -140,9 +138,8 @@ Document Name: </source>
     <name>Navigation</name>
     <message>
         <location filename="../src/navigation.ui" line="14"/>
-        <location filename="../build/kiran-manual_autogen/include/ui_navigation.h" line="58"/>
+        <location filename="../build/kiran-manual_autogen/include/ui_navigation.h" line="57"/>
         <location filename="../cmake-build-debug/kiran-manual_autogen/include/ui_navigation.h" line="57"/>
-        <location filename="../debug/kiran-manual_autogen/include/ui_navigation.h" line="58"/>
         <source>Navigation</source>
         <translation>导航页</translation>
     </message>
@@ -181,9 +178,8 @@ Document Name: </source>
     <name>Window</name>
     <message>
         <location filename="../src/window.ui" line="14"/>
-        <location filename="../build/kiran-manual_autogen/include/ui_window.h" line="73"/>
+        <location filename="../build/kiran-manual_autogen/include/ui_window.h" line="70"/>
         <location filename="../cmake-build-debug/kiran-manual_autogen/include/ui_window.h" line="70"/>
-        <location filename="../debug/kiran-manual_autogen/include/ui_window.h" line="73"/>
         <source>Window</source>
         <translation>主页</translation>
     </message>

@@ -15,9 +15,9 @@
 #pragma once
 #include <kiran-search-box.h>
 #include "search-dialog.h"
-/**
- * SearchEdit - 搜索框
- * */
+
+namespace Kiran
+{
 class SearchEdit : public KiranSearchBox
 {
     Q_OBJECT
@@ -49,8 +49,10 @@ private:
     void init();
     void initSearchDialog();
 
+private:
     // 搜索工具框： 提供搜索时的便捷跳转功能
     SearchDialog* m_searchDialog{};
     // 搜索域: 页面 StackWidget 切换时监听更改
     QString m_searchField;
 };
+}  // namespace Kiran

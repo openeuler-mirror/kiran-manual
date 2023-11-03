@@ -21,7 +21,8 @@ namespace Ui
 {
 class Navigation;
 }
-
+namespace Kiran
+{
 class Navigation : public KiranColorBlock
 {
     Q_OBJECT
@@ -36,6 +37,8 @@ signals:
 private:
     void init();
 
+private:
     Ui::Navigation* m_ui;
     QString m_confFilePath = CONF_FILE_PATH;
 };
+}  // namespace Kiran

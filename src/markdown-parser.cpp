@@ -23,6 +23,8 @@
 void removeEscapeChar(char* str);
 void removeEscapeChar(string& str);
 
+namespace Kiran
+{
 MarkdownParser::MarkdownParser(QObject* parent)
     : QObject(parent)
 {
@@ -576,3 +578,4 @@ void MarkdownParser::destory(Node* root)
         delete root;
     }
 }
+}  // namespace Kiran

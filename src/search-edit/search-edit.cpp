@@ -21,6 +21,8 @@
 #include <QEvent>
 #include <QKeyEvent>
 
+namespace Kiran
+{
 SearchEdit::SearchEdit(QWidget *parent)
     : KiranSearchBox(parent)
 {
@@ -52,6 +54,7 @@ void SearchEdit::initSearchDialog()
     QPoint pos = mapToGlobal(QPoint(0, height())) + QPoint(0, 40);
     m_searchDialog->move(pos);
 
+    // clang-format off
     connect(m_searchDialog, &SearchDialog::sdNextClicked, [this]()
     {
         emit requestSearchTextBrowserNext(this->text());
@@ -71,6 +74,7 @@ void SearchEdit::initSearchDialog()
     {
         emit requestSearchKeywordChanged(this->text());
     });
+    // clang-format on
 }
 
 void SearchEdit::doSearch()
@@ -103,3 +107,4 @@ void SearchEdit::updateSearchCount(int count, int index)
 {
     this->m_searchDialog->setMatchCount(count, index);
 }
+}  // namespace Kiran

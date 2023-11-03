@@ -22,6 +22,8 @@
 /**
  * 搜索对话框 - 提供搜索时的快捷工具
  * */
+namespace Kiran
+{
 class SearchDialog : public QDialog
 {
     Q_OBJECT
@@ -43,9 +45,11 @@ signals:
 private:
     void init();
 
+private:
     QPushButton *m_prevButton{};
     QPushButton *m_nextButton{};
     QLabel *m_countLabel{};
     QString m_searchText{};
     QPushButton *m_closeButton{};
 };
+}  // namespace Kiran

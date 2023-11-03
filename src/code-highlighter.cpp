@@ -12,11 +12,13 @@
  * Author:     youzhengcai <youzhengcai@kylinsec.com.cn>
  */
 
-#include <QTextBlockFormat>
 #include "code-highlighter.h"
+#include <QTextBlockFormat>
 
+namespace Kiran
+{
 CodeHighlighter::CodeHighlighter(QTextDocument *parent)
-    : QSyntaxHighlighter(parent)
+    : QSyntaxHighlighter::QSyntaxHighlighter(parent)
 {
     HighlightingRule rule;
 
@@ -25,35 +27,35 @@ CodeHighlighter::CodeHighlighter(QTextDocument *parent)
     // 定义关键字规则，下列为常见 C++ 关键字
     QStringList cppKeywordPatterns;
     cppKeywordPatterns << "\\bchar\\b"
-                    << "\\bclass\\b"
-                    << "\\bconst\\b"
-                    << "\\bdouble\\b"
-                    << "\\benum\\b"
-                    << "\\bexplicit\\b"
-                    << "\\bfriend\\b"
-                    << "\\binline\\b"
-                    << "\\bint\\b"
-                    << "\\blong\\b"
-                    << "\\bnamespace\\b"
-                    << "\\boperator\\b"
-                    << "\\bprivate\\b"
-                    << "\\bprotected\\b"
-                    << "\\bpublic\\b"
-                    << "\\bshort\\b"
-                    << "\\bsignals\\b"
-                    << "\\bsigned\\b"
-                    << "\\bslots\\b"
-                    << "\\bstatic\\b"
-                    << "\\bstruct\\b"
-                    << "\\btemplate\\b"
-                    << "\\btypedef\\b"
-                    << "\\btypename\\b"
-                    << "\\bunion\\b"
-                    << "\\bunsigned\\b"
-                    << "\\bvirtual\\b"
-                    << "\\bvoid\\b"
-                    << "\\bvolatile\\b"
-                    << "\\bbool\\b";
+                       << "\\bclass\\b"
+                       << "\\bconst\\b"
+                       << "\\bdouble\\b"
+                       << "\\benum\\b"
+                       << "\\bexplicit\\b"
+                       << "\\bfriend\\b"
+                       << "\\binline\\b"
+                       << "\\bint\\b"
+                       << "\\blong\\b"
+                       << "\\bnamespace\\b"
+                       << "\\boperator\\b"
+                       << "\\bprivate\\b"
+                       << "\\bprotected\\b"
+                       << "\\bpublic\\b"
+                       << "\\bshort\\b"
+                       << "\\bsignals\\b"
+                       << "\\bsigned\\b"
+                       << "\\bslots\\b"
+                       << "\\bstatic\\b"
+                       << "\\bstruct\\b"
+                       << "\\btemplate\\b"
+                       << "\\btypedef\\b"
+                       << "\\btypename\\b"
+                       << "\\bunion\\b"
+                       << "\\bunsigned\\b"
+                       << "\\bvirtual\\b"
+                       << "\\bvoid\\b"
+                       << "\\bvolatile\\b"
+                       << "\\bbool\\b";
     foreach (const QString &pattern, cppKeywordPatterns)
     {
         // 定义 pattern
@@ -127,3 +129,5 @@ void CodeHighlighter::highlightBlock(const QString &text)
         startIndex = text.indexOf(commentStartExpression, startIndex + commentLength);
     }
 }
+
+}  // namespace Kiran

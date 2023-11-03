@@ -21,16 +21,19 @@
 #include "kiran-log/qt5-log-i.h"
 #include "window.h"
 
-void initKiranLog();
-
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    initKiranLog();
 
-    // 安装翻译
+    int iRet = klog_qt5_init("", "kylinsec-session", PROJECT_NAME, PROJECT_NAME);
+    if (iRet != 0)
+    {
+        fprintf(stderr, "klog_qt5_init field,res:%d\n", iRet);
+    }
+    KLOG_INFO() << PROJECT_NAME << "Start ^_^";
+
     QTranslator translator;
-    if (!translator.load(QLocale(), PROJECT_NAME, ".", TRANSLATE_PREFIX ,".qm"))
+    if (!translator.load(QLocale(), PROJECT_NAME, ".", TRANSLATE_PREFIX, ".qm"))
     {
         KLOG_WARNING("Load translator failed for %s.", PROJECT_NAME);
     }
@@ -39,24 +42,13 @@ int main(int argc, char *argv[])
         QCoreApplication::installTranslator(&translator);
     }
 
-    // 调整窗口大小及位置
-    Window window;
+    Kiran::Window window;
     window.resize(WINDOW_WIDTH, WINDOW_HEIGHT);
     int screeNum = QApplication::desktop()->screenNumber(QCursor::pos());
     QRect screenGeometry = QApplication::desktop()->screenGeometry(screeNum);
     window.move(screenGeometry.x() + (screenGeometry.width() - window.width()) / 2,
-           screenGeometry.y() + (screenGeometry.height() - window.height()) / 2);
+                screenGeometry.y() + (screenGeometry.height() - window.height()) / 2);
     window.show();
 
     return QApplication::exec();
-}
-
-void initKiranLog()
-{
-    int iRet = klog_qt5_init("", "kylinsec-session", PROJECT_NAME, PROJECT_NAME);
-    if (iRet != 0)
-    {
-        fprintf(stderr, "klog_qt5_init field,res:%d\n", iRet);
-    }
-    KLOG_INFO() << PROJECT_NAME << "Start ^_^";
 }

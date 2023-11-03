@@ -19,10 +19,12 @@
 #include <QPainter>
 #include "constants.h"
 
-#include "ui_window.h"
-#include "navigation.h"
 #include "document.h"
+#include "navigation.h"
+#include "ui_window.h"
 
+namespace Kiran
+{
 Window::Window(QWidget* parent)
     : KiranTitlebarWindow(parent),
       m_ui(new Ui::Window)
@@ -31,7 +33,8 @@ Window::Window(QWidget* parent)
     init();
 }
 
-Window::~Window(){
+Window::~Window()
+{
     delete m_ui;
 }
 
@@ -48,18 +51,16 @@ void Window::switchToNavigation(const QString& key)
 
 void Window::init()
 {
-    this->setTitleBar();
+    setTitleBarHeight(TITLE_BAR_HEIGHT);
+    setButtonHints(TitlebarMinMaxCloseHints);
+    setTitlebarColorBlockEnable(true);
+    QPixmap pixmap(TITLE_BAR_ICON_PATH);
+    setIcon(pixmap);
+    setTitle(tr("kiran manual"));
+
     setWindowContentWidget(m_ui->palette);
     connect(m_ui->navigation, &Navigation::documentBlockClicked, this, &Window::switchToDocument);
     connect(m_ui->document, &Document::backHomeClicked, this, &Window::switchToNavigation);
 }
 
-void Window::setTitleBar()
-{
-    setTitleBarHeight(TITLE_BAR_HEIGHT);
-    setButtonHints(KiranTitlebarWindow::TitlebarMinMaxCloseHints);
-    setTitlebarColorBlockEnable(true);
-    QPixmap pixmap(TITLE_BAR_ICON_PATH);
-    setIcon(pixmap);
-    setTitle(tr("kiran manual"));
-}
+}  // namespace Kiran

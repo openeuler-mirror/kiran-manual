@@ -16,12 +16,14 @@
 
 #include "config.h"
 
+namespace Kiran
+{
 // Project config
 #define PROJECT_NAME "kiran-manual"
 
 // Resources
 #define RESOURCES_FOLDER ":/resources/"
-#define TITLE_BAR_ICON_PATH RESOURCES_FOLDER "kiran-manual-icons/kiran-manual-64.png"
+#define TITLE_BAR_ICON_PATH RESOURCES_FOLDER "hicolor/64x64/apps/kiran-manual.png"
 
 // UI
 #define WINDOW_WIDTH 1035
@@ -42,3 +44,5 @@
 #define CONFIG_KEY_NAME "Name"
 #define CONFIG_KEY_FILENAME "FileName"
 #define CONFIG_KEY_ICON "Icon"
+
+}  // namespace Kiran

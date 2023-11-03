@@ -11,20 +11,20 @@
  *
  * Author:     youzhengcai <youzhengcai@kylinsec.com.cn>
  */
+#include "doc-frame.h"
 #include <QDebug>
+#include <QLabel>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPainterPath>
-#include <QStyleOption>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QLabel>
 #include <QPoint>
+#include <QPushButton>
+#include <QStyleOption>
+#include <QVBoxLayout>
 #include "constants.h"
-#include "doc-frame.h"
 
-using namespace Kiran;
-
+namespace Kiran
+{
 DocFrame::DocFrame(QWidget* parent, Qt::WindowFlags f)
     : QWidget(parent, f)
 {
@@ -66,13 +66,13 @@ void DocFrame::init()
     iBtn->setFixedSize(w, h);
 
     connect(iBtn, &QPushButton::clicked, this, [=]()
-    {
-      auto clickedButton = qobject_cast<QPushButton *>(sender());
-      if (clickedButton)
-      {
-          emit clicked();
-      }
-    });
+            {
+                auto clickedButton = qobject_cast<QPushButton*>(sender());
+                if (clickedButton)
+                {
+                    emit clicked();
+                }
+            });
     // 声明条目标题
     auto titleLabel = new QLabel(m_itemName, this);
     titleLabel->setAlignment(Qt::AlignCenter);
@@ -81,14 +81,15 @@ void DocFrame::init()
     innerItemLayout->addWidget(titleLabel);
 }
 
-void DocFrame::mousePressEvent(QMouseEvent *event)
+void DocFrame::mousePressEvent(QMouseEvent* event)
 {
-    mousePos = QPoint(event->x(), event->y());
+    m_mousePos = QPoint(event->x(), event->y());
 }
 
-void DocFrame::mouseReleaseEvent(QMouseEvent *event)
+void DocFrame::mouseReleaseEvent(QMouseEvent* event)
 {
-    if(mousePos == QPoint(event->x(), event->y())) emit clicked();
+    if (m_mousePos == QPoint(event->x(), event->y()))
+        emit clicked();
 }
 
 void DocFrame::paintEvent(QPaintEvent* event)
@@ -140,7 +141,7 @@ void DocFrame::paintEvent(QPaintEvent* event)
 
     QWidget::paintEvent(event);
 }
-void DocFrame::setDocFrame(QString& itemName, QString &iconPath, QString& filePath, int maxPerLine)
+void DocFrame::setDocFrame(QString& itemName, QString& iconPath, QString& filePath, int maxPerLine)
 {
     m_itemName = itemName;
     m_iconPath = iconPath;
@@ -148,3 +149,4 @@ void DocFrame::setDocFrame(QString& itemName, QString &iconPath, QString& filePa
     m_maxPerLine = maxPerLine;
     init();
 }
+}  // namespace Kiran

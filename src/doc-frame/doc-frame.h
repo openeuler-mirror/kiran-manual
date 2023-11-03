@@ -18,6 +18,8 @@
 
 #include <kiran-style/style-palette.h>
 
+namespace Kiran
+{
 class DocFrame : public QWidget
 {
     Q_OBJECT
@@ -28,21 +30,23 @@ public:
 
 protected:
     void paintEvent(QPaintEvent* event) override;
-    void mousePressEvent(QMouseEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
 
 signals:
     void clicked();
 
 private:
+    void init();
+
+private:
     int m_radius = 6;
-    QPoint mousePos;
+    QPoint m_mousePos;
     bool m_drawBackground = true;
 
     QString m_itemName;
     QString m_iconPath;
     QString m_filePath;
     int m_maxPerLine{};
-
-    void init();
 };
+}  // namespace Kiran

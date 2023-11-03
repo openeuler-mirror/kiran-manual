@@ -22,6 +22,8 @@ QT_BEGIN_NAMESPACE
 class QTextDocument;
 QT_END_NAMESPACE
 
+namespace Kiran
+{
 class CodeHighlighter : public QSyntaxHighlighter
 {
     Q_OBJECT
@@ -52,3 +54,4 @@ private:
     QTextCharFormat quotationFormat;
     QTextCharFormat functionFormat;
 };
+}  // namespace Kiran

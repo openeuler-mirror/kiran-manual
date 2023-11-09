@@ -523,7 +523,7 @@ string MarkdownParser::html()
                 h4 { font-weight: 400; }\
                 h5 { font-weight: 400; }\
                 h6 { font-weight: 400; }\
-                strong { font-weight: 600 }\
+                strong { font-weight: 500 }\
                 ul, ol { font-weight: 400; }\
 		pre { background-color: #f2f2f2;padding-left:100px; white-space: pre-wrap; margin-right: 5px}\
 		pre>code { color: black; background-color: #f2f2f2;text-intend:100px}\

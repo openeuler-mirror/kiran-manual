@@ -35,6 +35,8 @@
 #include <QTreeWidget>
 #include <string>
 #include "markdown-parser.h"
+#include "toc-tree/toc-tree-item-delegate.h"
+#include "toc-tree/toc-tree-style.h"
 namespace Kiran
 {
 Document::Document(QWidget* parent)
@@ -310,7 +312,7 @@ void Document::init()
     outLayout->setMargin(0);
     // 组件初始化
     auto highlighter = new CodeHighlighter(m_ui->textBrowser->document());
-    m_ui->treeWidget->setHeaderHidden(true);
+
     connect(m_ui->treeWidget, &QTreeWidget::itemClicked, this, &Document::tocItemScrollToAnchor);
     connect(m_ui->pushButtonBackHome, &QPushButton::clicked, this, &Document::backToNavigationPage);
     connect(m_ui->textBrowser, &QTextBrowser::anchorClicked, this, &Document::openDocumentURL);
@@ -334,7 +336,7 @@ void Document::init()
                 const QColor& buttonTextColor = buttonPalette.color(QPalette::ButtonText);
                 QPalette followPalette{};
                 followPalette.setColor(QPalette::Text, buttonTextColor);
-                m_ui->treeWidget->setPalette(followPalette);
+//                m_ui->treeWidget->setPalette(followPalette);
                 m_ui->textBrowser->setPalette(followPalette);
             });
 }

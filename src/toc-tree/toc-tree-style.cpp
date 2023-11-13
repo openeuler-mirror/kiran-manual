@@ -6,6 +6,7 @@
 
 #include <QStyleOption>
 #include <QPainter>
+#include <QPainterPath>
 
 TocTreeStyle::TocTreeStyle(QStyle *style) : QProxyStyle(style)
 {
@@ -17,7 +18,7 @@ void TocTreeStyle::drawPrimitive(QStyle::PrimitiveElement pe, const QStyleOption
 
     switch (pe) {
     case PE_PanelItemViewRow:
-        drawPanelItemViewRow(opt, p, w);
+//        drawPanelItemViewRow(opt, p, w);
         break;
     case PE_PanelItemViewItem:
         drawPanelItemViewItem(opt, p, w);
@@ -32,36 +33,13 @@ void TocTreeStyle::drawPrimitive(QStyle::PrimitiveElement pe, const QStyleOption
 // 计算绘制路径即选中状态、行背景所需绘制区域。
 QPainterPath TocTreeStyle::roundedPath(const QStyleOptionViewItem *o, const QWidget *w)
 {
-    int radius = 5;
-    int backgroundMarginTop = 50;    // 上边距
-    int backgroundMarginBottom = 50; // 下边距
-    int backgroundMarginLeft = 0;   // 左边距
-    int backgroundMarginRight = 25;  // 右边距
+    int radius = 6;
+    int backgroundMarginLeft = 0;
+    int backgroundMarginRight = 24;
 
     QPainterPath path;
     path.setFillRule(Qt::WindingFill);
-    QRect corner(0, 0, radius, o->rect.height());
-
-    switch (o->viewItemPosition) {
-    case QStyleOptionViewItem::Beginning:
-        path.addRoundedRect(o->rect.adjusted(backgroundMarginLeft, 0, 0, 0), radius, radius);
-        corner.moveTopRight(o->rect.topRight());
-        path.addRect(corner.adjusted(0, 0, 0, -backgroundMarginTop));
-        break;
-    case QStyleOptionViewItem::End:
-        path.addRoundedRect(o->rect.adjusted(0, 0, -backgroundMarginRight, 0), radius, radius);
-        corner.moveTopLeft(o->rect.topLeft());
-        path.addRect(corner.adjusted(0, 0, backgroundMarginLeft, -backgroundMarginBottom));
-        break;
-    case QStyleOptionViewItem::OnlyOne:
-        path.addRoundedRect(o->rect.adjusted(backgroundMarginLeft, 0, -backgroundMarginRight, 0), radius, radius);
-        break;
-    case QStyleOptionViewItem::Middle:
-        path.addRect(o->rect.adjusted(backgroundMarginLeft, 0, -backgroundMarginRight, 0));
-        break;
-    case QStyleOptionViewItem::Invalid:
-        break;
-    }
+    path.addRoundedRect(o->rect.adjusted(backgroundMarginLeft, 0, -backgroundMarginRight, 0), radius, radius);
     return path;
 }
 

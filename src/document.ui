@@ -87,7 +87,7 @@ text-align: left
              <string notr="true"/>
             </property>
             <property name="indentation">
-             <number>25</number>
+             <number>24</number>
             </property>
             <column>
              <property name="text">

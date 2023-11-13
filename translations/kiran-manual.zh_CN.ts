@@ -5,7 +5,7 @@
     <name>Document</name>
     <message>
         <location filename="../src/document.ui" line="14"/>
-        <location filename="../build/kiran-manual_autogen/include/ui_document.h" line="136"/>
+        <location filename="../build/kiran-manual_autogen/include/ui_document.h" line="137"/>
         <location filename="../cmake-build-debug/kiran-manual_autogen/include/ui_document.h" line="137"/>
         <source>Document</source>
         <translation>文档</translation>
@@ -34,7 +34,7 @@ Document Name: </source>
     </message>
     <message>
         <location filename="../src/document.ui" line="71"/>
-        <location filename="../build/kiran-manual_autogen/include/ui_document.h" line="137"/>
+        <location filename="../build/kiran-manual_autogen/include/ui_document.h" line="138"/>
         <location filename="../cmake-build-debug/kiran-manual_autogen/include/ui_document.h" line="138"/>
         <source>Back Home</source>
         <translation>返回主页</translation>
@@ -54,7 +54,7 @@ Document Name: </source>
     </message>
     <message>
         <location filename="../src/document.cpp" line="276"/>
-        <location filename="../src/document.cpp" line="301"/>
+        <location filename="../src/document.cpp" line="295"/>
         <source>Notice!</source>
         <translation>注意！</translation>
     </message>
@@ -64,7 +64,7 @@ Document Name: </source>
         <translation>即将打开浏览器前往：%1</translation>
     </message>
     <message>
-        <location filename="../src/document.cpp" line="301"/>
+        <location filename="../src/document.cpp" line="295"/>
         <source>Target document does not exist! 
 Document Name: </source>
         <translation>目标文档不存在！

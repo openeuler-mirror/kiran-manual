@@ -30,6 +30,7 @@ namespace Kiran
 #define WINDOW_HEIGHT 742
 #define TITLE_BAR_HEIGHT 40
 #define DOC_FRAME_WIDTH 150
+#define DOC_IMAGE_MAX_WIDTH 600
 
 // Object name
 #define NAVIGATION_OBJECT_NAME "navigation"

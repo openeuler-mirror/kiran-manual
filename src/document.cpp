@@ -274,15 +274,9 @@ void Document::openDocumentURL(const QUrl& url)
     if (rvState == QValidator::Acceptable)
     {
         auto result = KiranMessageBox::message(this, tr("Notice!"), tr("About to open the Browser and go to: %1").arg(strUrl), KiranMessageBox::Ok | KiranMessageBox::No);
-        switch (result)
+        if (result == KiranMessageBox::Ok)
         {
-        case KiranMessageBox::Ok:
             QDesktopServices::openUrl(url);
-            break;
-        case KiranMessageBox::No:
-            break;
-        default:
-            break;
         }
         return;
     }
@@ -336,7 +330,6 @@ void Document::init()
                 const QColor& buttonTextColor = buttonPalette.color(QPalette::ButtonText);
                 QPalette followPalette{};
                 followPalette.setColor(QPalette::Text, buttonTextColor);
-//                m_ui->treeWidget->setPalette(followPalette);
                 m_ui->textBrowser->setPalette(followPalette);
             });
 }

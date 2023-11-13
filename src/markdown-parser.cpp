@@ -13,6 +13,7 @@
  */
 
 #include "markdown-parser.h"
+#include <QImage>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -277,14 +278,16 @@ void MarkdownParser::dfs(Node* root)
     //图片
     else if (root->type == HTML_TOKEN_IMAGE)
     {
-        m_content += R"(<img width="600" alt=")";
+        const std::string prePath = IMAGE_FOR_DOCS_FOLDER;
+        const std::string img = prePath + root->elem[1];
+
+        QImage image(QString::fromStdString(img));
+        int width = qMin(image.width(), DOC_IMAGE_MAX_WIDTH);
+
+        m_content += "<img width=\"" + std::to_string(width) + "\" alt=\"";
         m_content += root->elem[0];
         m_content += "\" src=\"";
-        string prePath = IMAGE_FOR_DOCS_FOLDER;
-
-        string img = prePath + root->elem[1];
-        m_content += prePath + root->elem[1];
-
+        m_content += img;
         m_content += "\" />";
     }
     // 处理空行

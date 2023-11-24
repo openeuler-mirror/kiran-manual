@@ -39,6 +39,7 @@ void DocFrame::init()
     innerItemLayout->setAlignment(Qt::AlignCenter);
 
     // 背景图片文件路径
+//    m_iconPath = "/home/skyzcyou/test.png";
     QImage img(m_iconPath);
     int w = img.width();
     // 图片宽高等比例缩放

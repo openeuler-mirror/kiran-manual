@@ -62,7 +62,7 @@
             <property name="styleSheet">
              <string notr="true">QPushButton { 
 height: 30px; 
-padding-left: 24px; 
+padding-left: 32px; 
 padding-top: 5px; 
 text-align: left 
 }</string>
@@ -76,7 +76,7 @@ text-align: left
            </widget>
           </item>
           <item>
-           <widget class="TocTree" name="treeWidget">
+           <widget class="Kiran::TocTree" name="treeWidget">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>1</horstretch>
@@ -160,7 +160,7 @@ padding: 15px 0 10px 5px
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>TocTree</class>
+   <class>Kiran::TocTree</class>
    <extends>QTreeWidget</extends>
    <header>toc-tree/toc-tree.h</header>
   </customwidget>

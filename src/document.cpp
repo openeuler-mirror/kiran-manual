@@ -35,8 +35,6 @@
 #include <QTreeWidget>
 #include <string>
 #include "markdown-parser.h"
-#include "toc-tree/toc-tree-item-delegate.h"
-#include "toc-tree/toc-tree-style.h"
 namespace Kiran
 {
 Document::Document(QWidget* parent)
@@ -174,7 +172,10 @@ void Document::searchNextKeyword(const QString& keyword)
             m_initSearched = true;
             if (m_matchList.empty())
             {
-                KiranMessageBox::message(this, tr("No search result"), tr("Number of Keyword Matches: %1 .").arg(m_matchList.size()), KiranMessageBox::Yes);
+                KiranMessageBox::message(this,
+                                         tr("No search result"),
+                                         tr("Number of Keyword Matches: %1 .").arg(m_matchList.size()),
+                                         KiranMessageBox::Yes);
                 return;
             }
         }

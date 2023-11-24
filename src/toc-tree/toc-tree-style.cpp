@@ -1,6 +1,16 @@
-//
-// Created by skyzcyou on 2023/11/10.
-//
+/**
+ * Copyright (c) 2020 ~ 2024 KylinSec Co., Ltd.
+ * kiran-manual is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *          http://license.coscl.org.cn/MulanPSL2
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ *
+ * Author:     youzhengcai <youzhengcai@kylinsec.com.cn>
+ */
 
 #include "toc-tree-style.h"
 
@@ -8,11 +18,12 @@
 #include <QPainter>
 #include <QPainterPath>
 
+namespace Kiran
+{
 TocTreeStyle::TocTreeStyle(QStyle *style) : QProxyStyle(style)
 {
 }
 
-// 重载绘制函数
 void TocTreeStyle::drawPrimitive(QStyle::PrimitiveElement pe, const QStyleOption *opt, QPainter *p, const QWidget *w) const
 {
 
@@ -29,8 +40,7 @@ void TocTreeStyle::drawPrimitive(QStyle::PrimitiveElement pe, const QStyleOption
     }
 }
 
-// 绘制路径计算函数
-// 计算绘制路径即选中状态、行背景所需绘制区域。
+// 绘制圆角背景
 QPainterPath TocTreeStyle::roundedPath(const QStyleOptionViewItem *o, const QWidget *w)
 {
     int radius = 6;
@@ -57,7 +67,7 @@ void TocTreeStyle::drawPanelItemViewRow(const QStyleOption *opt, QPainter *p, co
             cg = QPalette::Inactive;
 
         if ((vopt->state & QStyle::State_Selected) &&  proxy()->styleHint(QStyle::SH_ItemView_ShowDecorationSelected, opt, w))
-            p->fillRect(vopt->rect, vopt->palette.brush(cg, QPalette::Highlight));
+            p->fillRect(vopt->rect, vopt->palette.brush(cg, QPalette::Highlight)); // 选中高亮
         else if (vopt->features & QStyleOptionViewItem::Alternate)
             p->fillPath(path, vopt->palette.brush(cg, QPalette::AlternateBase));
     }
@@ -97,3 +107,15 @@ void TocTreeStyle::drawPanelItemViewItem(const QStyleOption *opt, QPainter *p, c
     }
     p->restore();
 }
+
+int TocTreeStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *option, const QWidget *widget) const
+{
+        switch (metric) {
+        case PM_FocusFrameHMargin:
+            return 12;
+        default:
+            break;
+        }
+        return QProxyStyle::pixelMetric(metric, option, widget);
+}
+}  // namespace Kiran

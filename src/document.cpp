@@ -65,7 +65,7 @@ QString Document::mdFile2HtmlStr(const QString& mdPath)
 
 void Document::renderDocument(const QString& mdFilePath)
 {
-    this->m_mdFilePath = mdFilePath;
+    this->setMdFilePath(mdFilePath);
     this->renderDocument();
 }
 
@@ -381,5 +381,13 @@ void Document::fillMatchList(const QString& searchText)
             m_matchList.append(cursor);
         }
     }
+}
+void Document::setMdFilePath(const QString& mdFilePath)
+{
+    this->m_mdFilePath = mdFilePath;
+}
+QString Document::getMdFilePath()
+{
+    return this->m_mdFilePath;
 }
 }  // namespace Kiran

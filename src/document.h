@@ -45,6 +45,8 @@ public:
     void setMatchStyle(QTextCursor& cursor);
     // 清除搜索命中样式
     void unsetMatchStyle(QTextCursor& cursor);
+    void setMdFilePath(const QString& mdFilePath);
+    QString getMdFilePath();
 
 private slots:
     void tocItemScrollToAnchor(QTreeWidgetItem* item, int column);

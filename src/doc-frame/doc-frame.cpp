@@ -45,7 +45,7 @@ void DocFrame::init()
     // 图片宽高等比例缩放
     int h = img.height();
     // 调整图片中宽高最大者至maxSide
-    int maxSide = 100;
+    int maxSide = 96;
     if (w >= h)
     {
         double scale = maxSide / double(w);

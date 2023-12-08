@@ -1,0 +1,12 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Encoding=UTF-8
+Name=Kiran Manual
+Name[zh_CN]=帮助手册
+Comment=kiran manual
+Comment[zh_CN]=Kiran桌面环境帮助手册
+Exec=@INSTALL_BINDIR@/@PROJECT_NAME@
+Icon=kiran-manual
+Terminal=false
+Type=Application
+Categories=Document;System;X-Common-Features;

@@ -13,6 +13,7 @@
  */
 
 #include "markdown-parser.h"
+#include <QImage>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -277,14 +278,16 @@ void MarkdownParser::dfs(Node* root)
     //图片
     else if (root->type == HTML_TOKEN_IMAGE)
     {
-        m_content += R"(<img width="600" alt=")";
+        const std::string prePath = IMAGE_FOR_DOCS_FOLDER;
+        const std::string img = prePath + root->elem[1];
+
+        QImage image(QString::fromStdString(img));
+        int width = qMin(image.width(), DOC_IMAGE_MAX_WIDTH);
+
+        m_content += "<img width=\"" + std::to_string(width) + "\" alt=\"";
         m_content += root->elem[0];
         m_content += "\" src=\"";
-        string prePath = IMAGE_FOR_DOCS_FOLDER;
-
-        string img = prePath + root->elem[1];
-        m_content += prePath + root->elem[1];
-
+        m_content += img;
         m_content += "\" />";
     }
     // 处理空行
@@ -523,10 +526,10 @@ string MarkdownParser::html()
                 h4 { font-weight: 400; }\
                 h5 { font-weight: 400; }\
                 h6 { font-weight: 400; }\
-                strong { font-weight: 600 }\
+                strong { font-weight: 500 }\
                 ul, ol { font-weight: 400; }\
-		pre { background-color: #f2f2f2;padding-left:100px; white-space: pre-wrap; margin-right: 5px}\
-		pre>code { color: black; background-color: #f2f2f2;text-intend:100px}\
+		pre { background-color: #cccccc;padding-left:100px; white-space: pre-wrap; margin-right: 5px}\
+		pre>code { color: black; background-color: #cccccc;text-intend:100px}\
         </style>\
         </head><body><article class=\"markdown-body\">";
     std::string end = "</article></body></html>";

@@ -14,6 +14,7 @@
 
 #include "window.h"
 #include <kiran-style/style-palette.h>
+#include <qt5-log-i.h>
 #include <QAction>
 #include <QBitmap>
 #include <QPainter>
@@ -40,7 +41,10 @@ Window::~Window()
 
 void Window::switchToDocument(const QString& mdfPath)
 {
-    m_ui->document->renderDocument(mdfPath);
+    // 若与上次文档路径相同则不再重新渲染，直接切换页面
+    if (m_ui->document->getMdFilePath() != mdfPath){
+        m_ui->document->renderDocument(mdfPath);
+    }
     m_ui->stackedWidget->setCurrentWidget(m_ui->document);
 }
 

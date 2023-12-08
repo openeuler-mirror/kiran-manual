@@ -39,12 +39,13 @@ void DocFrame::init()
     innerItemLayout->setAlignment(Qt::AlignCenter);
 
     // 背景图片文件路径
+//    m_iconPath = "/home/skyzcyou/test.png";
     QImage img(m_iconPath);
     int w = img.width();
     // 图片宽高等比例缩放
     int h = img.height();
     // 调整图片中宽高最大者至maxSide
-    int maxSide = 100;
+    int maxSide = 96;
     if (w >= h)
     {
         double scale = maxSide / double(w);

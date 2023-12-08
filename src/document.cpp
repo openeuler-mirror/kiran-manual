@@ -65,7 +65,7 @@ QString Document::mdFile2HtmlStr(const QString& mdPath)
 
 void Document::renderDocument(const QString& mdFilePath)
 {
-    this->m_mdFilePath = mdFilePath;
+    this->setMdFilePath(mdFilePath);
     this->renderDocument();
 }
 
@@ -172,7 +172,10 @@ void Document::searchNextKeyword(const QString& keyword)
             m_initSearched = true;
             if (m_matchList.empty())
             {
-                KiranMessageBox::message(this, tr("No search result"), tr("Number of Keyword Matches: %1 .").arg(m_matchList.size()), KiranMessageBox::Yes);
+                KiranMessageBox::message(this,
+                                         tr("No search result"),
+                                         tr("Number of Keyword Matches: %1 .").arg(m_matchList.size()),
+                                         KiranMessageBox::Yes);
                 return;
             }
         }
@@ -272,15 +275,9 @@ void Document::openDocumentURL(const QUrl& url)
     if (rvState == QValidator::Acceptable)
     {
         auto result = KiranMessageBox::message(this, tr("Notice!"), tr("About to open the Browser and go to: %1").arg(strUrl), KiranMessageBox::Ok | KiranMessageBox::No);
-        switch (result)
+        if (result == KiranMessageBox::Ok)
         {
-        case KiranMessageBox::Ok:
             QDesktopServices::openUrl(url);
-            break;
-        case KiranMessageBox::No:
-            break;
-        default:
-            break;
         }
         return;
     }
@@ -310,7 +307,7 @@ void Document::init()
     outLayout->setMargin(0);
     // 组件初始化
     auto highlighter = new CodeHighlighter(m_ui->textBrowser->document());
-    m_ui->treeWidget->setHeaderHidden(true);
+
     connect(m_ui->treeWidget, &QTreeWidget::itemClicked, this, &Document::tocItemScrollToAnchor);
     connect(m_ui->pushButtonBackHome, &QPushButton::clicked, this, &Document::backToNavigationPage);
     connect(m_ui->textBrowser, &QTextBrowser::anchorClicked, this, &Document::openDocumentURL);
@@ -334,7 +331,6 @@ void Document::init()
                 const QColor& buttonTextColor = buttonPalette.color(QPalette::ButtonText);
                 QPalette followPalette{};
                 followPalette.setColor(QPalette::Text, buttonTextColor);
-                m_ui->treeWidget->setPalette(followPalette);
                 m_ui->textBrowser->setPalette(followPalette);
             });
 }
@@ -385,5 +381,13 @@ void Document::fillMatchList(const QString& searchText)
             m_matchList.append(cursor);
         }
     }
+}
+void Document::setMdFilePath(const QString& mdFilePath)
+{
+    this->m_mdFilePath = mdFilePath;
+}
+QString Document::getMdFilePath()
+{
+    return this->m_mdFilePath;
 }
 }  // namespace Kiran

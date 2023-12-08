@@ -14,7 +14,7 @@
    <string>Document</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QWidget#Document { background-color: rgb(0, 0, 0);}</string>
+   <string notr="true"/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <property name="leftMargin">
@@ -41,6 +41,9 @@
        </property>
        <item>
         <widget class="KiranColorBlock" name="widgetLeft" native="true">
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout">
           <property name="leftMargin">
            <number>0</number>
@@ -59,7 +62,7 @@
             <property name="styleSheet">
              <string notr="true">QPushButton { 
 height: 30px; 
-padding-left: 24px; 
+padding-left: 32px; 
 padding-top: 5px; 
 text-align: left 
 }</string>
@@ -73,7 +76,7 @@ text-align: left
            </widget>
           </item>
           <item>
-           <widget class="QTreeWidget" name="treeWidget">
+           <widget class="Kiran::TocTree" name="treeWidget">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>1</horstretch>
@@ -81,21 +84,10 @@ text-align: left
              </sizepolicy>
             </property>
             <property name="styleSheet">
-             <string notr="true">QTreeView {
-background-color: transparent; 
-border: none
-}
-QTreeView::branch::selected {
-background-color:#2eb3ff;
-border-radius: 6px
-}
-QTreeView::item {
-height: 40px
-}
-QTreeView::item::selected{
-background-color:#2eb3ff
-}
-</string>
+             <string notr="true"/>
+            </property>
+            <property name="indentation">
+             <number>24</number>
             </property>
             <column>
              <property name="text">
@@ -166,6 +158,11 @@ padding: 15px 0 10px 5px
    <extends>QWidget</extends>
    <header location="global">kiranwidgets-qt5/kiran-color-block.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Kiran::TocTree</class>
+   <extends>QTreeWidget</extends>
+   <header>toc-tree/toc-tree.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

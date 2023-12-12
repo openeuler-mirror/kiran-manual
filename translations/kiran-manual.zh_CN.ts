@@ -129,7 +129,7 @@ Document Name: </source>
 <context>
     <name>Kiran::Window</name>
     <message>
-        <location filename="../src/window.cpp" line="59"/>
+        <location filename="../src/window.cpp" line="63"/>
         <source>kiran manual</source>
         <translation>帮助手册</translation>
     </message>

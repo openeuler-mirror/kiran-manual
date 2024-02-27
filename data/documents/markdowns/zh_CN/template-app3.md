@@ -1,6 +1,6 @@
 # 应用商店之 - KubeEdge 使用文档
 
-![AppStore](template-document-img.png)
+![template-document-img.png](../../images/docs/template-document-img.png)
 
 KubeEdge将Kubernetes的能力延伸到了边缘场景中，为云和边缘之间的网络，应用部署和元数据同步提供基础架构支持。KubeEdge在使用上与Kubernetes保持完全一致，除此之外还扩展了对边缘设备的管理与控制。本节将通过一个简单的例子向用户演示如何通过KubeEdge完成设备边云协同任务。
 
@@ -190,15 +190,3 @@ https://github.com/kubeedge/edgemesh
 **3）自定义云边消息路由**
 
 https://kubeedge.io/en/docs/developer/custom_message_deliver/
-
-## 7. 换行测试
-
-![AppStore](template-document-img.png)
-
-KubeEdge将Kubernetes的能力延伸到了边缘场景中，为云和边缘之间的网络，应用部署和元数据同步提供基础架构支持。KubeEdge在使用上与Kubernetes保持完全一致，除此之外还扩展了对边缘设备的管理与控制。本节将通过一个简单的例子向用户演示如何通过KubeEdge完成设备边云协同任务。
-
-回车换行
-![AppStore](template-document-img.png)
-KubeEdge将Kubernetes的能力延伸到了边缘场景中，为云和边缘之间的网络，应用部署和元数据同步提供基础架构支持。KubeEdge在使用上与Kubernetes保持完全一致，除此之外还扩展了对边缘设备的管理与控制。本节将通过一个简单的例子向用户演示如何通过KubeEdge完成设备边云协同任务。
-
-空行换行

@@ -24,4 +24,4 @@
 
 正确的超链接：[#获取文件状态函数](template-app3.md)
 错误的超链接：[#获取文件状态函数](Not_exist_document.md)
-图片：![MOVIE](template-document-img.png)
+图片：![template-document-img.png](../../images/docs/template-document-img.png)

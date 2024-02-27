@@ -1,6 +1,6 @@
-# 概述
+# 终端
 终端是麒麟信安服务器操作系统使用系统命令操作的媒介，通过在终端窗口键入系统命令实现与系统交互。
-![](Terminal.png)
+![Terminal.png](../../images/docs/Terminal.png)
 
 ## 使用入门
 ### 运行终端
@@ -17,7 +17,7 @@
 打开终端：点击则重新打开一个终端
 打开标签：点击则在当前终端新打开一个标签页
 新建配置文件：点击后弹出配置文件名称输入界面，输入文件名称后点击“创建”，打开配置文件设置界面
-![](Terminal-configuration.PNG)
+![Terminal-configuration.png](../../images/docs/Terminal-configuration.png)
 您可以自定义通用选项、标题和命令、颜色、背景、滚动、兼容性设置。
 关闭标签页：关闭当前标签页
 关闭窗口：关闭终端窗口
@@ -28,9 +28,9 @@
 全选：点击后选中当前终端的所有内容
 配置文件：点击后弹出配置文件弹窗，可新建、编辑、删除配置文件，可切换当前的配置文件
 键盘快捷键：点击后可查看快捷键操作
-![](Terminal-Shortcut-keys.PNG)
+![Terminal-Shortcut-keys.png](../../images/docs/Terminal-Shortcut-keys.png)
 配置文件首选项：设置默认配置文件的配置，可以设置通用选项、标题和命令、颜色、背景、滚动、兼容性
-![](Terminal-Preferences.PNG)
+![Terminal-Preferences.png](../../images/docs/Terminal-Preferences.png)
 
 ### 视图
 显示菜单栏：默认勾选显示终端上方的操作菜单栏，取消勾选后不再显示
@@ -41,7 +41,7 @@
 
 ### 搜索
 查找：点击后弹出查找框，在输入框输入搜索关键字，点击“查找”按钮后将在终端屏幕中搜索包含关键字的内容，若搜索到了则高亮显示。
-![](Terminal-find.PNG)
+![Terminal-find.png](../../images/docs/Terminal-find.png)
 您可以选择搜索的设置，如是否区分大小写，是否匹配整个单词等。
 查找下一个：点击后将在终端中跳转到搜索关键字的下一个位置，或按快捷键“shift+ctrl+H”也可以跳转。
 查找上一个：点击后将在终端中跳转到搜索关键字的是上一个位置，或按快捷键“shift+ctrl+G”也可以跳转。
@@ -50,7 +50,7 @@
 更改配置文件：点击“终端”-》鼠标移动至“更改配置文件”-》勾选需要修改的配置文件即可修改成功
 设置标题：修改当前终端的标题
 设定字符编码：您可修改字符编码，默认是UTF-8，可修改为GB18030、GBK或GB2312，点击“添加或删除”按钮还可以手动添加多种字符编码
-![](Terminal-terminal.PNG)
+![Terminal-terminal.png](../../images/docs/Terminal-terminal.png)
 复位：若终端使用中有问题，可点击“复位”进行恢复
 复位并清屏：重置终端并清理屏幕
 修改终端大小：点击“终端”下的大小选项可进行修改，默认大小是80X24，还提供了80X43、132X24、132X43大小设置；您也可以将鼠标移动到终端边缘，待出现拖动箭头后可以按住鼠标进行拖动来修改终端大小。
@@ -58,4 +58,4 @@
 ### 帮助
 目录：点击“帮助”-》“目录”弹出帮助手册，可以查看帮助信息，也可以通过按F1查看帮助手册
 关于：显示终端的版本信息，如版本号、许可协议等
-![](Terminal-about.PNG)
+![Terminal-about.png](../../images/docs/Terminal-about.png)

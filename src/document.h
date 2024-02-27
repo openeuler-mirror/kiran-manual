@@ -76,6 +76,8 @@ private:
     // 调试使用，当打开.md文档时，将 markdown2html 模块输出的 html 文档输出到文件，调试使用
     static void htmlStrSaveToFile(QString& fileName, QString& hStr);
     void fillMatchList(const QString& searchText);
+    // 遍历目录条目，选中　key　匹配的条目
+    void selectTreeItem(QTreeWidgetItem* item, const QString& key);
 
 private:
     Ui::Document* m_ui;

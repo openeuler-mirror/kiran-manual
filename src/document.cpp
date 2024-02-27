@@ -35,6 +35,7 @@
 #include <QTreeWidget>
 #include <string>
 #include "markdown-parser.h"
+#include <QAbstractTextDocumentLayout>
 namespace Kiran
 {
 Document::Document(QWidget* parent)
@@ -333,6 +334,18 @@ void Document::init()
                 followPalette.setColor(QPalette::Text, buttonTextColor);
                 m_ui->textBrowser->setPalette(followPalette);
             });
+    // 监听页面变化，更新目录
+    // TODO: 这种方法是用关键字匹配，若目录中有重复项会导致异常 (其实若采用　AnchorAt 类似的方法拿到　Anchor 也是会有这种　BUG 的，暂采用此方法，需要写文档时避免相同的目录)
+    connect(m_ui->textBrowser->verticalScrollBar(), &QScrollBar::valueChanged, this, [=]()
+            {
+                QTextCursor cursor = m_ui->textBrowser->cursorForPosition(QPoint(0, 0));
+                QString firstVisibleLineText = m_ui->textBrowser->document()->findBlockByLineNumber(cursor.block().blockNumber()).text();
+//                int firstVisibleBlock = m_ui->textBrowser->document()->documentLayout()->blockBoundingRect(cursor.block()).topLeft().y();
+//                QRect rect = m_ui->textBrowser->viewport()->rect();
+//                QPoint point = QPoint(10, firstVisibleBlock - rect.y());
+//                QString firstVisibleLineAnchor = m_ui->textBrowser->anchorAt(point); // AnchorAt()　只能获取到　`the refer of anchor`，　也就是　a 标签对应的　link，而获取不到　h 标签的　id
+                selectTreeItem(m_ui->treeWidget->invisibleRootItem(), firstVisibleLineText);
+            });
 }
 
 void Document::renderDocument()
@@ -389,5 +402,17 @@ void Document::setMdFilePath(const QString& mdFilePath)
 QString Document::getMdFilePath()
 {
     return this->m_mdFilePath;
+}
+void Document::selectTreeItem(QTreeWidgetItem* item, const QString& key)
+{
+    if (item->text(0) == key) {
+        m_ui->treeWidget->setCurrentItem(item);
+        return;
+    }
+    // 遍历子项
+    for (int i = 0; i < item->childCount(); ++i) {
+        QTreeWidgetItem* childItem = item->child(i);
+        selectTreeItem(childItem, key);
+    }
 }
 }  // namespace Kiran

@@ -32,6 +32,7 @@ DocFrame::DocFrame(QWidget* parent, Qt::WindowFlags f)
 
 void DocFrame::init()
 {
+    setAttribute(Qt::WA_Hover, true);
     this->setFixedSize(DOC_FRAME_WIDTH, DOC_FRAME_WIDTH);
     this->setCursor(QCursor(Qt::PointingHandCursor));
 
@@ -39,7 +40,6 @@ void DocFrame::init()
     innerItemLayout->setAlignment(Qt::AlignCenter);
 
     // 背景图片文件路径
-//    m_iconPath = "/home/skyzcyou/test.png";
     QImage img(m_iconPath);
     int w = img.width();
     // 图片宽高等比例缩放

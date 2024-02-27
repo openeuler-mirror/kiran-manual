@@ -4,11 +4,11 @@
 # 关于系统
 控制面板会默认打开关于系统的设置项，在此分类中，主要包含系统信息和软件信息，通过选中不同的二级分类便可查看并修改对应的信息。
 
-![AboutSystem](xwd_test.png)
+![xwd_test.png](../../images/docs/xwd_test.png)
 
 # 声音设置
 声音设置可以单独设置系统的输入、输出设备以及音量和左右的声道平衡。
-![AboutSystem](xwd_test.png)
+![xwd_test.png](../../images/docs/xwd_test.png)
 # 认证管理
 
 # 电源管理

@@ -21,28 +21,28 @@
 <context>
     <name>Kiran::Document</name>
     <message>
-        <location filename="../src/document.cpp" line="176"/>
+        <location filename="../src/document.cpp" line="177"/>
         <source>No search result</source>
         <translation>无搜索结果</translation>
     </message>
     <message>
-        <location filename="../src/document.cpp" line="177"/>
+        <location filename="../src/document.cpp" line="178"/>
         <source>Number of Keyword Matches: %1 .</source>
         <translation>关键字匹配数量：%1。</translation>
     </message>
     <message>
-        <location filename="../src/document.cpp" line="277"/>
-        <location filename="../src/document.cpp" line="296"/>
+        <location filename="../src/document.cpp" line="278"/>
+        <location filename="../src/document.cpp" line="297"/>
         <source>Notice!</source>
         <translation>注意！</translation>
     </message>
     <message>
-        <location filename="../src/document.cpp" line="277"/>
+        <location filename="../src/document.cpp" line="278"/>
         <source>About to open the Browser and go to: %1</source>
         <translation>将打开浏览器前往：%1</translation>
     </message>
     <message>
-        <location filename="../src/document.cpp" line="296"/>
+        <location filename="../src/document.cpp" line="297"/>
         <source>Target document does not exist! 
 Document Name: </source>
         <translation>目标文档不存在！文档名称： </translation>

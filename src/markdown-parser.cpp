@@ -35,14 +35,14 @@ void removeEscapeChar(char* str)
 {
     regex re(R"([\r\n]+$)");
     string s = string(str);
-    s = regex_replace(s, re, "");
+    s = regex_replace(s, re, std::string(""));
     strcpy(str, s.c_str());
 }
 
 void removeEscapeChar(string& str)
 {
     regex re(R"([\r\n]+$)");
-    str = regex_replace(str, re, "");
+    str = regex_replace(str, re, std::string(""));
 }
 
 void MarkdownParser::transfer()
@@ -122,9 +122,9 @@ void MarkdownParser::transfer()
             if (rowStr.find('<') && rowStr.find('>'))
             {
                 std::regex re("<");
-                std::string result = std::regex_replace(rowStr, re, "&lt;");
+                std::string result = std::regex_replace(rowStr, re, std::string("&lt;"));
                 re = std::regex(">");
-                rowStr = std::regex_replace(result, re, "&gt;");
+                rowStr = std::regex_replace(result, re, std::string("&gt;"));
             }
             // 行首主动添加空格
             m_root->_child.back()->elem[0] += "&nbsp;&nbsp;";

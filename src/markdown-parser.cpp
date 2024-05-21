@@ -17,7 +17,6 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <codecvt>
 #include <regex>
 #include "constants.h"
 

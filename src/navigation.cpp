@@ -15,6 +15,8 @@
 #include "navigation.h"
 
 #include <kiranwidgets-qt5/kiran-message-box.h>
+#include <palette.h>
+#include <style-helper.h>
 #include <QFile>
 #include <QGraphicsDropShadowEffect>
 #include <QLabel>
@@ -25,7 +27,6 @@
 #include "constants.h"
 #include "doc-frame/doc-frame.h"
 #include "kiran-log/qt5-log-i.h"
-#include "kiran-style/style-palette.h"
 #include "string"
 #include "ui_navigation.h"
 

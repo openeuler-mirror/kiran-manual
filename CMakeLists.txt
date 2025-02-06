@@ -23,7 +23,7 @@ find_package(
 # 查找 Kiran 相关组件
 find_package(PkgConfig REQUIRED)
 pkg_search_module(KLOG REQUIRED klog-qt5)
-pkg_search_module(KIRAN_STYLE REQUIRED kiran-style-helper)
+pkg_search_module(KIRAN_INTEGRATION_THEME REQUIRED kiran-integration-theme)
 pkg_search_module(KIRAN_WIDGETS REQUIRED kiranwidgets-qt5)
 
 set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -51,12 +51,12 @@ add_executable(${PROJECT_NAME} ${HEADER} ${SOURCES} ${FORMS} ${RESOURCE}
 target_include_directories(
   ${PROJECT_NAME}
   PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${PROJECT_SOURCE_DIR}
-          ${KLOG_INCLUDE_DIRS} ${KIRAN_STYLE_INCLUDE_DIRS}
+          ${KLOG_INCLUDE_DIRS} ${KIRAN_INTEGRATION_THEME_INCLUDE_DIRS}
           ${KIRAN_WIDGETS_INCLUDE_DIRS})
 
 target_link_libraries(
   ${PROJECT_NAME} ${REQUIRED_LIBS_QUALIFIED} ${KLOG_LIBRARIES}
-  ${KIRAN_STYLE_LIBRARIES} ${KIRAN_WIDGETS_LIBRARIES})
+  ${KIRAN_INTEGRATION_THEME_LIBRARIES} ${KIRAN_WIDGETS_LIBRARIES})
 
 # 安装二进制文件
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)

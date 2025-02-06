@@ -21,7 +21,10 @@
 #include <QPushButton>
 #include <QStyleOption>
 #include <QVBoxLayout>
+#include <palette.h>
 #include "constants.h"
+
+using namespace Kiran::Theme;
 
 namespace Kiran
 {
@@ -107,36 +110,13 @@ void DocFrame::paintEvent(QPaintEvent* event)
     qRect.adjust(0.5, 0.5, -0.5, -0.5);
     painterPath.addRoundedRect(qRect, m_radius, m_radius);
 
-    auto getStateFunc = [this](QStyle::State state) -> StylePalette::ColorState
-    {
-        if (!(state & QStyle::State_Enabled))
-        {
-            return StylePalette::Disabled;
-        }
-        else if (state & QStyle::State_Sunken)
-        {
-            return StylePalette::Active;
-        }
-        else if ((state & QStyle::State_MouseOver) && testAttribute(Qt::WA_Hover))
-        {
-            return StylePalette::Hover;
-        }
-        else
-        {
-            return StylePalette::Normal;
-        }
-    };
-
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    auto kiranPalette = StylePalette::instance();
+    auto kiranPalette = DEFAULT_PALETTE();
     if (m_drawBackground)
     {
-        QColor backgroundColor;
-        backgroundColor = kiranPalette->color(getStateFunc(state),
-                                              StylePalette::Widget,
-                                              StylePalette::Background);
+        auto backgroundColor = kiranPalette->getColor(state,Palette::WIDGET);
         painter.fillPath(painterPath, backgroundColor);
     }
 

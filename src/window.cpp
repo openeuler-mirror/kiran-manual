@@ -13,7 +13,7 @@
  */
 
 #include "window.h"
-#include <kiran-style/style-palette.h>
+#include <palette.h>
 #include <qt5-log-i.h>
 #include <QAction>
 #include <QBitmap>

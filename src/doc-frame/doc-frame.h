@@ -16,8 +16,6 @@
 
 #include <QWidget>
 
-#include <kiran-style/style-palette.h>
-
 namespace Kiran
 {
 class DocFrame : public QWidget

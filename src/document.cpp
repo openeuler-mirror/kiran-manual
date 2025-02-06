@@ -17,8 +17,6 @@
 #include "ui_document.h"
 
 #include <kiran-log/qt5-log-i.h>
-#include <kiran-style/style-global-define.h>
-#include <kiran-style/style-palette.h>
 #include <kiranwidgets-qt5/kiran-message-box.h>
 #include <QDesktopServices>
 #include <QDir>
@@ -34,8 +32,12 @@
 #include <QStringList>
 #include <QTreeWidget>
 #include <string>
+#include <palette.h>
 #include "markdown-parser.h"
 #include <QAbstractTextDocumentLayout>
+
+using namespace Kiran::Theme;
+
 namespace Kiran
 {
 Document::Document(QWidget* parent)
@@ -315,13 +317,12 @@ void Document::init()
 
     // Fixme: 以下代码用一种不好的方式解决 pushButtonBackHome, treeWidget, textBrowser 文字不跟随主题变化到问题
     // note: 要跟随主题变化要求控件不能设置样式表，如有样式表则会导致主题样式透传失败
-    using namespace Kiran;
-    auto stylePalette = StylePalette::instance();
-    connect(stylePalette, &StylePalette::themeChanged, this, [=](Kiran::PaletteType paletteType)
-            {
-                QColor qColor = stylePalette->color(StylePalette::Normal,
-                                                    StylePalette::Widget,
-                                                    StylePalette::Foreground);
+    auto stylePalette = DEFAULT_PALETTE();
+    connect(stylePalette, &Palette::baseColorsChanged, this, [=](){
+                auto kiranPalette = DEFAULT_PALETTE();
+
+                auto qColor = kiranPalette->getColor(Palette::NORMAL,Palette::TEXT);
+
                 QPalette palette{};
                 palette.setColor(QPalette::ButtonText, qColor);
                 m_ui->pushButtonBackHome->setPalette(palette);

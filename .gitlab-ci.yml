@@ -1,13 +1,16 @@
 variables:
-#  EXTRA_DNF_REPOS: |
-#    [KiranBase2.4]
-#    name=KiranBase2.4
-#    gpgcheck=0
-#    baseurl=http://192.168.120.71/kojifiles/repos/KY3.5-1-Kiran-base-2.4-build/latest/x86_64/
+  EXTRA_DNF_REPOS: |
+                   [KylinSec_3.5.2_Customize_Kiran2.7]
+                   name=Kiran2.7(standard_x86_64)
+                   type=rpm-md
+                   baseurl=http://build.kylinsec.com.cn:82/KylinSec:/3.5.2:/Customize:/Kiran2.7/standard_x86_64/
+                   gpgcheck=1
+                   gpgkey=http://build.kylinsec.com.cn:82/KylinSec:/3.5.2:/Customize:/Kiran2.7/standard_x86_64/repodata/repomd.xml.key
+                   enabled=1
+  DEFAULT_IMAGE: kylinsec-3.5.2
   RPM_BUILD_REQUIRES: 'gcc-c++ cmake glib2-devel qt5-qtbase-devel qt5-linguist kiran-log-qt5-devel kiran-widgets-qt5-devel kiran-qt5-integration-devel'
-  IMAGE: 'kylinsec-3.4-5-gc'
 
 include:
-  - project: 'os/gitlab-ci'
+  - project: 'os/ks-devops'
     ref: main
-    file: '/cmake/cxx.gitlab-ci.yml'
+    file: '/entrypoint/develop/cmake.yml'

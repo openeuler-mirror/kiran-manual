@@ -310,6 +310,7 @@ void Document::init()
     outLayout->setMargin(0);
     // 组件初始化
     auto highlighter = new CodeHighlighter(m_ui->textBrowser->document());
+    Q_UNUSED(highlighter);
 
     connect(m_ui->treeWidget, &QTreeWidget::itemClicked, this, &Document::tocItemScrollToAnchor);
     connect(m_ui->pushButtonBackHome, &QPushButton::clicked, this, &Document::backToNavigationPage);

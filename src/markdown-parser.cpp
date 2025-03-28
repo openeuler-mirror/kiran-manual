@@ -118,7 +118,8 @@ void MarkdownParser::transfer()
         if (inBlock)
         {
             // 处理 <> 否则会被 HTML 渲染为tag 同一行中存在 <> 则处理
-            if (rowStr.find('<') && rowStr.find('>'))
+	     if (rowStr.find('<') != std::string::npos &&
+                rowStr.find('>') != std::string::npos)
             {
                 std::regex re("<");
                 std::string result = std::regex_replace(rowStr, re, std::string("&lt;"));
